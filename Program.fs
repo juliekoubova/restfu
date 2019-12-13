@@ -1,8 +1,7 @@
-﻿
-open System
+﻿open System
 
 type LogEntryLevel = Error | Debug
-type LogEntry =  LogEntryLevel * String
+type LogEntry = LogEntryLevel * string
 
 type Result<'T> =
   | Ok of 'T
@@ -56,9 +55,7 @@ let emptyResource = {
   Put    = notFound
 }
 
-let inMemoryCollection
-  (id: 'Entity -> 'Id)
-  =
+let inMemoryCollection (id: 'Entity -> 'Id) =
   let mutable state = Map.empty
 
   let get id =
@@ -71,7 +68,7 @@ let inMemoryCollection
       match get id with
       | Ok entity ->
         state <- Map.remove id state
-        Response.fromResult(Ok entity)
+        Ok entity |> Response.fromResult
       | other -> other |> Response.fromResult
 
     Get = fun id _ -> get id |> Response.fromResult
@@ -98,13 +95,26 @@ let validatePutId
   =
   { resource with
       Put = fun id req ->
-        if id = idSelector(req.Body) then
+        if id = idSelector req.Body then
           resource.Put id req
         else
           BadRequest "Id doesn't match" |> Response.fromResult
   }
 
+type Pet = {
+  Id : String
+  Owner : String
+}
+
+let petId pet = pet.Id
+
+let petResource =
+  inMemoryCollection petId
+  |> validatePutId petId
+
 [<EntryPoint>]
-let main argv =
-    printfn "Hello World from F#!"
-    0 // return an integer exit code
+let main _ =
+  printfn "POST: %A" (petResource.Post () { Body = { Id = "Moan"; Owner = "Daddy" } })
+  printfn "LIST: %A" (petResource.List () { Body = () })
+  printfn "PUT: %A" (petResource.Put "Moan" { Body = { Id = "Penny"; Owner = "Daddy" } })
+  0

@@ -2,8 +2,9 @@
   "files.exclude": {
     ".git": true,
     ".ionide": true,
-    "bin": true,
-    "obj": true,
+    "*.sln": true,
+    "**/bin": true,
+    "**/obj": true,
     "**/.DS_Store": true
   }
 }

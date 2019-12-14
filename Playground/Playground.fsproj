@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Rest/Rest.fsproj" />
+    <ProjectReference Include="../Rest.AspNetCore/Rest.AspNetCore.fsproj" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>

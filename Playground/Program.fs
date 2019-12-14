@@ -1,5 +1,8 @@
-open System
+open Microsoft.AspNetCore
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Hosting
 open Rest
+open System
 
 let validatePutKey entityKey resource: RestResource<'Key, 'Entity> =
   function
@@ -19,9 +22,16 @@ type Pet = {
 let petKey pet = pet.Name
 let pets = InMemory.create petKey |> validatePutKey petKey
 
+let configureApp app =
+  ()
+
 [<EntryPoint>]
 let main _ =
-  printfn "POST: %A" (pets <| Post { Name = "Moan"; Owner = "Daddy" })
-  printfn "LIST: %A" (pets <| List)
-  printfn "PUT: %A" (pets <| Put ("Moan", { Name = "Penny"; Owner = "Daddy" }))
+  WebHost.CreateDefaultBuilder()
+    .Configure(configureApp)
+    .Build()
+    .Run()
   0
+  // printfn "POST: %A" (pets <| Post { Name = "Moan"; Owner = "Daddy" })
+  // printfn "LIST: %A" (pets <| List)
+  // printfn "PUT: %A" (pets <| Put ("Moan", { Name = "Penny"; Owner = "Daddy" }))

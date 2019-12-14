@@ -1,20 +1,20 @@
 namespace Rest
 
-type RestRequest<'Id, 'Entity> =
-| Delete of 'Id
-| Get of 'Id
+type RestRequest<'Key, 'Entity> =
+| Delete of 'Key
+| Get of 'Key
 | List
 | Post of 'Entity
-| Put of 'Id * 'Entity
+| Put of 'Key * 'Entity
 
 module RestRequest =
-  let map fId fEntity request =
+  let map k e request =
     match request with
-    | Delete id -> Delete (fId id)
-    | Get id -> Get (fId id)
+    | Delete key -> Delete (k key)
+    | Get key -> Get (k key)
     | List -> List
-    | Post entity -> Post (fEntity entity)
-    | Put (id, entity) -> Put ((fId id), (fEntity entity))
+    | Post entity -> Post (e entity)
+    | Put (key, entity) -> Put ((k key), (e entity))
 
-  let mapId f = map f id
+  let mapKey f = map f id
   let mapEntity f = map id f

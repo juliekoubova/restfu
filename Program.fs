@@ -1,33 +1,34 @@
 open System
 open Rest
 
-let validatePutId idSelector resource: RestResource<'Id, 'Entity> =
+let validatePutKey entityKey resource: RestResource<'Key, 'Entity> =
   function
-  | Put (id, entity) as req ->
-      if id = idSelector entity then
-        (resource req)
+  | Put (key, entity) as req ->
+      let keyFromEntity = entityKey entity
+      if key = keyFromEntity then
+        resource req
       else
-        PutFail (BadRequest, id, entity)
+        PutFail ((RestFail.cannotChangeKey key keyFromEntity), key, entity)
   | req -> resource req
 
-let convertId resource convert convertBack: RestResource<'Id, 'Entity> =
+let convertKey resource convert convertBack: RestResource<'Key, 'Entity> =
  fun req ->
     req
-    |> RestRequest.mapId convert
+    |> RestRequest.mapKey convert
     |> resource
-    |> RestResult.mapId convertBack
+    |> RestResult.mapKey convertBack
 
 type Pet = {
-  Id : String
+  Name : String
   Owner : String
 }
 
-let petId pet = pet.Id
-let pets = InMemory.create petId |> validatePutId petId
+let petKey pet = pet.Name
+let pets = InMemory.create petKey |> validatePutKey petKey
 
 [<EntryPoint>]
 let main _ =
-  printfn "POST: %A" (pets <| Post { Id = "Moan"; Owner = "Daddy" })
+  printfn "POST: %A" (pets <| Post { Name = "Moan"; Owner = "Daddy" })
   printfn "LIST: %A" (pets <| List)
-  printfn "PUT: %A" (pets <| Put ("Moan", { Id = "Penny"; Owner = "Daddy" }))
+  printfn "PUT: %A" (pets <| Put ("Moan", { Name = "Penny"; Owner = "Daddy" }))
   0

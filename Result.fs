@@ -1,55 +1,55 @@
 namespace Rest
 
-type RestResult<'Id, 'Entity> =
-| DeleteSuccess of Status * 'Id * 'Entity option
-| DeleteFail of Status * 'Id
+type RestResult<'Key, 'Entity> =
+| DeleteSuccess of RestSuccess * 'Key * 'Entity option
+| DeleteFail of RestFail * 'Key
 
-| GetSuccess of Status * 'Id * 'Entity
-| GetFail of Status * 'Id
+| GetSuccess of RestSuccess * 'Key * 'Entity
+| GetFail of RestFail * 'Key
 
-| ListSuccess of Status * 'Entity seq
-| ListFail of Status
+| ListSuccess of RestSuccess * 'Entity seq
+| ListFail of RestFail
 
-| PostSuccess of Status * 'Id * 'Entity option
-| PostFail of Status * 'Entity
+| PostSuccess of RestSuccess * 'Key * 'Entity option
+| PostFail of RestFail * 'Entity
 
-| PutSuccess of Status * 'Id * 'Entity option
-| PutFail of Status * 'Id * 'Entity
+| PutSuccess of RestSuccess * 'Key * 'Entity option
+| PutFail of RestFail * 'Key * 'Entity
 
 module RestResult =
-  let map (fId: 'IdA -> 'IdB) (fEntity: 'EntityA -> 'EntityB) result =
-    let fEntityOpt = Option.map fEntity
-    let fEntitySeq = Seq.map fEntity
+  let map k e result =
+    let eOpt = Option.map e
+    let eSeq = Seq.map e
     match result with
-    | DeleteSuccess (status, id, entity) ->
-      DeleteSuccess (status, (fId id), (fEntityOpt entity))
+    | DeleteSuccess (status, key, entity) ->
+      DeleteSuccess (status, (k key), (eOpt entity))
 
-    | DeleteFail (status, id) ->
-      DeleteFail (status, (fId id))
+    | DeleteFail (status, key) ->
+      DeleteFail (status, (k key))
 
-    | GetSuccess (status, id, entity) ->
-      GetSuccess (status, (fId id), (fEntity entity))
+    | GetSuccess (status, key, entity) ->
+      GetSuccess (status, (k key), (e entity))
 
-    | GetFail (status, id) ->
-      GetFail (status, (fId id))
+    | GetFail (status, key) ->
+      GetFail (status, (k key))
 
     | ListSuccess (status, entities) ->
-      ListSuccess (status, (fEntitySeq entities))
+      ListSuccess (status, (eSeq entities))
 
     | ListFail (status) ->
       ListFail (status)
 
-    | PostSuccess (status, id, entity) ->
-      PostSuccess (status, (fId id), (fEntityOpt entity))
+    | PostSuccess (status, key, entity) ->
+      PostSuccess (status, (k key), (eOpt entity))
 
     | PostFail (status, entity) ->
-      PostFail (status, (fEntity entity))
+      PostFail (status, (e entity))
 
-    | PutSuccess (status, id, entity) ->
-      PutSuccess (status, (fId id), (fEntityOpt entity))
+    | PutSuccess (status, key, entity) ->
+      PutSuccess (status, (k key), (eOpt entity))
 
-    | PutFail (status, id, entity) ->
-      PutFail (status, (fId id), (fEntity entity))
+    | PutFail (status, key, entity) ->
+      PutFail (status, (k key), (e entity))
 
-  let mapId f = map f id
+  let mapKey f = map f id
   let mapEntity f = map id f

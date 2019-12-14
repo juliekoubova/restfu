@@ -1,4 +1,4 @@
 namespace Rest
 
-type RestResource<'Id, 'Entity> =
-  RestRequest<'Id, 'Entity> -> RestResult<'Id, 'Entity>
+type RestResource<'Key, 'Entity> =
+  RestRequest<'Key, 'Entity> -> RestResult<'Key, 'Entity>

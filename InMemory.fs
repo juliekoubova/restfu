@@ -1,36 +1,36 @@
 namespace Rest
 
 module InMemory =
-  let create (entityId: 'Entity -> 'Id): RestResource<'Id, 'Entity> =
-    let mutable state : Map<'Id, 'Entity> = Map.empty
-    let tryFind id = Map.tryFind id state
+  let create (entityKey: 'Entity -> 'Key): RestResource<'Key, 'Entity> =
+    let mutable state : Map<'Key, 'Entity> = Map.empty
+    let tryFind key = Map.tryFind key state
 
     function
-    | Delete id ->
-        match tryFind id with
-        | None -> DeleteFail (NotFound, id)
+    | Delete key ->
+        match tryFind key with
+        | None -> DeleteFail ((RestFail.notFound key), key)
         | Some entity ->
-          state <- Map.remove id state
-          DeleteSuccess (Ok, id, Some entity)
+          state <- Map.remove key state
+          DeleteSuccess (Ok, key, Some entity)
 
-    | Get id ->
-        match tryFind id with
-        | None -> GetFail (NotFound, id)
-        | Some entity -> GetSuccess (Ok, id, entity)
+    | Get key ->
+        match tryFind key with
+        | None -> GetFail ((RestFail.notFound key), key)
+        | Some entity -> GetSuccess (Ok, key, entity)
 
     | List ->
         let entities = state |> Map.toSeq |> Seq.map snd
         ListSuccess (Ok, entities)
 
     | Post entity ->
-        let id = entityId entity
-        match tryFind id with
-        | Some _ -> PostFail (Conflict, entity)
+        let key = entityKey entity
+        match tryFind key with
+        | Some _ -> PostFail (RestFail.alreadyExists key, entity)
         | None ->
-          state <- Map.add id entity state
-          PostSuccess (Created, id, Some entity)
+          state <- Map.add key entity state
+          PostSuccess (Created, key, Some entity)
 
-    | Put (id, entity) ->
-        state <- Map.add id entity state
-        PutSuccess (Ok, id, Some entity)
+    | Put (key, entity) ->
+        state <- Map.add key entity state
+        PutSuccess (Ok, key, Some entity)
 

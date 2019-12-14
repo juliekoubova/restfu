@@ -11,13 +11,6 @@ let validatePutKey entityKey resource: RestResource<'Key, 'Entity> =
         PutFail ((RestFail.cannotChangeKey key keyFromEntity), key, entity)
   | req -> resource req
 
-let convertKey resource convert convertBack: RestResource<'Key, 'Entity> =
- fun req ->
-    req
-    |> RestRequest.mapKey convert
-    |> resource
-    |> RestResult.mapKey convertBack
-
 type Pet = {
   Name : String
   Owner : String

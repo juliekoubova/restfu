@@ -11,6 +11,7 @@
     <Compile Include="Result.fs" />
     <Compile Include="Resource.fs" />
     <Compile Include="InMemory.fs" />
+    <Compile Include="Convert.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

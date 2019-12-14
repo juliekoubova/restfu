@@ -15,7 +15,6 @@ type RestFail =
   | Conflict of string
   | InternalServerError of string
 
-
 module RestFail =
   let alreadyExists key =
     sprintf "Entity with key %A already exists" key |> Conflict

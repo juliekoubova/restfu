@@ -1,105 +1,21 @@
-﻿open System
+open System
+open Rest
 
-type LogEntryLevel = Error | Debug
-type LogEntry = LogEntryLevel * string
+let validatePutId idSelector resource: RestResource<'Id, 'Entity> =
+  function
+  | Put (id, entity) as req ->
+      if id = idSelector entity then
+        (resource req)
+      else
+        PutFail (BadRequest, id, entity)
+  | req -> resource req
 
-type Result<'T> =
-  | Ok of 'T
-  | Created of 'T
-  | Accepted of 'T
-  | NoContent
-  | BadRequest of String
-  | Unauthorized
-  | Forbidden
-  | NotFound
-  | MethodNotAllowed
-  | InternalServerError
-
-type Response<'T> = {
-  Log : LogEntry list
-  Result : Result<'T>
-}
-
-module Response =
-  let fromResult result = {
-    Log = []
-    Result = result
-  }
-
-type Request<'T> = {
-  Body : 'T
-}
-
-type Handler<'Id,'Req,'Res> = 'Id -> Request<'Req> -> Response<'Res>
-
-type RestSingleton<'T> = {
-  Get : Handler<unit, unit, 'T>
-  Put : Handler<unit, 'T, 'T>
-}
-
-type RestResource<'Id, 'Entity> = {
-  Delete : Handler<'Id, unit, 'Entity>
-  List   : Handler<unit, unit,  'Entity seq>
-  Get    : Handler<'Id, unit, 'Entity>
-  Post   : Handler<unit, 'Entity, 'Entity>
-  Put    : Handler<'Id, 'Entity, 'Entity>
-}
-
-let notFound _ _ = { Result = NotFound; Log = [] }
-
-let emptyResource = {
-  Delete = notFound
-  List   = notFound
-  Get    = notFound
-  Post   = notFound
-  Put    = notFound
-}
-
-let inMemoryCollection (id: 'Entity -> 'Id) =
-  let mutable state = Map.empty
-
-  let get id =
-    match Map.tryFind id state with
-    | Some entity -> Ok entity
-    | None -> NotFound
-
-  {
-    Delete = fun id _ ->
-      match get id with
-      | Ok entity ->
-        state <- Map.remove id state
-        Ok entity |> Response.fromResult
-      | other -> other |> Response.fromResult
-
-    Get = fun id _ -> get id |> Response.fromResult
-
-    List = fun _ _ ->
-      state
-      |> Map.toSeq
-      |> Seq.map snd
-      |> Ok
-      |> Response.fromResult
-
-    Post = fun _ { Body = entity } ->
-      state <- Map.add (id entity) entity state
-      Ok entity |> Response.fromResult
-
-    Put = fun id { Body = entity } ->
-      state <- Map.add id entity state
-      Ok entity |> Response.fromResult
-  }
-
-let validatePutId
-  (idSelector: 'Entity -> 'Id)
-  (resource: RestResource<'Id, 'Entity>)
-  =
-  { resource with
-      Put = fun id req ->
-        if id = idSelector req.Body then
-          resource.Put id req
-        else
-          BadRequest "Id doesn't match" |> Response.fromResult
-  }
+let convertId resource convert convertBack: RestResource<'Id, 'Entity> =
+ fun req ->
+    req
+    |> RestRequest.mapId convert
+    |> resource
+    |> RestResult.mapId convertBack
 
 type Pet = {
   Id : String
@@ -107,14 +23,11 @@ type Pet = {
 }
 
 let petId pet = pet.Id
-
-let petResource =
-  inMemoryCollection petId
-  |> validatePutId petId
+let pets = InMemory.create petId |> validatePutId petId
 
 [<EntryPoint>]
 let main _ =
-  printfn "POST: %A" (petResource.Post () { Body = { Id = "Moan"; Owner = "Daddy" } })
-  printfn "LIST: %A" (petResource.List () { Body = () })
-  printfn "PUT: %A" (petResource.Put "Moan" { Body = { Id = "Penny"; Owner = "Daddy" } })
+  printfn "POST: %A" (pets <| Post { Id = "Moan"; Owner = "Daddy" })
+  printfn "LIST: %A" (pets <| List)
+  printfn "PUT: %A" (pets <| Put ("Moan", { Id = "Penny"; Owner = "Daddy" }))
   0

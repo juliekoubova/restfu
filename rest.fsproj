@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Request.fs" />
+    <Compile Include="Status.fs" />
+    <Compile Include="Result.fs" />
+    <Compile Include="Resource.fs" />
+    <Compile Include="InMemory.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

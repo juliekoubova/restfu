@@ -1,11 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     <ProjectReference Include="../Rest/Rest.fsproj" />
+    <Compile Include="RestActionResult.fs" />
+    <Compile Include="RestController.fs" />
+    <Compile Include="RestApplicationModelProvider.fs" />
+    <Compile Include="Extensions.fs" />
   </ItemGroup>
 
 </Project>

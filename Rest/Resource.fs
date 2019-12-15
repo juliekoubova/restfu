@@ -26,17 +26,17 @@ module RestResource =
     Methods = m resource.Methods
   }
 
-  let mapHandler h resource =
-    map h id resource
+  let mapHandler h =
+    map h id
 
-  let internal withBuilder
+  let private withBuilder
     (handlerBuilder: 'F -> RestHandler<'K,'E> -> RestHandler<'K, 'E>)
     (handlerMethod: RestMethods.RestMethod)
     f
     =
     map (handlerBuilder f) (Set.add handlerMethod)
 
-  let internal withoutBuilder
+  let private withoutBuilder
     (handlerBuilder: RestHandler<'K,'E> -> RestHandler<'K, 'E>)
     (handlerMethod: RestMethods.RestMethod)
     =

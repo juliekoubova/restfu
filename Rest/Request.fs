@@ -9,13 +9,14 @@ type RestRequest<'Key, 'Entity> =
 | Put of 'Key * 'Entity
 
 module RestRequest =
-  let map k e request =
+  let map k e q request =
     match request with
     | Delete key -> Delete (k key)
     | Get key -> Get (k key)
-    | List query -> List query
+    | List query -> List (q query)
     | Post entity -> Post (e entity)
     | Put (key, entity) -> Put ((k key), (e entity))
 
-  let mapKey f = map f id
-  let mapEntity f = map id f
+  let mapKey f = map f id id
+  let mapEntity f = map id f id
+  let mapQuery f = map id id f

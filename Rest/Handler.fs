@@ -6,7 +6,7 @@ type RestHandler<'Key, 'Entity> =
 
 module RestHandler =
 
-  let empty: RestHandler<'K, 'E> =
+  let empty : RestHandler<'K, 'E> =
     function
     | Delete key -> DeleteFail (notFound, key)
     | Get key -> GetFail (notFound, key)

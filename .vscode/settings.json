@@ -1,4 +1,7 @@
 {
+  "editor.tabSize": 2,
+  "fantomas.preserveEOL": true,
+  "fantomas.pageWidth": 80,
   "files.exclude": {
     ".git": true,
     ".ionide": true,

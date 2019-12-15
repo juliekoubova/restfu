@@ -1,16 +1,16 @@
 namespace Rest
 
 module Convert =
-  let key resource convert revert: RestResource<'Key, 'Entity> =
-   fun req ->
-      req
-      |> RestRequest.mapKey convert
-      |> resource
-      |> RestResult.mapKey revert
+  let key resource convert revert =
+    resource |> RestResource.mapHandler (fun handler ->
+      RestRequest.mapKey convert
+      >> handler
+      >> RestResult.mapKey revert
+    )
 
-  let entity resource convert revert: RestResource<'Key, 'Entity> =
-   fun req ->
-      req
-      |> RestRequest.mapEntity convert
-      |> resource
-      |> RestResult.mapEntity revert
+  let entity resource convert revert =
+    resource |> RestResource.mapHandler (fun handler ->
+      RestRequest.mapEntity convert
+      >> handler
+      >> RestResult.mapEntity revert
+    )

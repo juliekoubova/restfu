@@ -1,26 +1,32 @@
 namespace Rest
 
 type RestSuccess =
-  | Ok
-  | Created
-  | Accepted
-  | NoContent
+| Ok
+| Created
+| Accepted
+| NoContent
 
 type RestFail =
-  | BadRequest of string
-  | Unauthorized of string
-  | Forbidden of string
-  | NotFound of string
-  | MethodNotAllowed of string
-  | Conflict of string
-  | InternalServerError of string
+| BadRequest of string
+| Unauthorized of string
+| Forbidden of string
+| NotFound of string
+| MethodNotAllowed of string
+| Conflict of string
+| InternalServerError of string
 
 module RestFail =
   let alreadyExists key =
-    sprintf "Entity with key %A already exists" key |> Conflict
+    Conflict <| sprintf "Entity with key %A already exists" key
 
   let cannotChangeKey uriKey entityKey =
-    sprintf "Cannot change key from %A to %A" uriKey entityKey |> BadRequest
+    BadRequest <| sprintf "Cannot change key from %A to %A" uriKey entityKey
 
-  let notFound key =
-    sprintf "Entity with key %A not found" key |> NotFound
+  let methodNotAllowed =
+    MethodNotAllowed "Method Not Allowed"
+
+  let notFound =
+    NotFound "Not Found"
+
+  let notFoundKey key =
+    NotFound <| sprintf "Entity with key %A not found" key

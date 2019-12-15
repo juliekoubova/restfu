@@ -1,9 +1,10 @@
 namespace Rest
 
+type RestQuery = unit
 type RestRequest<'Key, 'Entity> =
 | Delete of 'Key
 | Get of 'Key
-| List
+| List of RestQuery
 | Post of 'Entity
 | Put of 'Key * 'Entity
 
@@ -12,7 +13,7 @@ module RestRequest =
     match request with
     | Delete key -> Delete (k key)
     | Get key -> Get (k key)
-    | List -> List
+    | List query -> List query
     | Post entity -> Post (e entity)
     | Put (key, entity) -> Put ((k key), (e entity))
 

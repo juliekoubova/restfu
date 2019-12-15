@@ -2,17 +2,18 @@ open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Rest
+open RestFail
 open System
 
-let validatePutKey entityKey resource: RestResource<'Key, 'Entity> =
-  function
-  | Put (key, entity) as req ->
+let validatePutKey entityKey =
+  RestResource.withPut (
+    fun handler (key, entity) ->
       let keyFromEntity = entityKey entity
       if key = keyFromEntity then
-        resource req
+        Put (key, entity) |> handler
       else
-        PutFail ((RestFail.cannotChangeKey key keyFromEntity), key, entity)
-  | req -> resource req
+        PutFail ((cannotChangeKey key keyFromEntity), key, entity)
+  )
 
 type Pet = {
   Name : String
@@ -27,11 +28,12 @@ let configureApp app =
 
 [<EntryPoint>]
 let main _ =
-  WebHost.CreateDefaultBuilder()
-    .Configure(configureApp)
-    .Build()
-    .Run()
+  // WebHost.CreateDefaultBuilder()
+  //   .Configure(configureApp)
+  //   .Build()
+  //   .Run()
+  let h = pets.Handler
+  printfn "POST: %A" (h <| Post { Name = "Moan"; Owner = "Daddy" })
+  printfn "LIST: %A" (h <| List ())
+  printfn "PUT: %A" (h <| Put ("Moan", { Name = "Penny"; Owner = "Daddy" }))
   0
-  // printfn "POST: %A" (pets <| Post { Name = "Moan"; Owner = "Daddy" })
-  // printfn "LIST: %A" (pets <| List)
-  // printfn "PUT: %A" (pets <| Put ("Moan", { Name = "Penny"; Owner = "Daddy" }))

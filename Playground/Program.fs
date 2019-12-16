@@ -1,9 +1,13 @@
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
-open Rest
-open RestFail
+open Microsoft.Extensions.DependencyInjection
 open System
+open Rest
+open Rest.AspNetCore
+open RestFail
+open Microsoft.AspNetCore.Mvc
+open Microsoft.OpenApi.Models
 
 let validatePutKey entityKey =
   RestResource.withPut (
@@ -12,7 +16,7 @@ let validatePutKey entityKey =
       if key = keyFromEntity then
         Put (key, entity) |> handler
       else
-        PutFail ((cannotChangeKey key keyFromEntity), key, entity)
+        PutFail ((cannotChangeKey key keyFromEntity), (key, entity))
   )
 
 type Pet = {
@@ -23,17 +27,30 @@ type Pet = {
 let petKey pet = pet.Name
 let pets = InMemory.create petKey |> validatePutKey petKey
 
-let configureApp app =
+let configureServices (services : IServiceCollection) =
+  services.AddMvc () |> ignore
+  services.AddRest () |> ignore
+  services.AddRestResource "pets" pets |> ignore
+  services.AddSwaggerGen (fun swagger ->
+    swagger.SwaggerDoc ("v1", OpenApiInfo(Title = "Pets API", Version = "v1"))
+  ) |> ignore
+
+let configureApp (app : IApplicationBuilder) =
+  app.UseSwagger () |> ignore
+  app.UseSwaggerUI (fun c ->
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pets API")
+  ) |> ignore
   ()
 
 [<EntryPoint>]
 let main _ =
-  // WebHost.CreateDefaultBuilder()
-  //   .Configure(configureApp)
-  //   .Build()
-  //   .Run()
-  let h = pets.Handler
-  printfn "POST: %A" (h <| Post { Name = "Moan"; Owner = "Daddy" })
-  printfn "LIST: %A" (h <| List ())
-  printfn "PUT: %A" (h <| Put ("Moan", { Name = "Penny"; Owner = "Daddy" }))
+  WebHost.CreateDefaultBuilder()
+    .ConfigureServices(configureServices)
+    .Configure(configureApp)
+    .Build()
+    .Run()
+  // let h = pets.Handler
+  // printfn "POST: %A" (h <| Post { Name = "Moan"; Owner = "Daddy" })
+  // printfn "LIST: %A" (h <| List ())
+  // printfn "PUT: %A" (h <| Put ("Moan", { Name = "Penny"; Owner = "Daddy" }))
   0

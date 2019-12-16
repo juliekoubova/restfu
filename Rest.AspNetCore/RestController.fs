@@ -4,6 +4,7 @@ open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Mvc.ModelBinding
 open Rest
 
+[<ApiController>]
 type RestController<'Key,'Entity>(resource : RestResource<'Key,'Entity>) =
   inherit Controller()
 

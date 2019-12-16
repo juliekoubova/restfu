@@ -5,8 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="../Rest/Rest.fsproj" />
+    <Compile Include="IRestApiRegistration.fs" />
     <Compile Include="RestActionResult.fs" />
     <Compile Include="RestController.fs" />
     <Compile Include="RestApplicationModelProvider.fs" />

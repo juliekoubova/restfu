@@ -1,5 +1,6 @@
 [<AutoOpen>]
 module Rest.AspNetCore.Extensions
+open Rest
 
 open Microsoft.AspNetCore.Mvc.ApplicationModels
 open Microsoft.Extensions.DependencyInjection
@@ -12,3 +13,6 @@ type IServiceCollection with
       RestApplicationModelProvider
       > ()
     this
+
+  member this.AddRestResource (url: string) (resource : IRestResource) =
+    this.AddSingleton<IRestApiRegistration> (RestApiRegistration(url, resource))

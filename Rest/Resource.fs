@@ -1,6 +1,9 @@
 namespace Rest
 open Internal
 
+open System
+open System.Reflection
+
 module RestMethods =
   type RestMethod =
   | Delete
@@ -9,10 +12,23 @@ module RestMethods =
   | Post
   | Put
 
-type RestResource<'Key, 'Entity> = {
-  Handler: RestHandler<'Key, 'Entity>
-  Methods: Set<RestMethods.RestMethod>
-}
+type IRestResource =
+  abstract member EntityType : TypeInfo with get
+  abstract member KeyType : TypeInfo with get
+  abstract member Invoke : Object -> Object
+  abstract member Methods : Set<RestMethods.RestMethod> with get
+
+type RestResource<'Key, 'Entity> =
+  {
+    Handler: RestHandler<'Key, 'Entity>
+    Methods: Set<RestMethods.RestMethod>
+  }
+  interface IRestResource with
+    member _.EntityType with get () = typeof<'Entity>.GetTypeInfo()
+    member _.KeyType with get () = typeof<'Key>.GetTypeInfo()
+    member this.Methods with get () = this.Methods
+    member this.Invoke request =
+      upcast this.Handler (request :?> RestRequest<'Key, 'Entity>)
 
 module RestResource =
 

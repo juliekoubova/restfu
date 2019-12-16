@@ -10,9 +10,9 @@ module RestHandler =
     function
     | Delete key -> DeleteFail (notFound, key)
     | Get key -> GetFail (notFound, key)
-    | List _ -> ListFail (notFound)
+    | List query -> ListFail (notFound, query)
     | Post entity -> PostFail (notFound, entity)
-    | Put (key, entity) -> PutFail (notFound, key, entity)
+    | Put (key, entity) -> PutFail (notFound, (key, entity))
 
   let withDelete delete handler : RestHandler<'K, 'E> =
     function
@@ -46,10 +46,10 @@ module RestHandler =
     handler |> withGet (fun _ key -> GetFail (methodNotAllowed, key))
 
   let withoutList handler : RestHandler<'K, 'E> =
-    handler |> withList (fun _ _ -> ListFail (methodNotAllowed))
+    handler |> withList (fun _ query -> ListFail (methodNotAllowed, query))
 
   let withoutPost handler : RestHandler<'K, 'E> =
     handler |> withPost (fun _ entity -> PostFail (methodNotAllowed, entity))
 
   let withoutPut handler : RestHandler<'K, 'E> =
-    handler |> withPut (fun _ (key, entity) -> PutFail (methodNotAllowed, key, entity))
+    handler |> withPut (fun _ (key, entity) -> PutFail (methodNotAllowed, (key, entity)))

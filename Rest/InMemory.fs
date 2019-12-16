@@ -12,16 +12,16 @@ module InMemory =
       | None -> DeleteFail ((notFoundKey key), key)
       | Some entity ->
         state <- Map.remove key state
-        DeleteSuccess (Ok, key, Some entity)
+        DeleteSuccess (Ok, (key, Some entity))
 
     let get key =
       match tryFind key with
       | None -> GetFail ((notFoundKey key), key)
-      | Some entity -> GetSuccess (Ok, key, entity)
+      | Some entity -> GetSuccess (Ok, (key, entity))
 
-    let list _ =
+    let list query =
       let entities = state |> Map.toSeq |> Seq.map snd
-      ListSuccess (Ok, entities)
+      ListSuccess (Ok, (query, entities))
 
     let post entity =
       let key = entityKey entity
@@ -29,10 +29,10 @@ module InMemory =
       | Some _ -> PostFail (alreadyExists key, entity)
       | None ->
         state <- Map.add key entity state
-        PostSuccess (Created, key, Some entity)
+        PostSuccess (Created, (key, Some entity))
 
     let put (key, entity) =
       state <- Map.add key entity state
-      PutSuccess (Ok, key, Some entity)
+      PutSuccess (Ok, (key, Some entity))
 
     create delete get list post put

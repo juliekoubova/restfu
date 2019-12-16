@@ -8,11 +8,10 @@ open Microsoft.Extensions.DependencyInjection.Extensions
 
 type IServiceCollection with
   member this.AddRest () =
-    this.TryAddSingleton<
+    this.AddSingleton<
       IApplicationModelProvider,
       RestApplicationModelProvider
       > ()
-    this
 
   member this.AddRestResource (url: string) (resource : IRestResource) =
     this.AddSingleton<IRestApiRegistration> (RestApiRegistration(url, resource))

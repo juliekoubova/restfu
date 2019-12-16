@@ -10,32 +10,37 @@ module RestControllerModel =
     let generic = typedef.MakeGenericType (k, e)
     generic.GetTypeInfo()
 
-  let private controllerAction
-    (controllerType : TypeInfo)
-    (method : RestMethods.RestMethod)
-    =
-    match method with
+  let private actionMethodName =
+    function
     | RestMethods.Delete -> "Delete"
     | RestMethods.Get -> "Get"
     | RestMethods.List -> "List"
     | RestMethods.Post -> "Post"
     | RestMethods.Put -> "Put"
-    |> controllerType.GetDeclaredMethod
 
-  let create (reg: IRestApiRegistration) =
+  let addAction (controller : ControllerModel) (action : ActionModel) =
+    controller.Actions.Add action
+    action.Controller <- controller
+
+  let controllerModel typeInfo attributes actions =
+    let controller = ControllerModel (typeInfo, attributes)
+    actions |> Seq.iter (addAction controller)
+    controller
+
+  let create (reg : IRestApiRegistration) =
     let k = reg.Resource.KeyType
     let e = reg.Resource.EntityType
     let typeInfo = controllerType k e
-    let controller = ControllerModel (typeInfo, [])
-    let makeAction =
-      (controllerAction typeInfo)
+    let actionModel =
+      actionMethodName
+      >> typeInfo.GetDeclaredMethod
       >> (fun mi -> ActionModel(mi, []))
 
-    reg.Resource.Methods
-    |> Seq.map makeAction
-    |> Seq.iter controller.Actions.Add
+    let actions =
+      reg.Resource.Methods
+      |> Seq.map actionModel
 
-    controller
+    controllerModel typeInfo [] actions
 
 type RestApplicationModelProvider(regs : IRestApiRegistration seq) =
   interface IApplicationModelProvider with
@@ -43,10 +48,7 @@ type RestApplicationModelProvider(regs : IRestApiRegistration seq) =
     member this.OnProvidersExecuted _ =
       ()
     member this.OnProvidersExecuting context =
-      let zz = regs |> Seq.map RestControllerModel.create
-
-
-      printf "%A" zz
-
-      zz |> Seq.iter context.Result.Controllers.Add
+      regs
+      |> Seq.map RestControllerModel.create
+      |> Seq.iter context.Result.Controllers.Add
       ()

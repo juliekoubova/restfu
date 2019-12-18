@@ -17,13 +17,19 @@
       //   "action": "openExternally",
       //   "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
       // },
+      "justMyCode": false,
+      "symbolOptions": {
+        "searchMicrosoftSymbolServer": true
+      },
+      "suppressJITOptimizations": true,
       "env": {
+        "COMPlus_ZapDisable": "1",
+        "COMPlus_ReadyToRun": "0",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sourceFileMap": {
         "/Views": "${workspaceFolder}/Views"
       }
     }
-
   ]
 }

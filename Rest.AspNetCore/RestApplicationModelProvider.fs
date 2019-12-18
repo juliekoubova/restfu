@@ -1,7 +1,10 @@
 namespace Rest.AspNetCore
+open ApplicationModel
 open Rest
 
+open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Mvc.ApplicationModels
+open Microsoft.AspNetCore.Mvc.Routing
 open System.Reflection
 
 module RestControllerModel =
@@ -18,29 +21,53 @@ module RestControllerModel =
     | RestMethods.Post -> "Post"
     | RestMethods.Put -> "Put"
 
-  let addAction (controller : ControllerModel) (action : ActionModel) =
-    controller.Actions.Add action
-    action.Controller <- controller
+  let private ofType<'T> =
+    Seq.filter (fun a -> box a :? 'T) >> Seq.cast<'T>
 
-  let controllerModel typeInfo attributes actions =
-    let controller = ControllerModel (typeInfo, attributes)
-    actions |> Seq.iter (addAction controller)
-    controller
+  let private singleSelectorModel (attributes : obj seq) =
+    attributes
+    |> ofType<IRouteTemplateProvider>
+    |> Seq.tryHead
+    |> Option.map (fun route ->
+      let httpMethods =
+        match route with
+        | :? IActionHttpMethodProvider as httpMethod -> httpMethod.HttpMethods
+        | _ -> Seq.empty
+        |> Seq.toArray
+
+      selectorModel route httpMethods
+    )
+
 
   let create (reg : IRestApiRegistration) =
     let k = reg.Resource.KeyType
     let e = reg.Resource.EntityType
     let typeInfo = controllerType k e
-    let actionModel =
-      actionMethodName
-      >> typeInfo.GetDeclaredMethod
-      >> (fun mi -> ActionModel(mi, []))
+
+    let addSingleSelector (actionModel : ActionModel) =
+      singleSelectorModel actionModel.Attributes
+      |> Option.iter actionModel.Selectors.Add
+      actionModel
 
     let actions =
       reg.Resource.Methods
-      |> Seq.map actionModel
+      |> Seq.map (
+        actionMethodName
+        >> typeInfo.GetDeclaredMethod
+        >> actionModel
+        >> addSingleSelector
+      )
 
-    controllerModel typeInfo [] actions
+    let attribs =
+      attributes typeInfo
+      |> Collections.List.filter (fun a -> not <| a :? NonControllerAttribute)
+
+    let result = controllerModel typeInfo attribs actions
+
+    singleSelectorModel [RouteAttribute (reg.Url) |> box]
+    |> Option.iter result.Selectors.Add
+
+    result
 
 type RestApplicationModelProvider(regs : IRestApiRegistration seq) =
   interface IApplicationModelProvider with
@@ -51,4 +78,3 @@ type RestApplicationModelProvider(regs : IRestApiRegistration seq) =
       regs
       |> Seq.map RestControllerModel.create
       |> Seq.iter context.Result.Controllers.Add
-      ()

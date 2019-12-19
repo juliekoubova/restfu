@@ -1,9 +1,11 @@
 namespace Rest.AspNetCore
-open ApplicationModel
 open Rest
+open Rest.AspNetCore.ApplicationModel
+open Rest.AspNetCore.Reflection
 
 open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Mvc.ApplicationModels
+open Microsoft.AspNetCore.Mvc.ModelBinding
 open Microsoft.AspNetCore.Mvc.Routing
 open System.Reflection
 
@@ -20,6 +22,16 @@ module RestControllerModel =
     | RestMethods.List -> "List"
     | RestMethods.Post -> "Post"
     | RestMethods.Put -> "Put"
+
+  let private produces (entityType : TypeInfo) =
+    function
+    | RestMethods.Delete -> typeofOption entityType
+    | RestMethods.Get -> entityType
+    | RestMethods.List -> typeofSeq entityType
+    | RestMethods.Post -> typeofOption entityType
+    | RestMethods.Put -> typeofOption entityType
+    >> ProducesAttribute
+    >> box
 
   let private ofType<'T> =
     Seq.filter (fun a -> box a :? 'T) >> Seq.cast<'T>
@@ -38,25 +50,51 @@ module RestControllerModel =
       selectorModel route httpMethods
     )
 
-
-  let create (reg : IRestApiRegistration) =
+  let create
+    (mmp: ModelMetadataProvider option)
+    (reg : IRestApiRegistration)
+    =
     let k = reg.Resource.KeyType
     let e = reg.Resource.EntityType
     let typeInfo = controllerType k e
 
-    let addSingleSelector (actionModel : ActionModel) =
-      singleSelectorModel actionModel.Attributes
-      |> Option.iter actionModel.Selectors.Add
-      actionModel
+    let createParameter (parameter : ParameterInfo) =
+      let attribs = attributes parameter
+      let bindingInfo =
+        match mmp with
+        | None -> BindingInfo.GetBindingInfo attribs
+        | Some mmp ->
+          let metadata = mmp.GetMetadataForParameter parameter
+          BindingInfo.GetBindingInfo (attribs, metadata)
+
+      ParameterModel (
+        parameter,
+        attribs,
+        BindingInfo = bindingInfo,
+        ParameterName = parameter.Name
+      )
+
+    let createAction (method : RestMethods.RestMethod) =
+      let methodInfo =
+        method
+        |> actionMethodName
+        |> typeInfo.GetDeclaredMethod
+
+      let attribs =
+        (produces e method) :: (attributes methodInfo)
+
+      let parameters =
+        methodInfo.GetParameters ()
+        |> Seq.map createParameter
+
+      let selector =
+        singleSelectorModel attribs
+        |> Option.toList
+
+      actionModel methodInfo attribs parameters selector
 
     let actions =
-      reg.Resource.Methods
-      |> Seq.map (
-        actionMethodName
-        >> typeInfo.GetDeclaredMethod
-        >> actionModel
-        >> addSingleSelector
-      )
+      reg.Resource.Methods |> Seq.map createAction
 
     let attribs =
       attributes typeInfo
@@ -69,12 +107,23 @@ module RestControllerModel =
 
     result
 
-type RestApplicationModelProvider(regs : IRestApiRegistration seq) =
+type RestApplicationModelProvider
+  (
+    regs : IRestApiRegistration seq,
+    modelMetadataProvider : IModelMetadataProvider
+  ) =
+
+  let create =
+    match modelMetadataProvider with
+    | :? ModelMetadataProvider as mmp -> Some mmp
+    | _ -> None
+    |> RestControllerModel.create
+
   interface IApplicationModelProvider with
     member this.Order = -10_000
     member this.OnProvidersExecuted _ =
       ()
     member this.OnProvidersExecuting context =
       regs
-      |> Seq.map RestControllerModel.create
+      |> Seq.map create
       |> Seq.iter context.Result.Controllers.Add

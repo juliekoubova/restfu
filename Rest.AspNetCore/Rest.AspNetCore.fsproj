@@ -7,10 +7,11 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="../Rest/Rest.fsproj" />
+    <Compile Include="Reflection.fs" />
+    <Compile Include="ApplicationModel.fs" />
     <Compile Include="IRestApiRegistration.fs" />
     <Compile Include="RestActionResult.fs" />
     <Compile Include="RestController.fs" />
-    <Compile Include="ApplicationModel.fs" />
     <Compile Include="RestApplicationModelProvider.fs" />
     <Compile Include="Extensions.fs" />
   </ItemGroup>

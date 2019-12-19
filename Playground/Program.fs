@@ -1,13 +1,14 @@
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open Microsoft.OpenApi.Models
 open System
 open Rest
 open Rest.AspNetCore
 open RestFail
-open Microsoft.AspNetCore.Mvc
-open Microsoft.OpenApi.Models
 
 let validatePutKey entityKey =
   RestResource.withPut (
@@ -19,6 +20,7 @@ let validatePutKey entityKey =
         PutFail ((cannotChangeKey key keyFromEntity), (key, entity))
   )
 
+[<CLIMutable>]
 type Pet = {
   Name : String
   Owner : String
@@ -45,6 +47,11 @@ let configureApp (app : IApplicationBuilder) =
 [<EntryPoint>]
 let main _ =
   WebHost.CreateDefaultBuilder()
+    .ConfigureLogging(fun log ->
+      log.AddConsole () |> ignore
+      log.AddFilter ("Microsoft", LogLevel.Debug) |> ignore
+      ()
+    )
     .ConfigureServices(configureServices)
     .Configure(configureApp)
     .Build()

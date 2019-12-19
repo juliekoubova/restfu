@@ -6,13 +6,19 @@ open Microsoft.AspNetCore.Mvc.ActionConstraints
 open Microsoft.AspNetCore.Routing
 open System.Reflection
 
-let attributes (attributeProvider : ICustomAttributeProvider) =
-  attributeProvider.GetCustomAttributes false
-  |> Seq.cast<obj>
-  |> Seq.toList
+open Microsoft.AspNetCore.Mvc
 
-let actionModel (methodInfo : MethodInfo) =
-  ActionModel (methodInfo, (attributes methodInfo))
+let actionModel
+ (methodInfo : MethodInfo)
+ (attributes : obj list)
+ (parameters : ParameterModel seq)
+ (selectors  : SelectorModel seq)
+ =
+  let model = ActionModel (methodInfo, attributes)
+  parameters |> Seq.iter (fun p -> p.Action <- model)
+  parameters |> Seq.iter model.Parameters.Add
+  selectors |> Seq.iter model.Selectors.Add
+  model
 
 let controllerModel typeInfo attributes actions =
   let controller = ControllerModel (typeInfo, attributes)

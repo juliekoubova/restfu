@@ -1,12 +1,10 @@
 module internal Rest.AspNetCore.ApplicationModel
 
+open Microsoft.AspNetCore.Mvc.ActionConstraints
 open Microsoft.AspNetCore.Mvc.ApplicationModels
 open Microsoft.AspNetCore.Mvc.Routing
-open Microsoft.AspNetCore.Mvc.ActionConstraints
 open Microsoft.AspNetCore.Routing
 open System.Reflection
-
-open Microsoft.AspNetCore.Mvc
 
 let actionModel
  (methodInfo : MethodInfo)

@@ -4,7 +4,6 @@ open Rest
 
 open Microsoft.AspNetCore.Mvc.ApplicationModels
 open Microsoft.Extensions.DependencyInjection
-open Microsoft.Extensions.DependencyInjection.Extensions
 
 type IServiceCollection with
   member this.AddRest () =

@@ -5,28 +5,32 @@ open Rest
 
 [<ApiController>]
 [<NonController>]
-type RestController<'Key, 'Entity>(resource : RestResource<'Key, 'Entity>) =
+type RestController<'Key, 'Entity>() =
   inherit Controller()
 
-  let invoke = resource.Handler >> RestActionResult.fromResult
+  member private this.Invoke =
+    this.ControllerContext.ActionDescriptor.Properties
+    |> RestResourceProperty.getResource
+    |> fun r -> r.Invoke
+    >> RestActionResult.fromResult<'Key, 'Entity>
 
   [<HttpDelete("{key}")>]
-  member _.Delete ([<FromRoute>] key : 'Key) =
-    Delete key |> invoke
+  member this.Delete ([<FromRoute>] key : 'Key) =
+    Delete key |> this.Invoke
 
   [<HttpGet("{key}")>]
-  member _.Get ([<FromRoute>] key : 'Key) =
-    Get key |> invoke
+  member this.Get ([<FromRoute>] key : 'Key) =
+    Get key |> this.Invoke
 
   [<HttpGet>]
-  member _.List () =
-    List () |> invoke
+  member this.List () =
+    List () |> this.Invoke
 
   [<HttpPost>]
-  member _.Post ([<FromBody>] entity : 'Entity) =
-    Post entity |> invoke
+  member this.Post ([<FromBody>] entity : 'Entity) =
+    Post entity |> this.Invoke
 
   [<HttpPut("{key}")>]
-  member _.Put ([<FromRoute>] key : 'Key, [<FromBody>] entity : 'Entity) =
-    Put (key, entity) |> invoke
+  member this.Put ([<FromRoute>] key : 'Key, [<FromBody>] entity : 'Entity) =
+    Put (key, entity) |> this.Invoke
 

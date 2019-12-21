@@ -26,11 +26,20 @@ type Pet = {
   Owner : String
 }
 
+[<Route("handmade")>]
+type public HandmadeController() =
+  inherit Controller()
+
+  [<HttpGet>]
+  [<Produces(typeof<Pet seq>)>]
+  member _.List () : IActionResult =
+    upcast OkObjectResult Seq.empty<Pet>
+
 let petKey pet = pet.Name
 let pets = InMemory.create petKey |> validatePutKey petKey
 
 let configureServices (services : IServiceCollection) =
-  services.AddMvc () |> ignore
+  services.AddControllers() |> ignore
   services.AddRest () |> ignore
   services.AddRestResource "pets" pets |> ignore
   services.AddSwaggerGen (fun swagger ->
@@ -38,26 +47,24 @@ let configureServices (services : IServiceCollection) =
   ) |> ignore
 
 let configureApp (app : IApplicationBuilder) =
-  app.UseSwagger () |> ignore
-  app.UseSwaggerUI (fun c ->
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pets API")
-  ) |> ignore
-  ()
+  ignore <| app.UseRouting ()
+  ignore <| app.UseEndpoints(fun endpoints ->
+    endpoints.MapControllers() |> ignore
+  )
+  ignore <| app.UseSwagger ()
+  ignore <| app.UseSwaggerUI (fun c ->
+    ignore <| c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pets API")
+  )
 
 [<EntryPoint>]
 let main _ =
   WebHost.CreateDefaultBuilder()
     .ConfigureLogging(fun log ->
       log.AddConsole () |> ignore
-      log.AddFilter ("Microsoft", LogLevel.Debug) |> ignore
       ()
     )
     .ConfigureServices(configureServices)
     .Configure(configureApp)
     .Build()
     .Run()
-  // let h = pets.Handler
-  // printfn "POST: %A" (h <| Post { Name = "Moan"; Owner = "Daddy" })
-  // printfn "LIST: %A" (h <| List ())
-  // printfn "PUT: %A" (h <| Put ("Moan", { Name = "Penny"; Owner = "Daddy" }))
   0

@@ -7,7 +7,9 @@
     <Compile Include="Request.fs" />
     <Compile Include="Status.fs" />
     <Compile Include="Fail.fs" />
+    <Compile Include="FailDefinition.fs" />
     <Compile Include="Success.fs" />
+    <Compile Include="SuccessDefinition.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="Handler.fs" />
     <Compile Include="Resource.fs" />

@@ -6,7 +6,7 @@ open Rest
 [<ApiController>]
 [<NonController>]
 type RestController<'Key, 'Entity>() =
-  inherit Controller()
+  inherit ControllerBase()
 
   member private this.Invoke =
     this.ControllerContext.ActionDescriptor.Properties

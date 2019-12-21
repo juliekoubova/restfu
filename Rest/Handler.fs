@@ -10,9 +10,9 @@ module RestHandler =
     function
     | Delete key -> DeleteFail (notFound, key)
     | Get key -> GetFail (notFound, key)
-    | Query query -> QueryFail (notFound, query)
     | Post entity -> PostFail (notFound, entity)
     | Put (key, entity) -> PutFail (notFound, (key, entity))
+    | Query query -> QueryFail (notFound, query)
 
   let withDelete delete handler : RestHandler<'K, 'E> =
     function

@@ -19,10 +19,6 @@ module InMemory =
       | None -> GetFail ((notFoundKey key), key)
       | Some entity -> GetSuccess (Ok, (key, entity))
 
-    let list query =
-      let entities = state |> Map.toSeq |> Seq.map snd
-      ListSuccess (Ok, (query, entities))
-
     let post entity =
       let key = entityKey entity
       match tryFind key with
@@ -35,4 +31,8 @@ module InMemory =
       state <- Map.add key entity state
       PutSuccess (Ok, (key, Some entity))
 
-    create delete get list post put
+    let query q =
+      let entities = state |> Map.toSeq |> Seq.map snd
+      QuerySuccess (Ok, (q, entities))
+
+    create delete get post put query

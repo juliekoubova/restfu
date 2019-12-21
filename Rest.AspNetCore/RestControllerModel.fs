@@ -88,7 +88,7 @@ let create
 
   let attribs =
     attributes typeInfo
-    |> Collections.List.filter (fun a -> not <| a :? NonControllerAttribute)
+    |> List.filter (fun a -> not <| a :? NonControllerAttribute)
 
   let result = controllerModel typeInfo attribs actions
 

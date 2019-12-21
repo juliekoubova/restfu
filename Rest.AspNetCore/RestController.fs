@@ -22,10 +22,6 @@ type RestController<'Key, 'Entity>() =
   member this.Get ([<FromRoute>] key : 'Key) =
     Get key |> this.Invoke
 
-  [<HttpGet>]
-  member this.List () =
-    List () |> this.Invoke
-
   [<HttpPost>]
   member this.Post ([<FromBody>] entity : 'Entity) =
     Post entity |> this.Invoke
@@ -34,3 +30,6 @@ type RestController<'Key, 'Entity>() =
   member this.Put ([<FromRoute>] key : 'Key, [<FromBody>] entity : 'Entity) =
     Put (key, entity) |> this.Invoke
 
+  [<HttpGet>]
+  member this.Query () =
+    Query () |> this.Invoke

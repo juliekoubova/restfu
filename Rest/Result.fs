@@ -7,14 +7,14 @@ type RestResult<'Key, 'Entity> =
 | GetSuccess of RestSuccess * ('Key * 'Entity)
 | GetFail of RestFail * 'Key
 
-| ListSuccess of RestSuccess * (RestQuery * 'Entity seq)
-| ListFail of RestFail * RestQuery
-
 | PostSuccess of RestSuccess * ('Key * 'Entity option)
 | PostFail of RestFail * 'Entity
 
 | PutSuccess of RestSuccess * ('Key * 'Entity option)
 | PutFail of RestFail * ('Key * 'Entity)
+
+| QuerySuccess of RestSuccess * (RestQuery * 'Entity seq)
+| QueryFail of RestFail * RestQuery
 
 module RestResult =
   let map k e q result =
@@ -33,12 +33,6 @@ module RestResult =
     | GetFail (fail, key) ->
       GetFail (fail, (k key))
 
-    | ListSuccess (success, (query, entities)) ->
-      ListSuccess (success, ((q query), (eSeq entities)))
-
-    | ListFail (fail, query) ->
-      ListFail (fail, (q query))
-
     | PostSuccess (success, (key, entity)) ->
       PostSuccess (success, ((k key), (eOpt entity)))
 
@@ -50,6 +44,12 @@ module RestResult =
 
     | PutFail (fail, (key, entity)) ->
       PutFail (fail, ((k key), (e entity)))
+
+    | QuerySuccess (success, (query, entities)) ->
+      QuerySuccess (success, ((q query), (eSeq entities)))
+
+    | QueryFail (fail, query) ->
+      QueryFail (fail, (q query))
 
   let mapKey f = map f id id
   let mapEntity f = map id f id

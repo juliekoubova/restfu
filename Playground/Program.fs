@@ -26,15 +26,6 @@ type Pet = {
   [<Required>] Owner : string
 }
 
-[<Route("handmade")>]
-type public HandmadeController() =
-  inherit Controller()
-
-  [<HttpGet>]
-  [<Produces(typeof<Pet seq>)>]
-  member _.List () : IActionResult =
-    upcast OkObjectResult Seq.empty<Pet>
-
 let petKey pet = pet.Name
 let pets = InMemory.create petKey |> validatePutKey petKey
 pets.Handler <| Post { Name = "Moan"; Owner = "Daddy" } |> ignore

@@ -40,7 +40,7 @@ let fromResult<'K, 'E> (obj : obj) : IActionResult =
     | GetSuccess (success, (_, entity)) ->
       successCode success |> objectResult (Some entity)
 
-    | ListSuccess (success, (_, entities)) ->
+    | QuerySuccess (success, (_, entities)) ->
       successCode success |> objectResult (Some entities)
 
     | PostSuccess (success, (_, entity)) ->
@@ -51,7 +51,7 @@ let fromResult<'K, 'E> (obj : obj) : IActionResult =
 
     | DeleteFail (fail, _)
     | GetFail (fail, _)
-    | ListFail (fail, _)
+    | QueryFail (fail, _)
     | PostFail (fail, _)
     | PutFail (fail, _) ->
       let (code, message) = failCodeMessage fail

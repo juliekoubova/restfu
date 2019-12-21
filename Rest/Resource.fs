@@ -8,9 +8,9 @@ module RestOperations =
   type Op =
   | Delete
   | Get
-  | List
   | Post
   | Put
+  | Query
 
 type IRestResource =
   abstract member EntityType : TypeInfo with get
@@ -64,14 +64,14 @@ module RestResource =
   let withGet f =
     withBuilder RestHandler.withGet RestOperations.Get f
 
-  let withList f =
-    withBuilder RestHandler.withList RestOperations.List f
-
   let withPost f =
     withBuilder RestHandler.withPost RestOperations.Post f
 
   let withPut f =
     withBuilder RestHandler.withPut RestOperations.Put f
+
+  let withQuery f =
+    withBuilder RestHandler.withQuery RestOperations.Query f
 
   let withoutDelete handler =
     handler |> withoutBuilder (RestHandler.withoutDelete) RestOperations.Delete
@@ -79,19 +79,19 @@ module RestResource =
   let withoutGet handler =
     handler |> withoutBuilder RestHandler.withoutGet RestOperations.Get
 
-  let withoutList handler =
-    handler |> withoutBuilder RestHandler.withoutList RestOperations.List
-
   let withoutPost handler =
     handler |> withoutBuilder RestHandler.withoutPost RestOperations.Post
 
   let withoutPut handler =
     handler |> withoutBuilder RestHandler.withoutPut RestOperations.Put
 
-  let create delete get list post put =
+  let withoutQuery handler =
+    handler |> withoutBuilder RestHandler.withoutQuery RestOperations.Query
+
+  let create delete get post put query =
     empty
     |> withDelete (ignoreArg0 delete)
     |> withGet (ignoreArg0 get)
-    |> withList (ignoreArg0 list)
     |> withPost (ignoreArg0 post)
     |> withPut (ignoreArg0 put)
+    |> withQuery (ignoreArg0 query)

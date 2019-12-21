@@ -1,8 +1,8 @@
 module Rest.AspNetCore.RestControllerModel
 open Rest
-open Rest.AspNetCore.ApplicationModel
-open Rest.AspNetCore.Reflection
-open Rest.AspNetCore.RestResourceProperty
+open ApplicationModel
+open Reflection
+open RestResourceProperty
 
 open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Mvc.ApplicationModels

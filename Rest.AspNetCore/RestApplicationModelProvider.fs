@@ -6,7 +6,8 @@ type internal RestApplicationModelProvider
   (
     registrations : IRestApiRegistration seq,
     modelMetadataProvider : IModelMetadataProvider
-  ) =
+  )
+  =
 
   let create =
     match modelMetadataProvider with

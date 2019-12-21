@@ -17,11 +17,11 @@ let private controllerType k e =
 
 let private actionMethodName =
   function
-  | RestMethods.Delete -> "Delete"
-  | RestMethods.Get -> "Get"
-  | RestMethods.List -> "List"
-  | RestMethods.Post -> "Post"
-  | RestMethods.Put -> "Put"
+  | RestOperations.Delete -> "Delete"
+  | RestOperations.Get -> "Get"
+  | RestOperations.List -> "List"
+  | RestOperations.Post -> "Post"
+  | RestOperations.Put -> "Put"
 
 let private ofType<'T> =
   Seq.filter (fun a -> box a :? 'T) >> Seq.cast<'T>
@@ -64,7 +64,7 @@ let create
       ParameterName = parameter.Name
     )
 
-  let createAction (method : RestMethods.RestMethod) =
+  let createAction (method : RestOperations.Op) =
     let methodInfo =
       method
       |> actionMethodName
@@ -84,7 +84,7 @@ let create
     actionModel methodInfo attribs parameters selector
 
   let actions =
-    reg.Resource.Methods |> Seq.map createAction
+    reg.Resource.Operations |> Seq.map createAction
 
   let attribs =
     attributes typeInfo

@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (web)",
+      "name": "Just My Code",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
@@ -13,10 +13,19 @@
       "args": [],
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,
-      // "serverReadyAction": {
-      //   "action": "openExternally",
-      //   "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
-      // },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Everything",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/Playground/bin/Debug/netcoreapp3.1/Playground.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
       "justMyCode": false,
       "symbolOptions": {
         "searchMicrosoftSymbolServer": true
@@ -26,9 +35,6 @@
         "COMPlus_ZapDisable": "1",
         "COMPlus_ReadyToRun": "0",
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "sourceFileMap": {
-        "/Views": "${workspaceFolder}/Views"
       }
     }
   ]

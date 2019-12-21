@@ -7,10 +7,10 @@ open Microsoft.Extensions.DependencyInjection
 
 type IServiceCollection with
   member this.AddRest () =
-    this.AddSingleton<
-      IApplicationModelProvider,
-      RestApplicationModelProvider
-      > ()
+    ignore <| this.AddTransient<IApplicationModelProvider, RestApplicationModelProvider> ()
+    ignore <| this.ConfigureSwaggerGen(fun swagger ->
+      swagger.OperationFilter<SwaggerOperationFilter> ()
+    )
 
   member this.AddRestResource (url: string) (resource : IRestResource) =
-    this.AddSingleton<IRestApiRegistration> (RestApiRegistration(url, resource))
+    this.AddSingleton<IRestApiRegistration> (RestApiRegistration (url, resource))

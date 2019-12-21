@@ -1,9 +1,7 @@
 open Microsoft.AspNetCore
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
-open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.DependencyInjection
-open Microsoft.Extensions.Logging
 open Microsoft.OpenApi.Models
 open System.ComponentModel.DataAnnotations
 open Rest
@@ -36,13 +34,13 @@ let configureServices (services : IServiceCollection) =
   ignore <| services.AddRest ()
   ignore <| services.AddRestResource "pets" pets
   ignore <| services.AddSwaggerGen (fun swagger ->
-    swagger.SwaggerDoc ("v1", OpenApiInfo(Title = "Pets API", Version = "v1"))
+    swagger.SwaggerDoc ("v1", OpenApiInfo (Title = "Pets API", Version = "v1"))
   )
 
 let configureApp (app : IApplicationBuilder) =
   ignore <| app.UseRouting ()
-  ignore <| app.UseEndpoints(fun endpoints ->
-    endpoints.MapControllers() |> ignore
+  ignore <| app.UseEndpoints (fun endpoints ->
+    ignore <| endpoints.MapControllers ()
   )
   ignore <| app.UseSwagger ()
   ignore <| app.UseSwaggerUI (fun c ->
@@ -52,10 +50,6 @@ let configureApp (app : IApplicationBuilder) =
 [<EntryPoint>]
 let main _ =
   WebHost.CreateDefaultBuilder()
-    .ConfigureLogging(fun log ->
-      log.AddConsole () |> ignore
-      ()
-    )
     .ConfigureServices(configureServices)
     .Configure(configureApp)
     .Build()

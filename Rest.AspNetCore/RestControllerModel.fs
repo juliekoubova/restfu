@@ -2,7 +2,7 @@ module Rest.AspNetCore.RestControllerModel
 open Rest
 open ApplicationModel
 open Reflection
-open RestResourceProperty
+open RestResourceProperties
 
 open Microsoft.AspNetCore.Mvc
 open Microsoft.AspNetCore.Mvc.ApplicationModels
@@ -61,7 +61,7 @@ let create
       ParameterName = parameter.Name
     )
 
-  let createAction (operationType : RestOperations.RestOperationType) =
+  let createAction operationType operation =
     let methodInfo =
       operationType
       |> actionMethodName
@@ -78,11 +78,15 @@ let create
       singleSelectorModel attribs
       |> Option.toList
 
-    actionModel methodInfo attribs parameters selector
+    let model =
+      actionModel methodInfo attribs parameters selector
+
+    setOperation model.Properties operation
+    model
 
   let actions =
     reg.Resource.Operations
-    |> Seq.map (fun kvp -> createAction kvp.Key)
+    |> Seq.map (fun kvp -> createAction kvp.Key kvp.Value)
 
   let attribs =
     attributes typeInfo

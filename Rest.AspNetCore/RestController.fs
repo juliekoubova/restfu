@@ -1,18 +1,20 @@
 namespace Rest.AspNetCore
+open Rest
+open RestResourceProperties
 
 open Microsoft.AspNetCore.Mvc
-open Rest
 
 [<ApiController>]
 [<NonController>]
 type RestController<'Key, 'Entity>() =
   inherit ControllerBase()
 
-  member private this.Invoke =
-    this.ControllerContext.ActionDescriptor.Properties
-    |> RestResourceProperty.getResource
-    |> fun r -> r.Invoke
-    >> RestActionResult.fromResult<'Key, 'Entity>
+  member private this.Invoke (request : RestRequest<'Key, 'Entity>) =
+    let props = this.ControllerContext.ActionDescriptor.Properties
+    match getResource<'Key, 'Entity> props with
+    | Some resource ->
+      resource.Handler request |> RestActionResult.fromResult<'Key, 'Entity>
+    | None -> upcast this.StatusCode(500)
 
   [<HttpDelete("{key}")>]
   member this.Delete ([<FromRoute>] key : 'Key) =

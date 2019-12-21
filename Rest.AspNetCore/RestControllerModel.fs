@@ -61,9 +61,9 @@ let create
       ParameterName = parameter.Name
     )
 
-  let createAction (method : RestOperations.Op) =
+  let createAction (operationType : RestOperations.RestOperationType) =
     let methodInfo =
-      method
+      operationType
       |> actionMethodName
       |> typeInfo.GetDeclaredMethod
 
@@ -81,7 +81,8 @@ let create
     actionModel methodInfo attribs parameters selector
 
   let actions =
-    reg.Resource.Operations |> Seq.map createAction
+    reg.Resource.Operations
+    |> Seq.map (fun kvp -> createAction kvp.Key)
 
   let attribs =
     attributes typeInfo

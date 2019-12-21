@@ -8,17 +8,18 @@ open Microsoft.OpenApi.Models
 open System.ComponentModel.DataAnnotations
 open Rest
 open Rest.AspNetCore
-open RestFail
+open Rest.RestFailDefinition
 
 let validatePutKey entityKey =
-  RestResource.withPut (
-    fun handler (key, entity) ->
-      let keyFromEntity = entityKey entity
-      if key = keyFromEntity then
-        Put (key, entity) |> handler
-      else
-        PutFail ((cannotChangeKey key keyFromEntity), (key, entity))
-  )
+  let put handler (key, entity) =
+    let keyFromEntity = entityKey entity
+    if key = keyFromEntity then
+      Put (key, entity) |> handler
+    else
+      PutFail (applyFail cannotChangeKey (key, keyFromEntity) (key, entity))
+  RestResource.withPut put [
+    cannotChangeKey ()
+  ]
 
 [<CLIMutable>]
 type Pet = {

@@ -1,37 +1,24 @@
 namespace Rest
 
-type RestSuccess =
+type RestSuccessStatus =
 | Ok
 | Created
 | Accepted
 | NoContent
 
-type RestFail =
-| BadRequest of string
-| Unauthorized of string
-| Forbidden of string
-| NotFound of string
-| MethodNotAllowed of string
-| Conflict of string
-| InternalServerError of string
-
+type RestFailStatus =
+| BadRequest
+| Unauthorized
+| Forbidden
+| NotFound
+| MethodNotAllowed
+| Conflict
+| InternalServerError
 
 type RestStatus =
-| RestSuccess of RestSuccess
-| RestFail of RestFail
+| RestSuccess of RestSuccessStatus
+| RestFail of RestFailStatus
 
-module RestFail =
-  let alreadyExists key =
-    Conflict <| sprintf "Entity with key %A already exists" key
-
-  let cannotChangeKey uriKey entityKey =
-    BadRequest <| sprintf "Cannot change key from %A to %A" uriKey entityKey
-
-  let methodNotAllowed =
-    MethodNotAllowed "Method Not Allowed"
-
-  let notFound =
-    NotFound "Not Found"
-
-  let notFoundKey key =
-    NotFound <| sprintf "Entity with key %A not found" key
+type IRestResponseDefinition =
+  abstract member Status : RestStatus with get
+  abstract member Title : string with get

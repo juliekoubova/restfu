@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Rest/Rest.fsproj" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0-rc5" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Reflection.fs" />
@@ -15,8 +16,5 @@
     <Compile Include="RestControllerModel.fs" />
     <Compile Include="RestApplicationModelProvider.fs" />
     <Compile Include="Extensions.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0-rc5" />
   </ItemGroup>
 </Project>

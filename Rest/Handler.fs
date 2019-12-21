@@ -1,25 +1,42 @@
 namespace Rest
-open RestFail
+open RestFailDefinition
 
 type RestHandler<'Key, 'Entity> =
   RestRequest<'Key, 'Entity> -> RestResult<'Key, 'Entity>
 
+type RestHandlerTransform<'K, 'E, 'Req> =
+  RestHandler<'K, 'E> -> 'Req -> RestResult<'K, 'E>
+
 module RestHandler =
+
+  let private applyMethodNotAllowed x =
+    applyFail methodNotAllowed () x
+
+  let private applyNotFound x =
+    applyFail notFound () x
 
   let empty : RestHandler<'K, 'E> =
     function
-    | Delete key -> DeleteFail (notFound, key)
-    | Get key -> GetFail (notFound, key)
-    | Post entity -> PostFail (notFound, entity)
-    | Put (key, entity) -> PutFail (notFound, (key, entity))
-    | Query query -> QueryFail (notFound, query)
+    | Delete key -> DeleteFail (applyNotFound key)
+    | Get key -> GetFail (applyNotFound key)
+    | Post entity -> PostFail (applyNotFound entity)
+    | Put (key, entity) -> PutFail (applyNotFound (key, entity))
+    | Query query -> QueryFail (applyNotFound query)
 
-  let withDelete delete handler : RestHandler<'K, 'E> =
+  let withDelete
+    (delete : RestHandlerTransform<'K, 'E, 'K>)
+    handler
+    : RestHandler<'K, 'E>
+    =
     function
     | Delete key -> (delete handler key)
     | req -> (handler req)
 
-  let withGet get handler : RestHandler<'K, 'E>  =
+  let withGet
+    (get : RestHandlerTransform<'K, 'E, 'K>)
+    handler
+    : RestHandler<'K, 'E>
+    =
     function
     | Get key -> (get handler key)
     | req -> (handler req)
@@ -40,16 +57,16 @@ module RestHandler =
     | req -> (handler req)
 
   let withoutDelete handler : RestHandler<'K, 'E> =
-    handler |> withDelete (fun _ key -> DeleteFail (methodNotAllowed, key))
+    handler |> withDelete (fun _ x -> DeleteFail (applyMethodNotAllowed x))
 
   let withoutGet handler : RestHandler<'K, 'E> =
-    handler |> withGet (fun _ key -> GetFail (methodNotAllowed, key))
+    handler |> withGet (fun _ x -> GetFail (applyMethodNotAllowed x))
 
   let withoutPost handler : RestHandler<'K, 'E> =
-    handler |> withPost (fun _ entity -> PostFail (methodNotAllowed, entity))
+    handler |> withPost (fun _ x -> PostFail (applyMethodNotAllowed x))
 
   let withoutPut handler : RestHandler<'K, 'E> =
-    handler |> withPut (fun _ (key, entity) -> PutFail (methodNotAllowed, (key, entity)))
+    handler |> withPut (fun _ x -> PutFail (applyMethodNotAllowed x))
 
   let withoutQuery handler : RestHandler<'K, 'E> =
-    handler |> withQuery (fun _ query -> QueryFail (methodNotAllowed, query))
+    handler |> withQuery (fun _ x -> QueryFail (applyMethodNotAllowed x))

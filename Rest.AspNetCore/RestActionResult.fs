@@ -1,9 +1,9 @@
 module Rest.AspNetCore.RestActionResult
+open Rest
 
 open System
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Mvc
-open Rest
 
 let private successCode success =
   match success with
@@ -12,18 +12,23 @@ let private successCode success =
   | Accepted -> StatusCodes.Status202Accepted
   | NoContent -> StatusCodes.Status204NoContent
 
-let private failCodeMessage fail =
+let private failCode fail =
   match fail with
-  | BadRequest message -> (StatusCodes.Status400BadRequest, message)
-  | Unauthorized message -> (StatusCodes.Status401Unauthorized, message)
-  | Forbidden message -> (StatusCodes.Status403Forbidden, message)
-  | NotFound message -> (StatusCodes.Status404NotFound, message)
-  | MethodNotAllowed message -> (StatusCodes.Status405MethodNotAllowed, message)
-  | Conflict message -> (StatusCodes.Status409Conflict, message)
-  | InternalServerError message -> (StatusCodes.Status500InternalServerError, message)
+  | BadRequest -> StatusCodes.Status400BadRequest
+  | Unauthorized -> StatusCodes.Status401Unauthorized
+  | Forbidden -> StatusCodes.Status403Forbidden
+  | NotFound -> StatusCodes.Status404NotFound
+  | MethodNotAllowed -> StatusCodes.Status405MethodNotAllowed
+  | Conflict -> StatusCodes.Status409Conflict
+  | InternalServerError -> StatusCodes.Status500InternalServerError
 
-let private contentResult message code : IActionResult =
-  upcast ContentResult (Content = message, StatusCode = Nullable(int code))
+let private problemDetails ``type`` title desc code =
+  let result = ProblemDetails ()
+  result.Detail <- desc
+  result.Title <- title
+  result.Type <- ``type``
+  result.Status <- Nullable(int code)
+  result
 
 let private objectResult entity code : IActionResult =
   match entity with
@@ -34,27 +39,28 @@ let fromResult<'K, 'E> (obj : obj) : IActionResult =
   match obj with
   | :? RestResult<'K, 'E> as result ->
     match result with
-    | DeleteSuccess (success, (_, entity)) ->
-      successCode success |> objectResult entity
+    | DeleteSuccess { Status = status; Result = (_, entity) } ->
+      successCode status |> objectResult entity
 
-    | GetSuccess (success, (_, entity)) ->
-      successCode success |> objectResult (Some entity)
+    | GetSuccess { Status = status; Result = (_, entity) } ->
+      successCode status |> objectResult (Some entity)
 
-    | QuerySuccess (success, (_, entities)) ->
-      successCode success |> objectResult (Some entities)
+    | PostSuccess { Status = status; Result = (_, entity) } ->
+      successCode status |> objectResult entity
 
-    | PostSuccess (success, (_, entity)) ->
-      successCode success |> objectResult entity
+    | PutSuccess { Status = status; Result = (_, entity) } ->
+      successCode status |> objectResult entity
 
-    | PutSuccess (success, (_, entity)) ->
-      successCode success |> objectResult entity
+    | QuerySuccess { Status = status; Result = (_, entities) } ->
+      successCode status |> objectResult (Some entities)
 
-    | DeleteFail (fail, _)
-    | GetFail (fail, _)
-    | QueryFail (fail, _)
-    | PostFail (fail, _)
-    | PutFail (fail, _) ->
-      let (code, message) = failCodeMessage fail
-      contentResult message code
+    | DeleteFail { Status = s; Type = t; Title = title; Description = desc }
+    | GetFail { Status = s; Type = t; Title = title; Description = desc }
+    | PostFail { Status = s; Type = t; Title = title; Description = desc }
+    | PutFail { Status = s; Type = t; Title = title; Description = desc }
+    | QueryFail { Status = s; Type = t; Title = title; Description = desc } ->
+      let code = failCode s
+      let details = problemDetails t title desc code
+      objectResult (Some details) code
 
   | _ -> upcast StatusCodeResult(500)

@@ -1,18 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Utils.fs" />
     <Compile Include="Request.fs" />
     <Compile Include="Status.fs" />
+    <Compile Include="Fail.fs" />
+    <Compile Include="Success.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="Handler.fs" />
     <Compile Include="Resource.fs" />
+    <Compile Include="Crud.fs" />
     <Compile Include="InMemory.fs" />
     <Compile Include="Convert.fs" />
   </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.0" />
+  </ItemGroup>
 </Project>

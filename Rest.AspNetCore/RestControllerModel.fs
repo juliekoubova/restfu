@@ -19,12 +19,9 @@ let private actionMethodName =
   function
   | RestOperations.Delete -> "Delete"
   | RestOperations.Get -> "Get"
-  | RestOperations.List -> "List"
   | RestOperations.Post -> "Post"
   | RestOperations.Put -> "Put"
-
-let private ofType<'T> =
-  Seq.filter (fun a -> box a :? 'T) >> Seq.cast<'T>
+  | RestOperations.Query -> "Query"
 
 let private singleSelectorModel (attributes : obj seq) =
   attributes

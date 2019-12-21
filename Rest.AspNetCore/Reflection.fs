@@ -7,6 +7,9 @@ let attributes (attributeProvider : ICustomAttributeProvider) =
   |> Seq.cast<obj>
   |> Seq.toList
 
+let ofType<'T> =
+  Seq.filter (fun a -> box a :? 'T) >> Seq.cast<'T>
+
 let typeofSeq (t : TypeInfo) =
   typedefof<seq<_>>.MakeGenericType(t).GetTypeInfo()
 

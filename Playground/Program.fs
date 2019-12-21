@@ -5,7 +5,7 @@ open Microsoft.AspNetCore.Mvc
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 open Microsoft.OpenApi.Models
-open System
+open System.ComponentModel.DataAnnotations
 open Rest
 open Rest.AspNetCore
 open RestFail
@@ -22,8 +22,8 @@ let validatePutKey entityKey =
 
 [<CLIMutable>]
 type Pet = {
-  Name : String
-  Owner : String
+  [<Required>] Name : string
+  [<Required>] Owner : string
 }
 
 [<Route("handmade")>]
@@ -37,14 +37,15 @@ type public HandmadeController() =
 
 let petKey pet = pet.Name
 let pets = InMemory.create petKey |> validatePutKey petKey
+pets.Handler <| Post { Name = "Moan"; Owner = "Daddy" } |> ignore
 
 let configureServices (services : IServiceCollection) =
-  services.AddControllers() |> ignore
-  services.AddRest () |> ignore
-  services.AddRestResource "pets" pets |> ignore
-  services.AddSwaggerGen (fun swagger ->
+  ignore <| services.AddControllers()
+  ignore <| services.AddRest ()
+  ignore <| services.AddRestResource "pets" pets
+  ignore <| services.AddSwaggerGen (fun swagger ->
     swagger.SwaggerDoc ("v1", OpenApiInfo(Title = "Pets API", Version = "v1"))
-  ) |> ignore
+  )
 
 let configureApp (app : IApplicationBuilder) =
   ignore <| app.UseRouting ()

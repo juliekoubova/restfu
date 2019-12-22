@@ -13,7 +13,9 @@ let validatePutKey entityKey =
       PutFail (applyFail cannotChangeKey (key, keyFromEntity) (key, entity))
 
   withPut put {
-    Descriptions = []
+    Descriptions = [
+      "The {Key} of an existing {Entity} cannot be changed."
+    ]
     Responses = [ failResponse cannotChangeKey ]
     Summary = None
   }
@@ -32,7 +34,9 @@ let create<'K, 'E when 'K : equality>
 
   { empty with EntityName = entityName; KeyName = keyName }
   |> withDelete (ignoreArg0 delete) {
-    Descriptions = []
+    Descriptions = [
+      "Deletes an existing {Entity} with the specified {Key}."
+    ]
     Responses = [
       successResponse deleteOk
       failResponse notFoundKey
@@ -40,7 +44,9 @@ let create<'K, 'E when 'K : equality>
     Summary = Some "Delete {Entity} with the specified {Key}."
   }
   |> withGet (ignoreArg0 get) {
-    Descriptions = []
+    Descriptions = [
+      "Gets an existing {Entity} with the specified {Key}."
+    ]
     Responses = [
       successResponse getOk
       failResponse notFoundKey
@@ -48,7 +54,9 @@ let create<'K, 'E when 'K : equality>
     Summary = Some "Get {Entity} with the specified {Key}."
   }
   |> withPost (ignoreArg0 post) {
-    Descriptions = []
+    Descriptions = [
+      "Creates a new {Entity}. Fails if an {Entity} with the same {Key} already exists."
+    ]
     Responses = [
       successResponse postCreated
       failResponse alreadyExists
@@ -56,7 +64,9 @@ let create<'K, 'E when 'K : equality>
     Summary = Some "Create new {Entity}."
   }
   |> withPut (ignoreArg0 put) {
-    Descriptions = []
+    Descriptions = [
+      "Creates a new {Entity} or replaces an existing one with the same {Key}."
+    ]
     Responses = [
       successResponse putCreated
       successResponse putOk
@@ -64,10 +74,12 @@ let create<'K, 'E when 'K : equality>
     Summary = Some "Create or replace {Entity} with the specified {Key}."
   }
   |> withQuery (ignoreArg0 query) {
-    Descriptions = []
+    Descriptions = [
+      "Finds all {Entity:plural} matching the specified query."
+    ]
     Responses = [
       successResponse queryOk
     ]
-    Summary = Some "Find {Entity:plural} matching the query."
+    Summary = Some "Find all {Entity:plural} matching the query."
   }
   |> validatePutKey entityKey

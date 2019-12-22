@@ -37,8 +37,8 @@ module RestOperationMap =
     |> Option.orElse (Some RestOperation.empty)
     |> Option.get
     |> RestOperation.map
-       (List.append descriptions)
-       (List.append responses)
+       (fun prev -> List.append prev descriptions)
+       (fun prev -> List.append prev responses)
        (fun prev -> Option.orElse prev summary)
     |> (fun op -> Map.add opType op table)
 

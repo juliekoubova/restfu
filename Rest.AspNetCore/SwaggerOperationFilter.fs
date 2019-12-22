@@ -76,10 +76,15 @@ type SwaggerOperationFilter() =
 
       match (tryGetResource props, tryGetOperation props) with
       | Some res, Some op ->
-        operation.Summary <- Option.toObj op.Summary
+        operation.Description <-
+          op.Descriptions |> String.concat "\n"
         operation.Responses <-
           op.Responses
           |> List.groupBy statusCode
           |> List.map (mapSnd (mergeResponses generateSchema res))
           |> makeResponses
+        operation.Summary <- Option.toObj op.Summary
+        operation.Tags <- [|
+          OpenApiTag (Name = NaturalLanguage.pluralize res.EntityName)
+        |]
       | _ -> ()

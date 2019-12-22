@@ -14,7 +14,10 @@ let private token = Regex ("""(?x)
   \}
   """)
 
-let private possessivize (noun : string) =
+let pluralize =
+  pluralizer.Pluralize
+
+let possessivize (noun : string) =
   if (noun.EndsWith "s") then
     noun + "'"
   else
@@ -35,7 +38,7 @@ let replaceTokens
       | _ -> token
 
     match (plural, possessive) with
-    | (true, _) -> pluralizer.Pluralize(replacement)
+    | (true, _) -> pluralize replacement
     | (_, true) -> possessivize replacement
     | _ ->  replacement
   )

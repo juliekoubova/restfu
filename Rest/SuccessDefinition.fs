@@ -41,4 +41,4 @@ module RestSuccessDefinition =
     success<'E> Ok "{Entity} with the specified {Key} was successfully replaced."
 
   let querySuccess<'E> () =
-    success<'E array> Ok "Successfully listed matching entities."
+    success<'E array> Ok "Successfully returned matching {Entity:plural}."

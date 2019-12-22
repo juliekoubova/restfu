@@ -46,9 +46,9 @@ module RestFailDefinition =
     fail<'Key * 'Key>
       BadRequest
       "cannot-change-key"
-      "Cannot change {Entity} {Key}."
+      "Cannot change {Entity:possessive} {Key}."
       (fun (uriKey, entityKey) ->
-        sprintf "Cannot change key from %A to %A." uriKey entityKey
+        sprintf "Cannot change {Entity:possessive} key from %A to %A." uriKey entityKey
       )
 
   let methodNotAllowed () =

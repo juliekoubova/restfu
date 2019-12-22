@@ -20,13 +20,26 @@ type SwaggerOperationFilter() =
   let statusCode (response : IRestResponseDefinition) =
     response.Status |> StatusCode.code |> int |> string
 
+  let makeResponses (statusResponses : (string * OpenApiResponse) list) =
+    let dict = OpenApiResponses ()
+    statusResponses |> List.iter (fun (status, response) ->
+      dict.[status] <- response
+    )
+    dict
+
   let mergeResponses
     (generateSchema : TypeInfo -> OpenApiSchema)
+    (entityName : string option)
     (responses : IRestResponseDefinition list)
     =
+
+    let replacements = Map.ofList [
+      ("Entity", entityName)
+    ]
+
     let description =
       responses
-      |> List.map (fun r -> r.Title)
+      |> List.map (fun r -> r.Title |> NaturalLanguage.replaceTokens replacements)
       |> String.concat "\n"
 
     let getResponseType (r : IRestResponseDefinition) =
@@ -55,15 +68,26 @@ type SwaggerOperationFilter() =
     member _.Apply (operation, context) =
       let generateSchema t =
         context.SchemaGenerator.GenerateSchema (t, context.SchemaRepository)
+
+      let getSchemaId t =
+        generateSchema t |> ignore // ensure schema exists
+        let mutable schemaId : string = null
+        match context.SchemaRepository.TryGetIdFor (t, &schemaId) with
+        | true -> Some schemaId
+        | _ -> None
+
       let props =
         context.ApiDescription.ActionDescriptor.Properties
+
+      let entityName =
+        getResourceAnonymous props
+        |> Option.bind (fun r -> getSchemaId r.EntityType)
 
       match getOperation props with
       | None -> ()
       | Some op ->
-        op.Responses
-        |> List.groupBy statusCode
-        |> List.map (mapSnd (mergeResponses generateSchema))
-        |> List.iter (fun (status, response) ->
-            operation.Responses.[status] <- response
-        )
+        operation.Responses <-
+          op.Responses
+          |> List.groupBy statusCode
+          |> List.map (mapSnd (mergeResponses generateSchema entityName))
+          |> makeResponses

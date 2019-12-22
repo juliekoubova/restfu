@@ -21,6 +21,9 @@ let setResource : Props -> IRestResource -> unit =
 let setOperation : Props -> RestOperation -> unit =
   set operationKey
 
+let getResourceAnonymous props : IRestResource option =
+  get resourceKey props
+
 let getResource<'K, 'E> props : RestResource<'K, 'E> option =
   get resourceKey props
 

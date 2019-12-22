@@ -6,7 +6,6 @@
     <ProjectReference Include="../Rest/Rest.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NaturalLanguage.fs" />
     <Compile Include="Reflection.fs" />
     <Compile Include="ApplicationModel.fs" />
     <Compile Include="IRestApiRegistration.fs" />
@@ -20,7 +19,6 @@
     <Compile Include="Extensions.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="pluralize.net" Version="1.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0-rc5" />
   </ItemGroup>
 </Project>

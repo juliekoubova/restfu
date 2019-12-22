@@ -6,7 +6,9 @@ type RestSuccess<'Result> = {
 }
 
 module RestSuccess =
-  let mapResult f success = {
-    Status = success.Status
-    Result = f success.Result
+  let mapSuccess s r success = {
+    Status = s success.Status
+    Result = r success.Result
   }
+  let mapSuccessResult f =
+    mapSuccess id f

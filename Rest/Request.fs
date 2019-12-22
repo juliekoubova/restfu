@@ -1,12 +1,14 @@
 namespace Rest
 
-type RestQuery = unit
+type RestQuery<'Entity> =
+| RestQuery of unit
+
 type RestRequest<'Key, 'Entity> =
 | Delete of 'Key
 | Get of 'Key
 | Post of 'Entity
 | Put of 'Key * 'Entity
-| Query of RestQuery
+| Query of RestQuery<'Entity>
 
 module RestRequest =
   let map k e q request =
@@ -18,5 +20,4 @@ module RestRequest =
     | Query query -> Query (q query)
 
   let mapKey f = map f id id
-  let mapEntity f = map id f id
-  let mapQuery f = map id id f
+  let mapEntity f q = map id f q

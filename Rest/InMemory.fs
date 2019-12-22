@@ -6,7 +6,7 @@ open Quotations
 open FSharp.Quotations.Evaluator
 
 module InMemory =
-  let create (entityKeyExpr: Expr<'Entity -> 'Key>): RestResource<'Key, 'Entity> =
+  let create (entityKeyExpr: Expr<'Entity -> 'Key>) : RestResource<'Key, 'Entity> =
 
     let mutable state : Map<'Key, 'Entity> = Map.empty
 
@@ -46,5 +46,4 @@ module InMemory =
       let entities = state |> Map.toSeq |> Seq.map snd
       QuerySuccess (applySuccess querySuccess<'Entity> (q, entities))
 
-    Crud.create entityKeyName delete get post put query
-    |> Crud.validatePutKey entityKey
+    Crud.create entityKeyName entityKey delete get post put query

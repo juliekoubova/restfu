@@ -14,15 +14,34 @@ let validatePutKey entityKey =
 
   withPut put [ cannotChangeKey () ]
 
-let create<'K, 'E>
-  (keyName : string)
-  (delete  : 'K -> RestResult<'K, 'E>)
-  (get     : 'K -> RestResult<'K, 'E>)
-  (post    : 'E -> RestResult<'K, 'E>)
-  (put     : 'K * 'E -> RestResult<'K, 'E>)
-  (query   : RestQuery -> RestResult<'K, 'E>)
+let applyEntityKeyName entityName keyName resource =
+  let replace = NaturalLanguage.replaceTokens (Map.ofList [
+    ("Entity", Some entityName)
+    ("Key", Some keyName)
+  ])
+
+  let rename (d : RestFailDetails) : RestFailDetails = {
+    Description = replace d.Description
+    Status = d.Status
+    Title = replace d.Title
+    Type = d.Type
+  }
+  { resource with EntityName = entityName; KeyName = keyName }
+  |> mapHandler (fun handler -> handler >> RestResult.mapFailDetails rename)
+
+
+let create<'K, 'E when 'K : equality>
+  (keyName   : string)
+  (entityKey : 'E -> 'K)
+  (delete    : 'K -> RestResult<'K, 'E>)
+  (get       : 'K -> RestResult<'K, 'E>)
+  (post      : 'E -> RestResult<'K, 'E>)
+  (put       : 'K * 'E -> RestResult<'K, 'E>)
+  (query     : RestQuery<'E> -> RestResult<'K, 'E>)
   =
-  { empty with KeyName = keyName }
+  let entityName = typeof<'E>.Name
+
+  empty
   |> withDelete (ignoreArg0 delete) [
       deleteSuccess<'E> ()
       notFoundKey ()
@@ -42,3 +61,5 @@ let create<'K, 'E>
   |> withQuery (ignoreArg0 query) [
     querySuccess<'E> ()
   ]
+  |> validatePutKey entityKey
+  |> applyEntityKeyName entityName keyName

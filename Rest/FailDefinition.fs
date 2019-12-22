@@ -18,10 +18,12 @@ module RestFailDefinition =
   let applyFail (definition : unit -> RestFailDefinition<'a>) arg context =
     let def = definition ()
     {
-      Status = def.Status
-      Type = def.Type
-      Title = def.Title
-      Description = def.Description arg
+      Details = {
+        Description = def.Description arg
+        Status = def.Status
+        Title = def.Title
+        Type = def.Type
+      }
       Context = context
     }
 

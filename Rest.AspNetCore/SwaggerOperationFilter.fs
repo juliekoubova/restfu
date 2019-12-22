@@ -30,11 +30,13 @@ type SwaggerOperationFilter() =
   let mergeResponses
     (generateSchema : TypeInfo -> OpenApiSchema)
     (entityName : string option)
+    (keyName : string option)
     (responses : IRestResponseDefinition list)
     =
 
     let replacements = Map.ofList [
       ("Entity", entityName)
+      ("Key", keyName)
     ]
 
     let description =
@@ -83,11 +85,15 @@ type SwaggerOperationFilter() =
         getResourceAnonymous props
         |> Option.bind (fun r -> getSchemaId r.EntityType)
 
+      let keyName =
+        getResourceAnonymous props
+        |> Option.map (fun r -> r.KeyName)
+
       match getOperation props with
       | None -> ()
       | Some op ->
         operation.Responses <-
           op.Responses
           |> List.groupBy statusCode
-          |> List.map (mapSnd (mergeResponses generateSchema entityName))
+          |> List.map (mapSnd (mergeResponses generateSchema entityName keyName))
           |> makeResponses

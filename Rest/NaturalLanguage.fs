@@ -1,4 +1,4 @@
-module Rest.AspNetCore.NaturalLanguage
+module Rest.NaturalLanguage
 open Pluralize.NET
 open System.Text.RegularExpressions
 

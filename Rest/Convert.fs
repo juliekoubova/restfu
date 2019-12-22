@@ -8,9 +8,9 @@ module Convert =
       >> RestResult.mapKey revert
     )
 
-  let entity convert revert =
+  let entity convert convertQuery revert revertQuery =
     RestResource.mapHandler (fun handler ->
-      RestRequest.mapEntity convert
+      RestRequest.mapEntity convert convertQuery
       >> handler
-      >> RestResult.mapEntity revert
+      >> RestResult.mapEntity revert revertQuery
     )

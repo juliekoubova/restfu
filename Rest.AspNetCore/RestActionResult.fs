@@ -35,11 +35,11 @@ let fromResult<'K, 'E> (result : RestResult<'K, 'E>) : IActionResult =
   | QuerySuccess { Status = status; Result = (_, entities) } ->
     successCode status |> objectResult (Some entities)
 
-  | DeleteFail { Status = s; Type = t; Title = title; Description = desc }
-  | GetFail { Status = s; Type = t; Title = title; Description = desc }
-  | PostFail { Status = s; Type = t; Title = title; Description = desc }
-  | PutFail { Status = s; Type = t; Title = title; Description = desc }
-  | QueryFail { Status = s; Type = t; Title = title; Description = desc } ->
-    let code = failCode s
-    let details = problemDetails t title desc code
+  | DeleteFail { Details = details }
+  | GetFail { Details = details }
+  | PostFail { Details = details }
+  | PutFail { Details = details }
+  | QueryFail { Details = details } ->
+    let code = failCode details.Status
+    let details = problemDetails details.Type details.Title details.Description code
     objectResult (Some details) code

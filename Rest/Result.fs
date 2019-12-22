@@ -15,12 +15,12 @@ type RestResult<'Key, 'Entity> =
 | PutSuccess of RestSuccess<('Key * 'Entity option)>
 | PutFail of RestFail<('Key * 'Entity)>
 
-| QuerySuccess of RestSuccess<(RestQuery * 'Entity seq)>
-| QueryFail of RestFail<RestQuery>
+| QuerySuccess of RestSuccess<(RestQuery<'Entity> * 'Entity seq)>
+| QueryFail of RestFail<RestQuery<'Entity>>
 
 module RestResult =
 
-  let map k e q result =
+  let map k e q fd result =
     let eOpt = Option.map e
     let eSeq = Seq.map e
     let pairMap x y (a, b) =
@@ -28,34 +28,37 @@ module RestResult =
 
     match result with
     | DeleteSuccess success ->
-      DeleteSuccess (mapResult (pairMap k eOpt) success)
+      DeleteSuccess (mapSuccessResult (pairMap k eOpt) success)
 
     | DeleteFail fail ->
-      DeleteFail (mapContext k fail)
+      DeleteFail (mapFail k fd fail)
 
     | GetSuccess success ->
-      GetSuccess (mapResult (pairMap k e) success)
+      GetSuccess (mapSuccessResult (pairMap k e) success)
 
     | GetFail fail ->
-      GetFail (mapContext k fail)
+      GetFail (mapFail k fd fail)
 
     | PostSuccess success ->
-      PostSuccess (mapResult (pairMap k eOpt) success)
+      PostSuccess (mapSuccessResult (pairMap k eOpt) success)
 
     | PostFail fail ->
-      PostFail (mapContext e fail)
+      PostFail (mapFail e fd fail)
 
     | PutSuccess success ->
-      PutSuccess (mapResult (pairMap k eOpt) success)
+      PutSuccess (mapSuccessResult (pairMap k eOpt) success)
 
     | PutFail fail ->
-      PutFail (mapContext (pairMap k e) fail)
+      PutFail (mapFail (pairMap k e) fd fail)
 
     | QuerySuccess success ->
-      QuerySuccess (mapResult (pairMap q eSeq) success)
+      QuerySuccess (mapSuccessResult (pairMap q eSeq) success)
 
     | QueryFail fail ->
-      QueryFail (mapContext q fail)
+      QueryFail (mapFail q fd fail)
 
-  let mapKey f = map f id id
-  let mapEntity f = map id f id
+  let mapKey f = map f id id id
+  let mapFailDetails f = map id id id f
+  let mapEntity f q = map id f id q
+  let mapQuery f = map id id f
+

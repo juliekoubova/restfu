@@ -51,4 +51,4 @@ type RestController<'Key, 'Entity>() =
 
   [<HttpGet>]
   member this.Query () =
-    Query () |> this.Invoke
+    Query (RestQuery ()) |> this.Invoke

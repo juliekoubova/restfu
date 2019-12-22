@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Utils.fs" />
+    <Compile Include="NaturalLanguage.fs" />
     <Compile Include="Request.fs" />
     <Compile Include="Status.fs" />
     <Compile Include="Fail.fs" />
@@ -20,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="fsharp.quotations.evaluator" Version="2.0.0" />
+    <PackageReference Include="Pluralize.NET" Version="1.0.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.0" />
   </ItemGroup>
 </Project>

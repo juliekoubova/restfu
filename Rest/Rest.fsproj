@@ -13,7 +13,7 @@
     <Compile Include="Result.fs" />
     <Compile Include="Handler.fs" />
     <Compile Include="Resource.fs" />
-    <Compile Include="Crud.fs" />
+    <Compile Include="CRUD.fs" />
     <Compile Include="InMemory.fs" />
     <Compile Include="Convert.fs" />
   </ItemGroup>

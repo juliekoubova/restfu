@@ -1,4 +1,5 @@
 namespace Rest
+open System.Reflection
 
 type RestFailDefinition<'Details> =
   {
@@ -8,6 +9,8 @@ type RestFailDefinition<'Details> =
     Description : 'Details -> string
   }
   interface IRestResponseDefinition with
+    member this.ContentType with get () = typedefof<RestFail<_>>.GetTypeInfo ()
+    member this.IsSuccess with get () = false
     member this.Status with get () = RestFail this.Status
     member this.Title with get () = this.Title
 

@@ -6,18 +6,6 @@ open Microsoft.OpenApi.Models
 open System.ComponentModel.DataAnnotations
 open Rest
 open Rest.AspNetCore
-open Rest.RestFailDefinition
-
-let validatePutKey entityKey =
-  let put handler (key, entity) =
-    let keyFromEntity = entityKey entity
-    if key = keyFromEntity then
-      Put (key, entity) |> handler
-    else
-      PutFail (applyFail cannotChangeKey (key, keyFromEntity) (key, entity))
-  RestResource.withPut put [
-    cannotChangeKey ()
-  ]
 
 [<CLIMutable>]
 type Pet = {
@@ -26,7 +14,7 @@ type Pet = {
 }
 
 let petKey pet = pet.Name
-let pets = InMemory.create petKey |> validatePutKey petKey
+let pets = InMemory.create petKey
 pets.Handler <| Post { Name = "Moan"; Owner = "Daddy" } |> ignore
 
 let configureServices (services : IServiceCollection) =
@@ -34,7 +22,7 @@ let configureServices (services : IServiceCollection) =
   ignore <| services.AddRest ()
   ignore <| services.AddRestResource "pets" pets
   ignore <| services.AddSwaggerGen (fun swagger ->
-    swagger.SwaggerDoc ("v1", OpenApiInfo (Title = "Pets API", Version = "v1"))
+    swagger.SwaggerDoc ("pets", OpenApiInfo (Title = "Pets API", Version = "v1"))
   )
 
 let configureApp (app : IApplicationBuilder) =
@@ -44,7 +32,7 @@ let configureApp (app : IApplicationBuilder) =
   )
   ignore <| app.UseSwagger ()
   ignore <| app.UseSwaggerUI (fun c ->
-    ignore <| c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pets API")
+    ignore <| c.SwaggerEndpoint("/swagger/pets/swagger.json", "Pets API")
   )
 
 [<EntryPoint>]

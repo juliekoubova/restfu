@@ -1,4 +1,5 @@
 namespace Rest
+open System.Reflection
 
 type RestSuccessStatus =
 | Ok
@@ -20,5 +21,7 @@ type RestStatus =
 | RestFail of RestFailStatus
 
 type IRestResponseDefinition =
+  abstract member ContentType : TypeInfo with get
+  abstract member IsSuccess : bool with get
   abstract member Status : RestStatus with get
   abstract member Title : string with get

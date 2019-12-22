@@ -15,13 +15,14 @@ let validatePutKey entityKey =
   withPut put [ cannotChangeKey () ]
 
 let create<'K, 'E>
-  (delete : 'K -> RestResult<'K, 'E>)
-  (get    : 'K -> RestResult<'K, 'E>)
-  (post   : 'E -> RestResult<'K, 'E>)
-  (put    : 'K * 'E -> RestResult<'K, 'E>)
-  (query  : RestQuery -> RestResult<'K, 'E>)
+  (keyName : string)
+  (delete  : 'K -> RestResult<'K, 'E>)
+  (get     : 'K -> RestResult<'K, 'E>)
+  (post    : 'E -> RestResult<'K, 'E>)
+  (put     : 'K * 'E -> RestResult<'K, 'E>)
+  (query   : RestQuery -> RestResult<'K, 'E>)
   =
-  empty
+  { empty with KeyName = keyName }
   |> withDelete (ignoreArg0 delete) [
       deleteSuccess<'E> ()
       notFoundKey ()

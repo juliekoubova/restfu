@@ -13,8 +13,7 @@ type Pet = {
   [<Required>] Owner : string
 }
 
-let petKey pet = pet.Name
-let pets = InMemory.create petKey
+let pets = InMemory.create <@ fun pet -> pet.Name @>
 pets.Handler <| Post { Name = "Moan"; Owner = "Daddy" } |> ignore
 
 let configureServices (services : IServiceCollection) =

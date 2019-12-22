@@ -19,17 +19,20 @@ type RestOperationMap = Map<RestOperations.RestOperationType, RestOperation>
 
 type IRestResource =
   abstract member EntityType : TypeInfo with get
+  abstract member KeyName : string with get
   abstract member KeyType : TypeInfo with get
   abstract member Invoke : Object -> Object
   abstract member Operations : RestOperationMap with get
 
 type RestResource<'Key, 'Entity> =
   {
-    Handler: RestHandler<'Key, 'Entity>
-    Operations: RestOperationMap
+    Handler    : RestHandler<'Key, 'Entity>
+    KeyName    : string
+    Operations : RestOperationMap
   }
   interface IRestResource with
     member _.EntityType with get () = typeof<'Entity>.GetTypeInfo()
+    member this.KeyName with get () = this.KeyName
     member _.KeyType with get () = typeof<'Key>.GetTypeInfo()
     member this.Operations with get () = this.Operations
     member this.Invoke request =
@@ -40,11 +43,13 @@ module RestResource =
 
   let empty = {
     Handler = RestHandler.empty
+    KeyName = "key"
     Operations = Map.empty
   }
 
   let map h o resource = {
     Handler = h resource.Handler
+    KeyName = resource.KeyName
     Operations = o resource.Operations
   }
 

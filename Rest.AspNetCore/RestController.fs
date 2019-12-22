@@ -16,20 +16,37 @@ type RestController<'Key, 'Entity>() =
       resource.Handler request |> RestActionResult.fromResult<'Key, 'Entity>
     | None -> upcast this.StatusCode(500)
 
+  // NOTE: Routes must be specified using the RouteAttribute separately from
+  // method constraints, because the Route attribute gets replaced when
+  // RestControllerModel renames the key parameter.
+
   [<HttpDelete("{key}")>]
-  member this.Delete ([<FromRoute>] key : 'Key) =
+  member this.Delete
+    (
+      [<FromRoute(Name = "key")>] key : 'Key
+    ) =
     Delete key |> this.Invoke
 
   [<HttpGet("{key}")>]
-  member this.Get ([<FromRoute>] key : 'Key) =
+  member this.Get
+    (
+      [<FromRoute(Name = "key")>] key : 'Key
+    ) =
     Get key |> this.Invoke
 
   [<HttpPost>]
-  member this.Post ([<FromBody>] entity : 'Entity) =
+  member this.Post
+    (
+      [<FromBody>] entity : 'Entity
+    ) =
     Post entity |> this.Invoke
 
   [<HttpPut("{key}")>]
-  member this.Put ([<FromRoute>] key : 'Key, [<FromBody>] entity : 'Entity) =
+  member this.Put
+    (
+      [<FromRoute(Name = "key")>] key : 'Key,
+      [<FromBody>]                entity : 'Entity
+    ) =
     Put (key, entity) |> this.Invoke
 
   [<HttpGet>]

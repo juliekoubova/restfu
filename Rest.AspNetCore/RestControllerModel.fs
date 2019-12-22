@@ -37,22 +37,42 @@ let private singleSelectorModel (attributes : obj seq) =
     selectorModel route httpMethods
   )
 
+
+let private renameKeyFromRoute (keyName : string) (attributes : obj list) =
+  attributes
+  |> ofType<FromRouteAttribute>
+  |> Seq.filter (fun a -> a.Name = "key")
+  |> Seq.iter (fun a -> a.Name <- keyName)
+  attributes
+
+let private renameRoute (keyName : string) (attributes : obj list) =
+  attributes
+  |> List.map (modifyRouteTemplate (fun template ->
+    template.Replace ("{key}", sprintf "{%s}" keyName)
+  ))
+
 let create
   (mmp : ModelMetadataProvider option)
   (reg : IRestApiRegistration)
   =
-  let k = reg.Resource.KeyType
-  let e = reg.Resource.EntityType
-  let typeInfo = controllerType k e
+  let keyName = reg.Resource.KeyName.ToLowerInvariant()
+  let keyType = reg.Resource.KeyType
+  let entityType = reg.Resource.EntityType
+  let typeInfo = controllerType keyType entityType
 
   let createParameter (parameter : ParameterInfo) =
-    let attribs = attributes parameter
+    let attribs = attributes parameter |> renameKeyFromRoute keyName
     let bindingInfo =
       match mmp with
       | None -> BindingInfo.GetBindingInfo attribs
       | Some mmp ->
         let metadata = mmp.GetMetadataForParameter parameter
         BindingInfo.GetBindingInfo (attribs, metadata)
+
+    // let parameterName =
+    //   match parameter.Name with
+    //   | "key" -> keyName
+    //   | name -> name
 
     ParameterModel (
       parameter,
@@ -68,21 +88,17 @@ let create
       |> typeInfo.GetDeclaredMethod
 
     let attribs =
-      attributes methodInfo
+      attributes methodInfo |> renameRoute keyName
 
     let parameters =
-      methodInfo.GetParameters ()
-      |> Seq.map createParameter
+      methodInfo.GetParameters () |> Seq.map createParameter
 
     let selector =
       singleSelectorModel attribs
       |> Option.toList
 
-    let model =
-      actionModel methodInfo attribs parameters selector
-
-    setOperation model.Properties operation
-    model
+    actionModel methodInfo attribs parameters selector
+    |> setOperation operation
 
   let actions =
     reg.Resource.Operations
@@ -97,5 +113,4 @@ let create
   singleSelectorModel [RouteAttribute (reg.Url) |> box]
   |> Option.iter result.Selectors.Add
 
-  setResource result.Properties reg.Resource
-  result
+  setResource reg.Resource result

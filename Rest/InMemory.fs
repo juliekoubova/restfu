@@ -1,10 +1,17 @@
 namespace Rest
 open RestFailDefinition
 open RestSuccessDefinition
+open Quotations
+
+open FSharp.Quotations.Evaluator
 
 module InMemory =
-  let create (entityKey: 'Entity -> 'Key): RestResource<'Key, 'Entity> =
+  let create (entityKeyExpr: Expr<'Entity -> 'Key>): RestResource<'Key, 'Entity> =
+
     let mutable state : Map<'Key, 'Entity> = Map.empty
+
+    let entityKeyName = propertyName entityKeyExpr
+    let entityKey = entityKeyExpr.Compile ()
     let tryFind key = Map.tryFind key state
 
     let delete key =
@@ -39,4 +46,5 @@ module InMemory =
       let entities = state |> Map.toSeq |> Seq.map snd
       QuerySuccess (applySuccess querySuccess<'Entity> (q, entities))
 
-    Crud.create delete get post put query |> Crud.validatePutKey entityKey
+    Crud.create entityKeyName delete get post put query
+    |> Crud.validatePutKey entityKey

@@ -1,31 +1,38 @@
 module internal Rest.AspNetCore.RestResourceProperties
-open System.Collections.Generic
 open Rest
 
-let private resourceKey = obj()
-let private operationKey = obj()
+open System.Collections.Generic
+open Microsoft.AspNetCore.Mvc.ApplicationModels
+
+let private resourceKey = obj ()
+let private operationKey = obj ()
 
 type private Props = IDictionary<obj, obj>
 
-let private get<'T> key (properties : Props) =
-  match properties.[key] with
+let private get<'T> (key : obj) (props : Props) =
+  match props.[key] with
   | :? 'T as value -> Some value
   | _ -> None
 
-let private set key (properties : Props) value =
-  properties.[key] <- value
+let private set<'T, 'M when 'M :> IPropertyModel>
+  (key : obj)
+  (value : 'T)
+  (model : 'M)
+  =
+  model.Properties.[key] <- value
+  model
 
-let setResource : Props -> IRestResource -> unit =
+let setResource<'M when 'M :> IPropertyModel> : IRestResource -> 'M -> 'M =
   set resourceKey
 
-let setOperation : Props -> RestOperation -> unit =
+let setOperation<'M when 'M :> IPropertyModel> : RestOperation -> 'M -> 'M =
   set operationKey
 
 let getResourceAnonymous props : IRestResource option =
-  get resourceKey props
+  get<IRestResource> resourceKey props
 
 let getResource<'K, 'E> props : RestResource<'K, 'E> option =
-  get resourceKey props
+  get<RestResource<'K, 'E>> resourceKey props
 
 let getOperation props : RestOperation option =
   get operationKey props

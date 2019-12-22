@@ -5,6 +5,7 @@ open Microsoft.AspNetCore.Mvc.ApplicationModels
 open Microsoft.AspNetCore.Mvc.Routing
 open Microsoft.AspNetCore.Routing
 open System.Reflection
+open Microsoft.AspNetCore.Mvc
 
 let actionModel
  (methodInfo : MethodInfo)
@@ -43,3 +44,35 @@ let selectorModel
     selectorModel.EndpointMetadata.Add (HttpMethodMetadata httpMethods)
 
   selectorModel
+
+let modifyRouteTemplate (modify : string -> string) (attr : obj) =
+
+  let mapNull f o =
+    match o with
+    | null -> None
+    | x -> Some (f x)
+
+  let modifyTemplate = mapNull modify
+
+  let copyHMA (source : HttpMethodAttribute) (target : HttpMethodAttribute) =
+    target.Name <- source.Name
+    target.Order <- source.Order
+    target
+
+  let modifyHMA (hma : HttpMethodAttribute) =
+    let t = hma.GetType ()
+    let args =
+      modifyTemplate hma.Template
+      |> Option.map box
+      |> Option.toArray
+
+    System.Activator.CreateInstance  (t, args)
+    :?> HttpMethodAttribute
+    |> copyHMA hma
+    |> box
+
+  match attr with
+  | :? HttpMethodAttribute as hma -> modifyHMA hma
+  | :? IRouteTemplateProvider ->
+    failwithf "Unable to modify route template for %A" attr
+  | other -> box other

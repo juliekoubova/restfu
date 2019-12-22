@@ -1,44 +1,42 @@
 namespace Rest
 open System.Reflection
 
-type RestSuccessDefinition =
-  {
-    ContentType : TypeInfo
-    Status : RestSuccessStatus
-    Title : string
-  }
-  interface IRestResponseDefinition with
-    member this.ContentType with get () = this.ContentType
-    member _.IsSuccess with get () = true
-    member this.Status with get () = RestSuccess this.Status
-    member this.Title with get () = this.Title
+type RestSuccessDefinition = {
+  ResponseType : RestResponse
+  Status : RestSuccessStatus
+}
 
 module RestSuccessDefinition =
 
-  let applySuccess (definition : unit -> RestSuccessDefinition) result =
-    let def = definition ()
-    {
-      Status = def.Status
-      Result = result
-    }
+  let applySuccess definition result =
+    ((definition ()).Status, result)
 
-  let success<'E> status title = {
-    ContentType = typeof<'E>.GetTypeInfo()
+  let successResponse definition =
+    (definition ()).ResponseType
+
+  let success ct status summary = {
+    ResponseType =  {
+      ContentType = ct
+      Status = RestSuccess status
+      Summary = summary
+    }
     Status = status
-    Title = title
   }
 
-  let created<'E> () =
-    success<'E> Created "{Entity} was successfully created."
+  let postCreated<'A> () =
+    success snd Created "{Entity} was created."
 
-  let deleteSuccess<'E> () =
-    success<'E> Ok "{Entity} with the specified {Key} was successfully deleted."
+  let putCreated<'A> () =
+    success snd Created "{Entity} with the specified {Key} was created."
 
-  let getSuccess<'E> () =
-    success<'E> Ok "{Entity} with the specified {Key} was found."
+  let deleteOk<'A> () =
+    success snd Ok "{Entity} with the specified {Key} was deleted."
 
-  let putSuccess<'E> () =
-    success<'E> Ok "{Entity} with the specified {Key} was successfully replaced."
+  let getOk<'A> () =
+    success snd Ok "{Entity} with the specified {Key} was found."
 
-  let querySuccess<'E> () =
-    success<'E array> Ok "Successfully returned matching {Entity:plural}."
+  let putOk<'A> () =
+    success snd Ok "{Entity} with the specified {Key} was replaced."
+
+  let queryOk<'A> () =
+    success (snd >> typeofSeq) Ok "Returned matching {Entity:plural}."

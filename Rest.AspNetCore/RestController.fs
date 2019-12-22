@@ -9,12 +9,12 @@ open Microsoft.AspNetCore.Mvc
 type RestController<'Key, 'Entity>() =
   inherit ControllerBase()
 
+
   member private this.Invoke (request : RestRequest<'Key, 'Entity>) =
-    let props = this.ControllerContext.ActionDescriptor.Properties
-    match getResource<'Key, 'Entity> props with
-    | Some resource ->
-      resource.Handler request |> RestActionResult.fromResult<'Key, 'Entity>
-    | None -> upcast this.StatusCode(500)
+    this.ControllerContext.ActionDescriptor.Properties
+    |> getResource<'Key, 'Entity>
+    |> (fun res -> res.Handler request)
+    |> RestActionResult.fromResult<'Key, 'Entity>
 
   // NOTE: Routes must be specified using the RouteAttribute separately from
   // method constraints, because the Route attribute gets replaced when

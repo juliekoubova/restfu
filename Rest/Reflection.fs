@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module internal Rest.AspNetCore.Reflection
+module internal Rest.Reflection
 open System.Reflection
 
 let attributes (attributeProvider : ICustomAttributeProvider) =

@@ -9,7 +9,7 @@ let private operationKey = obj ()
 
 type private Props = IDictionary<obj, obj>
 
-let private get<'T> (key : obj) (props : Props) =
+let private tryGet<'T> (key : obj) (props : Props) =
   match props.[key] with
   | :? 'T as value -> Some value
   | _ -> None
@@ -28,12 +28,14 @@ let setResource<'M when 'M :> IPropertyModel> : IRestResource -> 'M -> 'M =
 let setOperation<'M when 'M :> IPropertyModel> : RestOperation -> 'M -> 'M =
   set operationKey
 
-let getResourceAnonymous props : IRestResource option =
-  get<IRestResource> resourceKey props
+let tryGetResource props : IRestResource option =
+  tryGet<IRestResource> resourceKey props
 
-let getResource<'K, 'E> props : RestResource<'K, 'E> option =
-  get<RestResource<'K, 'E>> resourceKey props
+let getResource<'K, 'E> props : RestResource<'K, 'E> =
+  tryGet<RestResource<'K, 'E>> resourceKey props
+  |> Option.orElseWith (fun _ -> failwith "Could not get RestResource")
+  |> Option.get
 
-let getOperation props : RestOperation option =
-  get operationKey props
+let tryGetOperation props : RestOperation option =
+  tryGet operationKey props
 

@@ -1,22 +1,20 @@
 namespace Rest
-open RestFail
-open RestSuccess
 
 type RestResult<'Key, 'Entity> =
-| DeleteSuccess of RestSuccess<('Key * 'Entity option)>
-| DeleteFail of RestFail<'Key>
+| DeleteSuccess of RestSuccessStatus * ('Key * 'Entity option)
+| DeleteFail of RestFailDetails * 'Key
 
-| GetSuccess of RestSuccess<('Key * 'Entity)>
-| GetFail of RestFail<'Key>
+| GetSuccess of RestSuccessStatus * ('Key * 'Entity)
+| GetFail of RestFailDetails * 'Key
 
-| PostSuccess of RestSuccess<('Key * 'Entity option)>
-| PostFail of RestFail<'Entity>
+| PostSuccess of RestSuccessStatus * ('Key * 'Entity option)
+| PostFail of RestFailDetails * 'Entity
 
-| PutSuccess of RestSuccess<('Key * 'Entity option)>
-| PutFail of RestFail<('Key * 'Entity)>
+| PutSuccess of RestSuccessStatus  * ('Key * 'Entity option)
+| PutFail of RestFailDetails * ('Key * 'Entity)
 
-| QuerySuccess of RestSuccess<(RestQuery<'Entity> * 'Entity seq)>
-| QueryFail of RestFail<RestQuery<'Entity>>
+| QuerySuccess of RestSuccessStatus * (RestQuery<'Entity> * 'Entity seq)
+| QueryFail of RestFailDetails * RestQuery<'Entity>
 
 module RestResult =
 
@@ -27,35 +25,35 @@ module RestResult =
       (x a, y b)
 
     match result with
-    | DeleteSuccess success ->
-      DeleteSuccess (mapSuccessResult (pairMap k eOpt) success)
+    | DeleteSuccess (status, result) ->
+      DeleteSuccess (status, pairMap k eOpt result)
 
-    | DeleteFail fail ->
-      DeleteFail (mapFail k fd fail)
+    | DeleteFail (details, key) ->
+      DeleteFail (fd details, k key)
 
-    | GetSuccess success ->
-      GetSuccess (mapSuccessResult (pairMap k e) success)
+    | GetSuccess (status, result) ->
+      GetSuccess (status, pairMap k e result)
 
-    | GetFail fail ->
-      GetFail (mapFail k fd fail)
+    | GetFail (details, key) ->
+      GetFail (fd details, k key)
 
-    | PostSuccess success ->
-      PostSuccess (mapSuccessResult (pairMap k eOpt) success)
+    | PostSuccess (status, result) ->
+      PostSuccess (status, pairMap k eOpt result)
 
-    | PostFail fail ->
-      PostFail (mapFail e fd fail)
+    | PostFail (details, entity) ->
+      PostFail (fd details, e entity)
 
-    | PutSuccess success ->
-      PutSuccess (mapSuccessResult (pairMap k eOpt) success)
+    | PutSuccess (success, result) ->
+      PutSuccess (success, pairMap k eOpt result)
 
-    | PutFail fail ->
-      PutFail (mapFail (pairMap k e) fd fail)
+    | PutFail (details, context) ->
+      PutFail (fd details, pairMap k e context)
 
-    | QuerySuccess success ->
-      QuerySuccess (mapSuccessResult (pairMap q eSeq) success)
+    | QuerySuccess (status, result) ->
+      QuerySuccess (status, pairMap q eSeq result)
 
-    | QueryFail fail ->
-      QueryFail (mapFail q fd fail)
+    | QueryFail (details, query) ->
+      QueryFail (fd details, q query)
 
   let mapKey f = map f id id id
   let mapFailDetails f = map id id id f

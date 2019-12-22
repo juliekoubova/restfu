@@ -19,7 +19,7 @@ pets.Handler <| Post { Name = "Moan"; Owner = "Daddy" } |> ignore
 let configureServices (services : IServiceCollection) =
   ignore <| services.AddControllers()
   ignore <| services.AddRest ()
-  ignore <| services.AddRestResource "pets" pets
+  ignore <| services.AddRestResource ("pets", pets)
   ignore <| services.AddSwaggerGen (fun swagger ->
     swagger.SwaggerDoc ("pets", OpenApiInfo (Title = "Pets API", Version = "v1"))
   )

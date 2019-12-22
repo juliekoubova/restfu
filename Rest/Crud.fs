@@ -12,22 +12,11 @@ let validatePutKey entityKey =
     else
       PutFail (applyFail cannotChangeKey (key, keyFromEntity) (key, entity))
 
-  withPut put [ cannotChangeKey () ]
-
-let applyEntityKeyName entityName keyName resource =
-  let replace = NaturalLanguage.replaceTokens (Map.ofList [
-    ("Entity", Some entityName)
-    ("Key", Some keyName)
-  ])
-
-  let rename (d : RestFailDetails) : RestFailDetails = {
-    Description = replace d.Description
-    Status = d.Status
-    Title = replace d.Title
-    Type = d.Type
+  withPut put {
+    Descriptions = []
+    Responses = [ failResponse cannotChangeKey ]
+    Summary = None
   }
-  { resource with EntityName = entityName; KeyName = keyName }
-  |> mapHandler (fun handler -> handler >> RestResult.mapFailDetails rename)
 
 
 let create<'K, 'E when 'K : equality>
@@ -41,25 +30,44 @@ let create<'K, 'E when 'K : equality>
   =
   let entityName = typeof<'E>.Name
 
-  empty
-  |> withDelete (ignoreArg0 delete) [
-      deleteSuccess<'E> ()
-      notFoundKey ()
+  { empty with EntityName = entityName; KeyName = keyName }
+  |> withDelete (ignoreArg0 delete) {
+    Descriptions = []
+    Responses = [
+      successResponse deleteOk
+      failResponse notFoundKey
     ]
-  |> withGet (ignoreArg0 get) [
-    getSuccess<'E> ()
-    notFoundKey ()
-  ]
-  |> withPost (ignoreArg0 post) [
-    created<'E> ()
-    alreadyExists ()
-  ]
-  |> withPut (ignoreArg0 put) [
-    putSuccess<'E> ()
-    created<'E> ()
-  ]
-  |> withQuery (ignoreArg0 query) [
-    querySuccess<'E> ()
-  ]
+    Summary = Some "Delete {Entity} with the specified {Key}."
+  }
+  |> withGet (ignoreArg0 get) {
+    Descriptions = []
+    Responses = [
+      successResponse getOk
+      failResponse notFoundKey
+    ]
+    Summary = Some "Get {Entity} with the specified {Key}."
+  }
+  |> withPost (ignoreArg0 post) {
+    Descriptions = []
+    Responses = [
+      successResponse postCreated
+      failResponse alreadyExists
+    ]
+    Summary = Some "Create new {Entity}."
+  }
+  |> withPut (ignoreArg0 put) {
+    Descriptions = []
+    Responses = [
+      successResponse putCreated
+      successResponse putOk
+    ]
+    Summary = Some "Create or replace {Entity} with the specified {Key}."
+  }
+  |> withQuery (ignoreArg0 query) {
+    Descriptions = []
+    Responses = [
+      successResponse queryOk
+    ]
+    Summary = Some "Find {Entity:plural} matching the query."
+  }
   |> validatePutKey entityKey
-  |> applyEntityKeyName entityName keyName

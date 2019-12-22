@@ -10,14 +10,14 @@ open Swashbuckle.AspNetCore.SwaggerGen
 type SwaggerOperationFilter() =
 
   [<Literal>]
-  let ProblemContentType = "application/problem+json"
+  let ProblemMediaType = "application/problem+json"
   [<Literal>]
-  let ResponseContentType = "application/json"
+  let ResponseMediaType = "application/json"
 
   let mapSnd f (x, y) =
     x, f y
 
-  let statusCode (response : IRestResponseDefinition) =
+  let statusCode (response : RestResponse) =
     response.Status |> StatusCode.code |> int |> string
 
   let makeResponses (statusResponses : (string * OpenApiResponse) list) =
@@ -29,25 +29,21 @@ type SwaggerOperationFilter() =
 
   let mergeResponses
     (generateSchema : TypeInfo -> OpenApiSchema)
-    (entityName : string option)
-    (keyName : string option)
-    (responses : IRestResponseDefinition list)
+    (resource : IRestResource)
+    (responses : RestResponse list)
     =
-
-    let replacements = Map.ofList [
-      ("Entity", entityName)
-      ("Key", keyName)
-    ]
 
     let description =
       responses
-      |> List.map (fun r -> r.Title |> NaturalLanguage.replaceTokens replacements)
+      |> List.map (fun r -> r.Summary)
       |> String.concat "\n"
 
-    let getResponseType (r : IRestResponseDefinition) =
-      match r.IsSuccess with
-      | true -> ResponseContentType, r.ContentType
-      | false -> ProblemContentType, typeof<ProblemDetails>.GetTypeInfo ()
+    let getResponseType (r : RestResponse) =
+      match r.Status with
+      | RestSuccess _ ->
+        ResponseMediaType, (r.ContentType (resource.KeyType, resource.EntityType))
+      | RestFail _ ->
+        ProblemMediaType, typeof<ProblemDetails>.GetTypeInfo ()
 
     let mediaType schema =
       OpenApiMediaType(Schema = schema)
@@ -55,13 +51,10 @@ type SwaggerOperationFilter() =
     let result = OpenApiResponse (Description = description)
 
     responses
-    |> Seq.tryHead
-    |> Option.map (
-      getResponseType
-      >> mapSnd (generateSchema >> mediaType)
-    )
-    |> Option.iter (fun (k, v) ->
-      result.Content.[k] <- v
+    |> Seq.tryExactlyOne
+    |> Option.map (getResponseType >> mapSnd (generateSchema >> mediaType))
+    |> Option.iter (fun (mediaTypeName, mediaType) ->
+      result.Content.[mediaTypeName] <- mediaType
     )
 
     result
@@ -81,19 +74,12 @@ type SwaggerOperationFilter() =
       let props =
         context.ApiDescription.ActionDescriptor.Properties
 
-      let entityName =
-        getResourceAnonymous props
-        |> Option.bind (fun r -> getSchemaId r.EntityType)
-
-      let keyName =
-        getResourceAnonymous props
-        |> Option.map (fun r -> r.KeyName)
-
-      match getOperation props with
-      | None -> ()
-      | Some op ->
+      match (tryGetResource props, tryGetOperation props) with
+      | Some res, Some op ->
+        operation.Summary <- Option.toObj op.Summary
         operation.Responses <-
           op.Responses
           |> List.groupBy statusCode
-          |> List.map (mapSnd (mergeResponses generateSchema entityName keyName))
+          |> List.map (mapSnd (mergeResponses generateSchema res))
           |> makeResponses
+      | _ -> ()

@@ -3,18 +3,22 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AssemblyAttributes.fs" />
     <Compile Include="Utils.fs" />
+    <Compile Include="Reflection.fs" />
     <Compile Include="NaturalLanguage.fs" />
     <Compile Include="Request.fs" />
     <Compile Include="Status.fs" />
     <Compile Include="Fail.fs" />
+    <Compile Include="ResponseType.fs" />
     <Compile Include="FailDefinition.fs" />
-    <Compile Include="Success.fs" />
     <Compile Include="SuccessDefinition.fs" />
     <Compile Include="Result.fs" />
     <Compile Include="Handler.fs" />
+    <Compile Include="Operations.fs" />
     <Compile Include="Resource.fs" />
     <Compile Include="Quotations.fs" />
+    <Compile Include="ApiExplorer.fs" />
     <Compile Include="CRUD.fs" />
     <Compile Include="InMemory.fs" />
     <Compile Include="Convert.fs" />

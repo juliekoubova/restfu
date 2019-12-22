@@ -12,5 +12,10 @@ type IServiceCollection with
       swagger.OperationFilter<SwaggerOperationFilter> ()
     )
 
-  member this.AddRestResource (url: string) (resource : IRestResource) =
-    this.AddSingleton<IRestApiRegistration> (RestApiRegistration (url, resource))
+  member this.AddRestResource<'Key, 'Entity>
+    (
+      url : string,
+      resource : RestResource<'Key, 'Entity>
+    ) =
+    let res = RestApiExplorer.applyEntityKeyName resource
+    this.AddSingleton<IRestApiRegistration> (RestApiRegistration (url, res))

@@ -3,20 +3,6 @@ namespace Rest
 open System
 open System.Reflection
 
-module RestOperations =
-  type RestOperationType =
-  | Delete
-  | Get
-  | Post
-  | Put
-  | Query
-
-type RestOperation = {
-  Responses : IRestResponseDefinition list
-}
-
-type RestOperationMap = Map<RestOperations.RestOperationType, RestOperation>
-
 type IRestResource =
   abstract member EntityName : string with get
   abstract member EntityType : TypeInfo with get
@@ -58,32 +44,26 @@ module RestResource =
   let mapHandler h =
     map h id
 
-  let private addResponses
-    (op : RestOperations.RestOperationType)
-    (responses : IRestResponseDefinition list)
-    (table : RestOperationMap)
-    =
-    let responses =
-      match Map.tryFind op table with
-      | None -> responses
-      | Some op -> List.append responses op.Responses
-    Map.add op { Responses = responses } table
-
   let private withBuilder<'K, 'E, 'Req>
-    (operationType : RestOperations.RestOperationType)
+    (opType : RestOperations.RestOperationType)
     (applyTransformHandler :
       RestHandlerTransform<'K, 'E, 'Req> ->
       RestHandler<'K, 'E> ->
       RestHandler<'K, 'E>
     )
     (transformHandler : RestHandlerTransform<'K, 'E, 'Req>)
-    (responses : IRestResponseDefinition list)
+    (transformOp : RestOperation)
     (resource : RestResource<'K, 'E>)
     =
     let mapHandler =
       applyTransformHandler transformHandler
+
     let mapOperations =
-       addResponses operationType responses
+      RestOperationMap.add
+        transformOp.Descriptions
+        transformOp.Responses
+        transformOp.Summary
+        opType
 
     map mapHandler mapOperations resource
 

@@ -6,7 +6,6 @@
     <ProjectReference Include="../Rest/Rest.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Reflection.fs" />
     <Compile Include="ApplicationModel.fs" />
     <Compile Include="IRestApiRegistration.fs" />
     <Compile Include="StatusCode.fs" />
@@ -15,6 +14,7 @@
     <Compile Include="RestController.fs" />
     <Compile Include="RestControllerModel.fs" />
     <Compile Include="RestApplicationModelProvider.fs" />
+    <Compile Include="SwaggerReserveSchemaIds.fs" />
     <Compile Include="SwaggerOperationFilter.fs" />
     <Compile Include="Extensions.fs" />
   </ItemGroup>

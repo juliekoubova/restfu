@@ -19,12 +19,12 @@ module InMemory =
       | None -> DeleteFail (applyFail notFoundKey key key)
       | Some entity ->
         state <- Map.remove key state
-        DeleteSuccess (applySuccess deleteSuccess<'Entity> (key, Some entity))
+        DeleteSuccess (applySuccess deleteOk (key, Some entity))
 
     let get key =
       match tryFind key with
       | None -> GetFail (applyFail notFoundKey key key)
-      | Some entity -> GetSuccess (applySuccess getSuccess<'Entity> (key, entity))
+      | Some entity -> GetSuccess (applySuccess getOk (key, entity))
 
     let post entity =
       let key = entityKey entity
@@ -32,18 +32,18 @@ module InMemory =
       | Some _ -> PostFail (applyFail alreadyExists key entity)
       | None ->
         state <- Map.add key entity state
-        PostSuccess (applySuccess created<'Entity> (key, Some entity))
+        PostSuccess (applySuccess postCreated (key, Some entity))
 
     let put (key, entity) =
       let success =
         match tryFind key with
-        | Some _ -> putSuccess<'Entity>
-        | None -> created<'Entity>
+        | Some _ -> putOk<'Entity>
+        | None -> putCreated<'Entity>
       state <- Map.add key entity state
       PutSuccess (applySuccess success (key, Some entity))
 
     let query q =
       let entities = state |> Map.toSeq |> Seq.map snd
-      QuerySuccess (applySuccess querySuccess<'Entity> (q, entities))
+      QuerySuccess (applySuccess queryOk (q, entities))
 
     Crud.create entityKeyName entityKey delete get post put query

@@ -1,41 +1,38 @@
 namespace Rest
 open System.Reflection
 
-type RestFailDefinition<'Details> =
+type RestFailDefinition<'Arg> =
   {
-    Status : RestFailStatus
-    Type : string
-    Title : string
-    Description : 'Details -> string
+    ResponseType : RestResponse
+    Format : 'Arg -> RestFailDetails
   }
-  interface IRestResponseDefinition with
-    member this.ContentType with get () = typedefof<RestFail<_>>.GetTypeInfo ()
-    member this.IsSuccess with get () = false
-    member this.Status with get () = RestFail this.Status
-    member this.Title with get () = this.Title
 
 module RestFailDefinition =
-  let applyFail (definition : unit -> RestFailDefinition<'a>) arg context =
-    let def = definition ()
-    {
-      Details = {
-        Description = def.Description arg
-        Status = def.Status
-        Title = def.Title
-        Type = def.Type
-      }
-      Context = context
-    }
 
   [<Literal>]
   let private BaseUrl = "https://github.com/juliekoubova/tired-rest/wiki/Problems#"
 
-  let fail<'Arg> status ``type`` title (description : 'Arg -> string) = {
-    Status = status
-    Type = BaseUrl + ``type``
-    Title = title
-    Description = description
-  }
+  let applyFail definition arg context =
+    (definition ()).Format arg, context
+
+  let failResponse definition =
+    (definition ()).ResponseType
+
+  let fail<'Arg> status ``type`` summary (description : 'Arg -> string) =
+    let namespacedType = BaseUrl + ``type``
+    {
+      ResponseType = {
+        ContentType = fun _ -> typeof<RestFailDetails>.GetTypeInfo ()
+        Status = RestFail status
+        Summary = summary
+      }
+      Format = fun arg -> {
+        Description = description arg
+        Status = status
+        Title = summary
+        Type = namespacedType
+      }
+    }
 
   let alreadyExists () =
     fail
@@ -44,8 +41,8 @@ module RestFailDefinition =
       "{Entity} with the specified {Key} already exists."
       (sprintf "{Entity} with key %A already exists.")
 
-  let cannotChangeKey<'Key> () =
-    fail<'Key * 'Key>
+  let cannotChangeKey<'K> () =
+    fail<'K * 'K>
       BadRequest
       "cannot-change-key"
       "Cannot change {Entity:possessive} {Key}."

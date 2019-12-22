@@ -20,26 +20,22 @@ let private objectResult entity code : IActionResult =
 
 let fromResult<'K, 'E> (result : RestResult<'K, 'E>) : IActionResult =
   match result with
-  | DeleteSuccess { Status = status; Result = (_, entity) } ->
+  | DeleteSuccess (status, (_, entity))
+  | PostSuccess (status, (_, entity))
+  | PutSuccess (status, (_, entity)) ->
     successCode status |> objectResult entity
 
-  | GetSuccess { Status = status; Result = (_, entity) } ->
+  | GetSuccess (status, (_, entity)) ->
     successCode status |> objectResult (Some entity)
 
-  | PostSuccess { Status = status; Result = (_, entity) } ->
-    successCode status |> objectResult entity
-
-  | PutSuccess { Status = status; Result = (_, entity) } ->
-    successCode status |> objectResult entity
-
-  | QuerySuccess { Status = status; Result = (_, entities) } ->
+  | QuerySuccess (status, (_, entities)) ->
     successCode status |> objectResult (Some entities)
 
-  | DeleteFail { Details = details }
-  | GetFail { Details = details }
-  | PostFail { Details = details }
-  | PutFail { Details = details }
-  | QueryFail { Details = details } ->
+  | DeleteFail (details, _)
+  | GetFail (details, _)
+  | PostFail (details, _)
+  | PutFail (details, _)
+  | QueryFail (details, _) ->
     let code = failCode details.Status
     let details = problemDetails details.Type details.Title details.Description code
     objectResult (Some details) code

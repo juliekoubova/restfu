@@ -1,17 +1,12 @@
 namespace Rest
 open RestFailDefinition
 open RestSuccessDefinition
-open Quotations
+open Microsoft.FSharp.Quotations
 
-open FSharp.Quotations.Evaluator
-
-module InMemory =
-  let create (entityKeyExpr: Expr<'Entity -> 'Key>) : RestResource<'Key, 'Entity> =
+module private InMemoryResource =
+  let create (entityKey : EntityKey<'Key, 'Entity>) =
 
     let mutable state : Map<'Key, 'Entity> = Map.empty
-
-    let entityKeyName = propertyName entityKeyExpr
-    let entityKey = entityKeyExpr.Compile ()
     let tryFind key = Map.tryFind key state
 
     let delete key =
@@ -27,7 +22,7 @@ module InMemory =
       | Some entity -> GetSuccess (applySuccess getOk (key, entity))
 
     let post entity =
-      let key = entityKey entity
+      let key = entityKey.Value entity
       match tryFind key with
       | Some _ -> PostFail (applyFail alreadyExists key entity)
       | None ->
@@ -46,4 +41,14 @@ module InMemory =
       let entities = state |> Map.toSeq |> Seq.map snd
       QuerySuccess (applySuccess queryOk (q, entities))
 
-    Crud.create entityKeyName entityKey delete get post put query
+    Crud.create entityKey delete get post put query
+
+
+[<AbstractClass; Sealed>]
+type InMemory private () =
+
+  static member Create<'Key, 'Entity when 'Key : comparison>
+    ([<ReflectedDefinition(true)>] entityKey : Expr<'Entity -> 'Key>)
+    : RestResource<'Key, 'Entity>
+    =
+    entityKey |> EntityKey.validate |> InMemoryResource.create

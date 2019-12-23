@@ -17,14 +17,13 @@
     <Compile Include="Handler.fs" />
     <Compile Include="Operations.fs" />
     <Compile Include="Resource.fs" />
-    <Compile Include="Quotations.fs" />
     <Compile Include="ApiExplorer.fs" />
+    <Compile Include="EntityKey.fs" />
     <Compile Include="CRUD.fs" />
     <Compile Include="InMemory.fs" />
     <Compile Include="Convert.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="fsharp.quotations.evaluator" Version="2.0.0" />
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.0" />
   </ItemGroup>

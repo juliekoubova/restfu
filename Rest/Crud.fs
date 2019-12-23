@@ -4,9 +4,9 @@ open RestFailDefinition
 open RestResource
 open RestSuccessDefinition
 
-let validatePutKey entityKey =
+let private validatePutKey entityKey =
   let put handler (key, entity) =
-    let keyFromEntity = entityKey entity
+    let keyFromEntity = entityKey.Value entity
     if key = keyFromEntity then
       Put (key, entity) |> handler
     else
@@ -22,8 +22,7 @@ let validatePutKey entityKey =
 
 
 let create<'K, 'E when 'K : equality>
-  (keyName   : string)
-  (entityKey : 'E -> 'K)
+  (entityKey : EntityKey<'K, 'E>)
   (delete    : 'K -> RestResult<'K, 'E>)
   (get       : 'K -> RestResult<'K, 'E>)
   (post      : 'E -> RestResult<'K, 'E>)
@@ -32,7 +31,7 @@ let create<'K, 'E when 'K : equality>
   =
   let entityName = typeof<'E>.Name
 
-  { empty with EntityName = entityName; KeyName = keyName }
+  { empty with EntityName = entityName; KeyName = entityKey.Name }
   |> withDelete (ignoreArg0 delete) {
     Descriptions = [
       "Deletes an existing {Entity} with the specified {Key}."

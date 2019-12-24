@@ -39,7 +39,7 @@ module RestFailDefinition =
       Conflict
       "already-exists"
       "{Entity} with the specified {Key} already exists."
-      (sprintf "{Entity} with key %A already exists.")
+      (sprintf "{Entity} with {Key} %A already exists.")
 
   let cannotChangeKey<'K> () =
     fail<'K * 'K>
@@ -47,7 +47,7 @@ module RestFailDefinition =
       "cannot-change-key"
       "Cannot change {Entity:possessive} {Key}."
       (fun (uriKey, entityKey) ->
-        sprintf "Cannot change {Entity:possessive} key from %A to %A." uriKey entityKey
+        sprintf "Cannot change {Entity:possessive} {Key} from %A to %A." uriKey entityKey
       )
 
   let methodNotAllowed () =

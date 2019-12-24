@@ -9,7 +9,6 @@ open Microsoft.AspNetCore.Mvc
 type RestController<'Key, 'Entity>() =
   inherit ControllerBase()
 
-
   member private this.Invoke (request : RestRequest<'Key, 'Entity>) =
     this.ControllerContext.ActionDescriptor.Properties
     |> getResource<'Key, 'Entity>
@@ -34,6 +33,14 @@ type RestController<'Key, 'Entity>() =
     ) =
     Get key |> this.Invoke
 
+  [<HttpPatch("{key}")>]
+  member this.Patch
+    (
+      [<FromRoute(Name = "key")>] key : 'Key,
+      [<FromBody>]                patch : JsonPatch
+    ) =
+    Patch (key, patch) |> this.Invoke
+
   [<HttpPost>]
   member this.Post
     (
@@ -51,4 +58,4 @@ type RestController<'Key, 'Entity>() =
 
   [<HttpGet>]
   member this.Query () =
-    Query (RestQuery ()) |> this.Invoke
+    Query None |> this.Invoke

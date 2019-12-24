@@ -49,13 +49,13 @@ module Mapping =
     | Lambda (var, body) ->
       match body with
       | NewRecord (targetType, exprs) ->
-        let targetExprs =
+        let targetProps =
           FSharpType.GetRecordFields (targetType)
           |> List.ofArray
 
         exprs
         |> List.map (sourceProperty var)
-        |> List.zip targetExprs
+        |> List.zip targetProps
         |> List.map (
           function
           | (target, Some source) ->

@@ -7,22 +7,28 @@ type RestResult<'Key, 'Entity> =
 | GetSuccess of RestSuccessStatus * ('Key * 'Entity)
 | GetFail of RestFailDetails * 'Key
 
+| PatchSuccess of RestSuccessStatus * ('Key * JsonPatch * 'Entity option)
+| PatchFail of RestFailDetails * ('Key * JsonPatch)
+
 | PostSuccess of RestSuccessStatus * ('Key * 'Entity option)
 | PostFail of RestFailDetails * 'Entity
 
 | PutSuccess of RestSuccessStatus  * ('Key * 'Entity option)
 | PutFail of RestFailDetails * ('Key * 'Entity)
 
-| QuerySuccess of RestSuccessStatus * (RestQuery<'Entity> * 'Entity seq)
-| QueryFail of RestFailDetails * RestQuery<'Entity>
+| QuerySuccess of RestSuccessStatus * (RestQuery option * 'Entity seq)
+| QueryFail of RestFailDetails * RestQuery option
 
 module RestResult =
 
-  let map k e q fd result =
+  let map k e p q fd result =
     let eOpt = Option.map e
+    let qOpt = Option.map q
     let eSeq = Seq.map e
     let pairMap x y (a, b) =
       (x a, y b)
+    let tripleMap x y z (a, b, c) =
+      (x a, y b, z c)
 
     match result with
     | DeleteSuccess (status, result) ->
@@ -37,6 +43,12 @@ module RestResult =
     | GetFail (details, key) ->
       GetFail (fd details, k key)
 
+    | PatchSuccess (status, result) ->
+      PatchSuccess (status, (tripleMap k p eOpt result))
+
+    | PatchFail (details, context) ->
+      PatchFail (fd details, (pairMap k p context))
+
     | PostSuccess (status, result) ->
       PostSuccess (status, pairMap k eOpt result)
 
@@ -50,13 +62,14 @@ module RestResult =
       PutFail (fd details, pairMap k e context)
 
     | QuerySuccess (status, result) ->
-      QuerySuccess (status, pairMap q eSeq result)
+      QuerySuccess (status, pairMap qOpt eSeq result)
 
     | QueryFail (details, query) ->
-      QueryFail (fd details, q query)
+      QueryFail (fd details, qOpt query)
 
-  let mapKey f = map f id id id
-  let mapFailDetails f = map id id id f
-  let mapEntity f q = map id f id q
-  let mapQuery f = map id id f
+  let mapKey k = map k id id id id
+  let mapEntity e p q = map id e p q id
+  let mapPatch p = map id id p id
+  let mapQuery q = map id id id q id
+  let mapFailDetails fd = map id id id id fd
 

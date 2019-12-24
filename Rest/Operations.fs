@@ -4,6 +4,7 @@ module RestOperations =
   type RestOperationType =
   | Delete
   | Get
+  | Patch
   | Post
   | Put
   | Query

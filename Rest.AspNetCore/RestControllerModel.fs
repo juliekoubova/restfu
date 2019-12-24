@@ -20,6 +20,7 @@ let private actionMethodName =
   function
   | RestOperations.Delete -> "Delete"
   | RestOperations.Get -> "Get"
+  | RestOperations.Patch -> "Patch"
   | RestOperations.Post -> "Post"
   | RestOperations.Put -> "Put"
   | RestOperations.Query -> "Query"

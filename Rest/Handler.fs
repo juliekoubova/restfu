@@ -19,6 +19,7 @@ module RestHandler =
     function
     | Delete key -> DeleteFail (applyNotFound key)
     | Get key -> GetFail (applyNotFound key)
+    | Patch (key, patch) -> PatchFail (applyNotFound (key, patch))
     | Post entity -> PostFail (applyNotFound entity)
     | Put (key, entity) -> PutFail (applyNotFound (key, entity))
     | Query query -> QueryFail (applyNotFound query)
@@ -38,29 +39,37 @@ module RestHandler =
     : RestHandler<'K, 'E>
     =
     function
-    | Get key -> (get handler key)
-    | req -> (handler req)
+    | Get k -> get handler k
+    | req -> handler req
+
+  let withPatch patch handler : RestHandler<'K, 'E> =
+    function
+    | Patch (k, p) -> patch handler (k, p)
+    | req -> handler req
 
   let withPost post handler : RestHandler<'K, 'E>  =
     function
-    | Post entity -> (post handler entity)
-    | req -> (handler req)
+    | Post e -> post handler e
+    | req -> handler req
 
   let withPut put handler : RestHandler<'K, 'E>  =
     function
-    | Put (key, entity) -> (put handler (key, entity))
-    | req -> (handler req)
+    | Put (k, e) -> put handler (k, e)
+    | req -> handler req
 
   let withQuery query handler : RestHandler<'K, 'E>  =
     function
-    | Query q -> (query handler q)
-    | req -> (handler req)
+    | Query q -> query handler q
+    | req -> handler req
 
   let withoutDelete handler : RestHandler<'K, 'E> =
     handler |> withDelete (fun _ x -> DeleteFail (applyMethodNotAllowed x))
 
   let withoutGet handler : RestHandler<'K, 'E> =
     handler |> withGet (fun _ x -> GetFail (applyMethodNotAllowed x))
+
+  let withoutPatch handler : RestHandler<'K, 'E> =
+    handler |> withPatch (fun _ x -> PatchFail (applyMethodNotAllowed x))
 
   let withoutPost handler : RestHandler<'K, 'E> =
     handler |> withPost (fun _ x -> PostFail (applyMethodNotAllowed x))

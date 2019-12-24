@@ -21,6 +21,11 @@ module private InMemoryResource =
       | None -> GetFail (applyFail notFoundKey key key)
       | Some entity -> GetSuccess (applySuccess getOk (key, entity))
 
+    let patch (key, patch) =
+      match tryFind key with
+      | None -> PatchFail (applyFail notFoundKey key (key, patch))
+      | Some _ -> PatchFail (applyFail internalServerError () (key, patch))
+
     let post entity =
       let key = entityKey.Value entity
       match tryFind key with
@@ -41,7 +46,7 @@ module private InMemoryResource =
       let entities = state |> Map.toSeq |> Seq.map snd
       QuerySuccess (applySuccess queryOk (q, entities))
 
-    Crud.create entityKey delete get post put query
+    Crud.create entityKey delete get patch post put query
 
 
 [<AbstractClass; Sealed>]

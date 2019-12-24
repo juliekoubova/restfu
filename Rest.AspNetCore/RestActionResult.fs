@@ -21,6 +21,7 @@ let private objectResult entity code : IActionResult =
 let fromResult<'K, 'E> (result : RestResult<'K, 'E>) : IActionResult =
   match result with
   | DeleteSuccess (status, (_, entity))
+  | PatchSuccess (status, (_, _, entity))
   | PostSuccess (status, (_, entity))
   | PutSuccess (status, (_, entity)) ->
     successCode status |> objectResult entity
@@ -33,6 +34,7 @@ let fromResult<'K, 'E> (result : RestResult<'K, 'E>) : IActionResult =
 
   | DeleteFail (details, _)
   | GetFail (details, _)
+  | PatchFail (details, _)
   | PostFail (details, _)
   | PutFail (details, _)
   | QueryFail (details, _) ->

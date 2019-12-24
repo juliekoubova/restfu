@@ -79,6 +79,9 @@ module RestResource =
   let withGet transform =
     withBuilder RestOperations.Get RestHandler.withGet transform
 
+  let withPatch transform =
+    withBuilder RestOperations.Patch RestHandler.withPatch transform
+
   let withPost transform =
     withBuilder RestOperations.Post RestHandler.withPost transform
 
@@ -93,6 +96,9 @@ module RestResource =
 
   let withoutGet resource =
     resource |> withoutBuilder RestOperations.Get RestHandler.withoutGet
+
+  let withoutPatch resource =
+    resource |> withoutBuilder RestOperations.Patch RestHandler.withoutPatch
 
   let withoutPost resource =
     resource |> withoutBuilder RestOperations.Post RestHandler.withoutPost

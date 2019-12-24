@@ -70,3 +70,10 @@ module RestFailDefinition =
       "key-not-found"
       "{Entity} with the specified {Key} could not be found."
       (sprintf "{Entity} with {Key} %A could not be found.")
+
+  let internalServerError () =
+    fail
+      InternalServerError
+      "internal-server-error"
+      "Internal Server Error"
+      (fun () -> "Internal Server Error")

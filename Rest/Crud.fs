@@ -25,9 +25,10 @@ let create<'K, 'E when 'K : equality>
   (entityKey : EntityKey<'K, 'E>)
   (delete    : 'K -> RestResult<'K, 'E>)
   (get       : 'K -> RestResult<'K, 'E>)
+  (patch     : 'K * JsonPatch -> RestResult<'K, 'E>)
   (post      : 'E -> RestResult<'K, 'E>)
   (put       : 'K * 'E -> RestResult<'K, 'E>)
-  (query     : RestQuery<'E> -> RestResult<'K, 'E>)
+  (query     : RestQuery option -> RestResult<'K, 'E>)
   =
   let entityName = typeof<'E>.Name
 
@@ -51,6 +52,15 @@ let create<'K, 'E when 'K : equality>
       failResponse notFoundKey
     ]
     Summary = Some "Get {Entity} with the specified {Key}."
+  }
+  |> withPatch (ignoreArg0 patch) {
+    Descriptions = [
+      "Applies partial modifications to an existing {Entity} with the specified {Key}."
+    ]
+    Responses = [
+      failResponse notFoundKey
+    ]
+    Summary = Some "Apply partial modifications to {Entity} with the specified {Key}."
   }
   |> withPost (ignoreArg0 post) {
     Descriptions = [

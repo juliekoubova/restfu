@@ -43,7 +43,11 @@ module private InMemoryResource =
       PutSuccess (applySuccess success (key, Some entity))
 
     let query q =
-      let entities = state |> Map.toSeq |> Seq.map snd
+      let entities =
+        state
+        |> Map.toSeq
+        |> Seq.map snd
+        // |> Seq.filter ()
       QuerySuccess (applySuccess queryOk (q, entities))
 
     Crud.create entityKey delete get patch post put query

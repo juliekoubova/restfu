@@ -1,22 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <IsPackable>false</IsPackable>
-    <GenerateProgramFile>true</GenerateProgramFile>
+    <GenerateProgramFile>False</GenerateProgramFile>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="InMemory.fs" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="../Rest/Rest.fsproj" />
-    <PackageReference Include="FsUnit.xUnit" Version="3.8.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Include="Filter.fs" />
+    <Compile Include="InMemory.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Expecto" Version="8.13.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.8.0" />
+  </ItemGroup>
 </Project>

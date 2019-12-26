@@ -9,7 +9,9 @@
     <Compile Include="NaturalLanguage.fs" />
     <Compile Include="JsonPointer.fs" />
     <Compile Include="JsonPatch.fs" />
+    <Compile Include="Filter.fs" />
     <Compile Include="Query.fs" />
+    <Compile Include="QueryEvaluator.fs" />
     <Compile Include="Request.fs" />
     <Compile Include="Status.fs" />
     <Compile Include="Fail.fs" />

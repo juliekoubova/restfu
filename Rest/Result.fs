@@ -16,8 +16,8 @@ type RestResult<'Key, 'Entity> =
 | PutSuccess of RestSuccessStatus  * ('Key * 'Entity option)
 | PutFail of RestFailDetails * ('Key * 'Entity)
 
-| QuerySuccess of RestSuccessStatus * (RestQuery option * 'Entity seq)
-| QueryFail of RestFailDetails * RestQuery option
+| QuerySuccess of RestSuccessStatus * (RestQuery<'Entity> option * 'Entity seq)
+| QueryFail of RestFailDetails * RestQuery<'Entity> option
 
 module RestResult =
 

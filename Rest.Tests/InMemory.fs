@@ -1,54 +1,62 @@
 module Rest.Tests.InMemoryTests
+open Expecto
 open Rest
 
-open FsUnit
-open Xunit
-open FsUnit.CustomMatchers
 
 type Thingy = {
   Id : string
 }
 
-let thingies () =
-  InMemory.Create (fun e -> e.Id)
-  |> RestApiExplorer.applyEntityKeyName
+let withInMemoryResource f () =
+  let res =
+    InMemory.Create (fun e -> e.Id)
+    |> RestApiExplorer.applyEntityKeyName
+  f res
 
-[<Fact>]
-let ``Creates new Entity`` () =
-  let res = thingies ()
-  let entity = { Id = "42" }
+[<Tests>]
+let tests =
+  testList "InMemory" [
+    yield! testFixture withInMemoryResource [
 
-  Post { Id = "42" }
-  |> res.Handler
-  |> should equal (PostSuccess (Created, ("42", Some entity)))
+      "Gets an existing entity", (fun res ->
+        let entity = { Id = "42" }
 
-[<Fact>]
-let ``Doesn't create an Entity with existing Id`` () =
-  let res = thingies ()
-  let entity = { Id = "42" }
+        Expect.equal
+          (Post entity |> res.Handler)
+          (PostSuccess (Created, ("42", Some entity)))
+          "Unexpected POST result"
 
-  Post entity
-  |> res.Handler
-  |> should equal (PostSuccess (Created, ("42", Some entity)))
+        Expect.equal
+          (Get "42" |> res.Handler)
+          (GetSuccess (Ok, ("42", entity)))
+          "Unexpected GET result"
+      )
 
-  let expected : RestResult<string, Thingy> = (PostFail ({
-    Status = Conflict
-    Title ="Thingy with the specified Id already exists."
-    Description ="Thingy with Id \"42\" already exists."
-    Type = "https://github.com/juliekoubova/tired-rest/wiki/Problems#already-exists"
-  }, entity))
+      "Creates new Entity", (fun res ->
+        let entity = { Id = "42" }
+        Expect.equal
+          (Post entity |> res.Handler)
+          (PostSuccess (Created, ("42", Some entity)))
+          "Unexpected result"
+      )
 
-  Post entity |> res.Handler |> should equal expected
+      "Doesn't create an Entity with existing Id", (fun res ->
+        let entity = { Id = "42" }
 
-[<Fact>]
-let ``Gets an existing Entity`` () =
-  let res = thingies ()
-  let entity = { Id = "42" }
+        Expect.equal
+          (Post entity |> res.Handler)
+          (PostSuccess (Created, ("42", Some entity)))
+          "First create result unexpected"
 
-  Post { Id = "42" }
-  |> res.Handler
-  |> should equal (PostSuccess (Created, ("42", Some entity)))
-
-  Get "42"
-  |> res.Handler
-  |> should equal (GetSuccess (Ok, ("42", entity)))
+        Expect.equal
+          (Post entity |> res.Handler)
+          (PostFail ({
+            Status = Conflict
+            Title ="Thingy with the specified Id already exists."
+            Description ="Thingy with Id \"42\" already exists."
+            Type = "https://github.com/juliekoubova/tired-rest/wiki/Problems#already-exists"
+          }, entity))
+          "Second create result unexpected"
+      )
+    ]
+  ]

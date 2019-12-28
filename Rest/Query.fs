@@ -10,7 +10,7 @@ type RestOrderBy<'T> = OrderBy of RestQueryProperty<'T> * RestOrder
 
 
 type RestQuery<'T> = {
-  Filter : RestFilterExpr<'T> option
+  Filter : RestFilterExpr option
   OrderBy : RestOrderBy<'T> list
   Skip : int option
   Top : int option

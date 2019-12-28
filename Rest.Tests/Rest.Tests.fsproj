@@ -1,20 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <GenerateProgramFile>False</GenerateProgramFile>
-    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Rest/Rest.fsproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StringLiterals.fs" />
     <Compile Include="Filter.fs" />
     <Compile Include="InMemory.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Expecto" Version="8.13.1" />
+    <PackageReference Include="FParsec" Version="1.0.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.8.0" />
   </ItemGroup>

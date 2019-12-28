@@ -3,13 +3,12 @@ open Expecto
 open Rest
 open Rest.RestFilter
 
-type T = { Prop : obj }
 let bTrue = Value (Boolean true)
 let bFalse = Value (Boolean false)
-let prop = Value (Property (<@ fun (x : T) -> x.Prop @>))
-let weedNumber = Value (Number 420m)
-let sexNumber = Value (Number 69m)
-let onTheBackSeatOfACar = Value (Number 420.69m)
+let prop = Value (Property "Prop")
+let weedNumber = Value (Number 420.0)
+let sexNumber = Value (Number 69.0)
+let onTheBackSeatOfACar = Value (Number 420.69)
 let noice = Value (String "noice")
 
 [<Tests>]
@@ -36,12 +35,26 @@ let tests =
       "((Prop lt 69) or (Prop gt 420))"
     )
   ])
+
   testList "RestFilter" [
-    for (expr, expected) in cases ->
-      test (sprintf "Serialize %s" (expected.Replace (".", "\u2024"))) {
-        Expect.equal
-          (serialize expr)
-          expected
-          "Unexpected serializer output"
-      }
+
+    testList "serialize" [
+      for (expr, expected) in cases ->
+        test (expected.Replace (".", "\u2024")) {
+          Expect.equal
+            (serialize expr)
+            expected
+            "Unexpected serializer output"
+        }
+    ]
+
+    testList "parse" [
+      for (expected, str) in cases ->
+        test (str.Replace (".", "\u2024")) {
+          Expect.equal
+            (parse str)
+            (Result.Ok expected)
+            "Unexpected parse result"
+        }
+    ]
   ]

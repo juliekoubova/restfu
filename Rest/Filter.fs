@@ -4,7 +4,7 @@ open FParsec
 type RestFilterValue =
 | Boolean of bool
 | Number of float
-| Property of string
+| Property of string list
 | String of string
 
 type RestFilterBinaryOperator =
@@ -41,8 +41,9 @@ module RestFilterParser =
     StringLiteral.parse |>> String
 
   let parseProperty : ValueParser =
-    let options = IdentifierOptions (label = "property name")
-    identifier options |>> Property
+    // TODO : support full JSON Pointer maybe?
+    let options = IdentifierOptions (label = "property path")
+    sepBy1 (identifier options) (pchar '/') |>> Property
 
   let parseValue : ExprParser =
     choice [
@@ -121,7 +122,7 @@ module RestFilter =
       | Boolean true -> "true"
       | Boolean false -> "false"
       | Number num -> sprintf "%g" num
-      | Property name -> name
+      | Property path -> path |> String.concat "/"
       | String str -> sprintf "'%s'" str
 
     let serializeUnary unary operand =

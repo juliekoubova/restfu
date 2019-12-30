@@ -5,12 +5,11 @@ type RestOrder =
 | Ascending
 | Descending
 
-type RestQueryProperty<'T> = RestQueryProperty of Expr<'T -> obj>
-type RestOrderBy<'T> = OrderBy of RestQueryProperty<'T> * RestOrder
+type RestOrderBy<'T> = OrderBy of RestExpr<'T> * RestOrder
 
 
 type RestQuery<'T> = {
-  Filter : RestFilterExpr option
+  Filter : RestExpr<'T> option
   OrderBy : RestOrderBy<'T> list
   Skip : int option
   Top : int option

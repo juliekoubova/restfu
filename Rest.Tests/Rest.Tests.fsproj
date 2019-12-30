@@ -2,14 +2,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <GenerateProgramFile>False</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Rest/Rest.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="StringLiterals.fs" />
-    <Compile Include="Filter.fs" />
+    <Compile Include="ExprAst.fs" />
+    <Compile Include="Expr.fs" />
     <Compile Include="InMemory.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

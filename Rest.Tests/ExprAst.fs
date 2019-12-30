@@ -1,7 +1,7 @@
-module Rest.Tests.FilterTests
+module Rest.Tests.ExprAstTests
 open Expecto
 open Rest
-open Rest.RestFilter
+open Rest.ExprAst
 
 let bTrue = Value (Boolean true)
 let bFalse = Value (Boolean false)
@@ -38,18 +38,7 @@ let tests =
     )
   ])
 
-  testList "RestFilter" [
-
-    testList "serialize" [
-      for (expr, expected) in cases ->
-        test (expected.Replace (".", "\u2024")) {
-          Expect.equal
-            (serialize expr)
-            expected
-            "Unexpected serializer output"
-        }
-    ]
-
+  testList "RestExprAst" [
     testList "parse" [
       for (expected, str) in cases ->
         test (str.Replace (".", "\u2024")) {

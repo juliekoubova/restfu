@@ -3,7 +3,9 @@ open FParsec
 
 type Value =
 | Boolean of bool
-| Number of float
+| Float of float
+| Int32 of int32
+| Int64 of int64
 | Property of string list
 | String of string
 
@@ -62,7 +64,9 @@ let serialize expr =
     match value with
     | Boolean true -> "true"
     | Boolean false -> "false"
-    | Number num -> sprintf "%g" num
+    | Float f -> sprintf "%g" f
+    | Int32 n -> sprintf "%i" n
+    | Int64 n -> sprintf "%i" n
     | Property path -> path |> String.concat "/"
     | String str -> sprintf "'%s'" str
 
@@ -88,30 +92,70 @@ let serialize expr =
 
   foldBack serializeValue serializeBinary serializeUnary expr id
 
+let parseBoolean : ValueParser =
+  stringReturn "true" (Boolean true) <|>
+  stringReturn "false" (Boolean false) <?>
+  "boolean"
+
+let parseNumber : ValueParser =
+  let options =
+    NumberLiteralOptions.AllowFraction |||
+    NumberLiteralOptions.AllowHexadecimal |||
+    NumberLiteralOptions.AllowInfinity |||
+    NumberLiteralOptions.AllowMinusSign |||
+    NumberLiteralOptions.AllowNaN
+
+  let tryNumber wrapper typ str =
+    try
+      Result.Ok (wrapper (typ str))
+    with
+      | :? System.OverflowException as e -> Result.Error e
+
+  let orElse fn result =
+    match result with
+    | Result.Ok x -> Result.Ok x
+    | Result.Error _ -> fn ()
+
+  let integer (str : string) =
+    tryNumber Int32 int32 str
+    |> orElse (fun () -> tryNumber Int64 int64 str)
+    |> orElse (fun () -> tryNumber Float float str)
+
+  fun stream ->
+    let reply = numberLiteral options "number" stream
+    if reply.Status = ReplyStatus.Ok then
+      let num = reply.Result
+      let result =
+        if num.IsNaN then Float nan |> Result.Ok
+        elif num.IsInfinity && num.HasMinusSign then Float -infinity |> Result.Ok
+        elif num.IsInfinity then Float infinity |> Result.Ok
+        elif num.IsInteger then integer num.String
+        else tryNumber Float float num.String
+      match result with
+      | Result.Ok x -> Reply x
+      | Result.Error e ->
+        stream.Skip -num.String.Length
+        Reply (FatalError, messageError e.Message)
+    else
+      Reply (reply.Status, reply.Error)
+
+let parseString : ValueParser =
+  StringLiteral.parse |>> String
+
+let parseProperty : ValueParser =
+  // TODO : support full JSON Pointer maybe?
+  let options = IdentifierOptions (label = "property path")
+  sepBy1 (identifier options) (pchar '/') |>> Property
+
+let parseValue : ExprParser =
+  choice [
+    parseBoolean
+    parseNumber
+    parseString
+    parseProperty
+  ] |>> Value
+
 let parse =
-  let parseBoolean : ValueParser =
-    stringReturn "true" (Boolean true) <|>
-    stringReturn "false" (Boolean false) <?>
-    "boolean"
-
-  let parseNumber : ValueParser =
-    pfloat <?> "number" |>> Number
-
-  let parseString : ValueParser =
-    StringLiteral.parse |>> String
-
-  let parseProperty : ValueParser =
-    // TODO : support full JSON Pointer maybe?
-    let options = IdentifierOptions (label = "property path")
-    sepBy1 (identifier options) (pchar '/') |>> Property
-
-  let parseValue : ExprParser =
-    choice [
-      parseBoolean
-      parseNumber
-      parseString
-      parseProperty
-    ] |>> Value
 
   let parseExpr, parseExprRef = createParserForwardedToRef ()
 

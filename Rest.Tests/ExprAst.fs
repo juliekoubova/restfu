@@ -2,14 +2,16 @@ module Rest.Tests.ExprAstTests
 open Expecto
 open Rest
 open Rest.ExprAst
+open FParsec
+open Swensen.Unquote.Assertions
 
 let bTrue = Value (Boolean true)
 let bFalse = Value (Boolean false)
 let prop = Value (Property ["Prop"])
 let propX = Value (Property ["Prop"; "X"])
-let weedNumber = Value (Number 420.0)
-let sexNumber = Value (Number 69.0)
-let onTheBackSeatOfACar = Value (Number 420.69)
+let weedNumber = Value (Int32 420)
+let sexNumber = Value (Int32 69)
+let onTheBackSeatOfACar = Value (Float 420.69)
 let noice = Value (String "noice")
 
 [<Tests>]
@@ -25,9 +27,9 @@ let tests =
     (Binary (Equal, prop, weedNumber), "(Prop eq 420)")
     (Binary (NotEqual, sexNumber, noice), "(69 ne 'noice')")
     (Binary (GreaterThan, propX, sexNumber), "(Prop/X gt 69)")
-    (Binary (GreaterThanOrEqual, prop, sexNumber), "(Prop ge 69)")
-    (Binary (LessThan, prop, sexNumber), "(Prop lt 69)")
-    (Binary (LessThanOrEqual, prop, sexNumber), "(Prop le 69)")
+    (Binary (GreaterThanOrEqual, prop, sexNumber), "Prop ge 69")
+    (Binary (LessThan, prop, sexNumber), "Prop lt 69")
+    (Binary (LessThanOrEqual, prop, sexNumber), "Prop le 69")
     (
       Binary (
         Or,
@@ -39,13 +41,27 @@ let tests =
   ])
 
   testList "RestExprAst" [
+    testList "parseNumber" [
+      let numPairs = [
+        ("42", Int32 42)
+        ("42.0", Float 42.0)
+        ("5000000000", Int64 5000000000L)
+      ]
+      for (str, expected) in numPairs ->
+        testCase (str.Replace (".", "\u2024")) <| (fun _ ->
+            match run parseNumber str with
+            | Success (x, _, _) -> Expect.equal x expected "Unexpected result"
+            | Failure (r, _, _) -> failwithf "%A" r
+        )
+
+    ]
     testList "parse" [
       for (expected, str) in cases ->
-        test (str.Replace (".", "\u2024")) {
+        testCase (str.Replace (".", "\u2024")) <| (fun _ ->
           Expect.equal
-            (parse str)
+            (ExprAst.parse str)
             (Result.Ok expected)
             "Unexpected parse result"
-        }
+        )
     ]
   ]

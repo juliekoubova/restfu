@@ -24,109 +24,6 @@ module RestExpr =
       Error (sprintf "Property %s doesn't exist on type %s" name typ.Name)
     | pi -> Ok pi
 
-  let validateProperty result name =
-    result |> Result.bind (fun (typ, list) ->
-      getProperty typ name |> Result.map (
-        fun pi -> pi.PropertyType, pi :: list
-      )
-    )
-
-  let validatePropertyPath (typ : Type) path =
-    List.fold
-      validateProperty
-      (Ok (typ, []))
-      path
-    |> Result.map (snd >> List.rev)
-
-  let tryCoerce (l, r) typ =
-    let tl = exprType l
-    let tr = exprType r
-
-    if tl = typ && tr <> typ then
-      l, Convert (typ, r)
-    elif tl <> typ && tr = typ then
-      Convert (typ, l), r
-    else
-      l, r
-
-  let coerceTypes (l, r) =
-    List.fold tryCoerce (l, r) [
-      typeof<float>
-      typeof<float32>
-      typeof<decimal>
-      typeof<int64>
-      typeof<int32>
-      typeof<int64>
-    ]
-
-  let validate entityType ast =
-
-    let validateValue =
-      let literal x = x |> box |> Literal |> Ok
-      function
-      | ExprAst.Boolean b -> literal b
-      | ExprAst.Number num -> literal num
-      | ExprAst.String str -> literal str
-      | ExprAst.Property path ->
-        validatePropertyPath entityType path
-        |> Result.map Property
-
-    let expectType (expected : Type) (actual : Type) result =
-      if expected = actual then
-        Ok result
-      else
-        Error (sprintf
-          "%s : This expression was expected to have type '%s' but here has type '%s'"
-          "TODO"
-          expected.Name
-          actual.Name
-        )
-
-    let validateBinary op l r =
-      l |> Result.bind (fun l ->
-        r |> Result.bind (fun r ->
-          let l, r = coerceTypes (l, r)
-          let lType = exprType l
-          let rType = exprType r
-
-          let relational op =
-            expectType lType rType (Binary (op, l, r))
-
-          let logical op =
-            expectType typeof<bool> lType ()
-            |> Result.map (fun _ -> expectType typeof<bool> rType ())
-            |> Result.map (fun _ -> Binary (op, l, r))
-
-          match op with
-          | ExprAst.Equal -> relational ExprAst.Equal
-          | ExprAst.NotEqual -> relational ExprAst.NotEqual
-          | ExprAst.GreaterThan -> relational ExprAst.GreaterThan
-          | ExprAst.GreaterThanOrEqual -> relational ExprAst.GreaterThanOrEqual
-          | ExprAst.LessThan -> relational ExprAst.LessThan
-          | ExprAst.LessThanOrEqual -> relational ExprAst.LessThanOrEqual
-          | ExprAst.And -> logical ExprAst.And
-          | ExprAst.Or -> logical ExprAst.Or
-        )
-       )
-
-    let validateUnary op expr =
-      expr |> Result.bind (fun expr ->
-        match op with
-        | ExprAst.Not ->
-          expectType typeof<bool> (exprType expr) (Unary (ExprAst.Not, expr))
-      )
-
-    ExprAst.foldBack
-      validateValue
-      validateBinary
-      validateUnary
-      ast
-      id
-
-  let parse entityType str =
-    ExprAst.parse str
-    |> Result.bind (validate entityType)
-
   let rec foldBack
     fLiteral
     fProperty
@@ -198,3 +95,125 @@ module RestExpr =
       serializeUnary
       expr
       id
+
+  let validateProperty result name =
+    result |> Result.bind (fun (typ, list) ->
+      getProperty typ name |> Result.map (
+        fun pi -> pi.PropertyType, pi :: list
+      )
+    )
+
+  let validatePropertyPath (typ : Type) path =
+    List.fold
+      validateProperty
+      (Ok (typ, []))
+      path
+    |> Result.map (snd >> List.rev)
+
+  let coercePriority = [
+      typeof<float>
+      typeof<float32>
+      typeof<decimal>
+      typeof<int64>
+      typeof<int32>
+      typeof<int64>
+    ]
+
+  let canCoerce from target =
+    List.contains from coercePriority &&
+    List.contains target coercePriority
+
+  let convert expr (typ : Type) =
+    match expr with
+    | Literal value -> Literal (System.Convert.ChangeType (value, typ))
+    | expr -> Convert (typ, expr)
+
+  let tryCoerce (l, r) typ =
+    let tl = exprType l
+    let tr = exprType r
+
+    if tl = typ && tr <> typ then
+      l, convert r typ
+    elif tl <> typ && tr = typ then
+      convert l typ, r
+    else
+      l, r
+
+  let coerceTypes (l, r) =
+    let tl = exprType l
+    let tr = exprType r
+
+    if tl <> tr && canCoerce tl tr then
+      List.fold tryCoerce (l, r) coercePriority
+    else
+      (l, r)
+
+  let validate entityType ast =
+
+    let validateValue =
+      let literal x = x |> box |> Literal |> Ok
+      function
+      | ExprAst.Boolean b -> literal b
+      | ExprAst.Float f -> literal f
+      | ExprAst.Int32 n -> literal n
+      | ExprAst.Int64 n -> literal n
+      | ExprAst.String str -> literal str
+      | ExprAst.Property path ->
+        validatePropertyPath entityType path
+        |> Result.map Property
+
+    let expectType (expected : Type) expr result =
+      let actual = exprType expr
+      if expected = actual then
+        Ok result
+      else
+        Error (sprintf
+          "%s : This expression was expected to have type '%s' but here has type '%s'"
+          (serialize expr)
+          expected.Name
+          actual.Name
+        )
+
+    let validateBinary op l r =
+      l |> Result.bind (fun l ->
+        r |> Result.bind (fun r ->
+          let l, r = coerceTypes (l, r)
+          let lType = exprType l
+
+          let relational op =
+            expectType lType r (Binary (op, l, r))
+
+          let logical op =
+            expectType typeof<bool> l ()
+            |> Result.map (fun _ -> expectType typeof<bool> r ())
+            |> Result.map (fun _ -> Binary (op, l, r))
+
+          match op with
+          | ExprAst.Equal -> relational ExprAst.Equal
+          | ExprAst.NotEqual -> relational ExprAst.NotEqual
+          | ExprAst.GreaterThan -> relational ExprAst.GreaterThan
+          | ExprAst.GreaterThanOrEqual -> relational ExprAst.GreaterThanOrEqual
+          | ExprAst.LessThan -> relational ExprAst.LessThan
+          | ExprAst.LessThanOrEqual -> relational ExprAst.LessThanOrEqual
+          | ExprAst.And -> logical ExprAst.And
+          | ExprAst.Or -> logical ExprAst.Or
+        )
+       )
+
+    let validateUnary op expr =
+      expr |> Result.bind (fun expr ->
+        match op with
+        | ExprAst.Not ->
+          expectType typeof<bool> expr (Unary (ExprAst.Not, expr))
+      )
+
+    ExprAst.foldBack
+      validateValue
+      validateBinary
+      validateUnary
+      ast
+      id
+
+  let parse entityType str =
+    ExprAst.parse str
+    |> Result.bind (validate entityType)

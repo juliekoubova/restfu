@@ -7,11 +7,8 @@
     <Compile Include="Utils.fs" />
     <Compile Include="Reflection.fs" />
     <Compile Include="NaturalLanguage.fs" />
-    <Compile Include="StringLiteral.fs" />
     <Compile Include="JsonPointer.fs" />
     <Compile Include="JsonPatch.fs" />
-    <Compile Include="ExprAst.fs" />
-    <Compile Include="Expr.fs" />
     <Compile Include="Query.fs" />
     <Compile Include="QueryEvaluator.fs" />
     <Compile Include="Request.fs" />
@@ -31,8 +28,8 @@
     <Compile Include="Convert.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FParsec" Version="1.0.3" />
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.0" />
+    <ProjectReference Include="../Rest.Expressions/Rest.Expressions.fsproj" />
   </ItemGroup>
 </Project>

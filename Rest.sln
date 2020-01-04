@@ -15,6 +15,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Mapping.Tests", "Rest.
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Tests", "Rest.Tests\Rest.Tests.fsproj", "{2E7910C1-7D70-48C8-950C-09EEC849DA1A}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Expressions", "Rest.Expressions\Rest.Expressions.fsproj", "{C24AF5AE-2C01-4A27-9278-EE50B9EBD0D3}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Expressions.Tests", "Rest.Expressions.Tests\Rest.Expressions.Tests.fsproj", "{59A68FE9-9B71-42A5-B32D-8F9695A777CB}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,5 +52,13 @@ Global
 		{2E7910C1-7D70-48C8-950C-09EEC849DA1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E7910C1-7D70-48C8-950C-09EEC849DA1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E7910C1-7D70-48C8-950C-09EEC849DA1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C24AF5AE-2C01-4A27-9278-EE50B9EBD0D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C24AF5AE-2C01-4A27-9278-EE50B9EBD0D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C24AF5AE-2C01-4A27-9278-EE50B9EBD0D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C24AF5AE-2C01-4A27-9278-EE50B9EBD0D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59A68FE9-9B71-42A5-B32D-8F9695A777CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59A68FE9-9B71-42A5-B32D-8F9695A777CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59A68FE9-9B71-42A5-B32D-8F9695A777CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59A68FE9-9B71-42A5-B32D-8F9695A777CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

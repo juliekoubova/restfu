@@ -3,7 +3,6 @@ open Expecto
 open Rest
 open Rest.ExprAst
 open FParsec
-open Swensen.Unquote.Assertions
 
 let bTrue = Value (Boolean true)
 let bFalse = Value (Boolean false)

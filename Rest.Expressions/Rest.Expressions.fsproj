@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FParsec" Version="1.0.3" />
+    <Compile Include="StringLiteral.fs" />
+    <Compile Include="ExprAst.fs" />
+    <Compile Include="Expr.fs" />
+  </ItemGroup>
+
+</Project>

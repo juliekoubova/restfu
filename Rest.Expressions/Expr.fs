@@ -14,7 +14,7 @@ module RestExpr =
     function
     | Convert (target, _) -> target
     | Binary _ -> typeof<bool>
-    | Unary _ -> typeof<bool>
+    | Unary (ExprAst.Not, _) -> typeof<bool>
     | Literal value -> value.GetType ()
     | Property list -> (List.last list).PropertyType
 
@@ -148,7 +148,7 @@ module RestExpr =
     else
       (l, r)
 
-  let validate entityType ast =
+  let validate<'T> ast : Result<RestExpr<'T>, string> =
 
     let validateValue =
       let literal x = x |> box |> Literal |> Ok
@@ -159,7 +159,7 @@ module RestExpr =
       | ExprAst.Int64 n -> literal n
       | ExprAst.String str -> literal str
       | ExprAst.Property path ->
-        validatePropertyPath entityType path
+        validatePropertyPath typeof<'T> path
         |> Result.map Property
 
     let expectType (expected : Type) expr result =
@@ -189,14 +189,16 @@ module RestExpr =
             |> Result.map (fun _ -> Binary (op, l, r))
 
           match op with
-          | ExprAst.Equal -> relational ExprAst.Equal
-          | ExprAst.NotEqual -> relational ExprAst.NotEqual
-          | ExprAst.GreaterThan -> relational ExprAst.GreaterThan
-          | ExprAst.GreaterThanOrEqual -> relational ExprAst.GreaterThanOrEqual
-          | ExprAst.LessThan -> relational ExprAst.LessThan
-          | ExprAst.LessThanOrEqual -> relational ExprAst.LessThanOrEqual
-          | ExprAst.And -> logical ExprAst.And
-          | ExprAst.Or -> logical ExprAst.Or
+          | ExprAst.Equal
+          | ExprAst.NotEqual
+          | ExprAst.GreaterThan
+          | ExprAst.GreaterThanOrEqual
+          | ExprAst.LessThan
+          | ExprAst.LessThanOrEqual
+            -> relational op
+          | ExprAst.And
+          | ExprAst.Or
+            -> logical op
         )
        )
 
@@ -214,6 +216,6 @@ module RestExpr =
       ast
       id
 
-  let parse entityType str =
+  let parse<'T> str =
     ExprAst.parse str
-    |> Result.bind (validate entityType)
+    |> Result.bind (validate<'T>)

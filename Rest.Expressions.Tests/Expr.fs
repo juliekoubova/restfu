@@ -81,7 +81,7 @@ let tests =
       for (expected, str) in parseCases ->
         test (str.Replace (".", "\u2024")) {
           Expect.equal
-            (RestExpr.parse typeof<Entity> str)
+            (RestExpr.parse<Entity> str)
             expected
             "Unexpected parse result"
         }

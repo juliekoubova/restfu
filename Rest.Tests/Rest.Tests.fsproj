@@ -9,6 +9,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InMemory.fs" />
+    <Compile Include="QueryEvaluator.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

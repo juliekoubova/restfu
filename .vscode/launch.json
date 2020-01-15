@@ -5,7 +5,26 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Just My Code",
+      "name": "Rest.Tests",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/Rest.Tests/bin/Debug/netcoreapp3.1/Rest.Tests.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "symbolOptions": {
+        "searchMicrosoftSymbolServer": true
+      },
+      // "justMyCode": false,
+      // "suppressJITOptimizations": true,
+      // "env": {
+      //   "COMPlus_ZapDisable": "1",
+      //   "COMPlus_ReadyToRun": "0",
+      // }
+    },
+    {
+      "name": "Playground (Just My Code)",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
@@ -18,7 +37,7 @@
       }
     },
     {
-      "name": "Everything",
+      "name": "Playground (Everything)",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",

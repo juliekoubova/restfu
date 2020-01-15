@@ -1,7 +1,4 @@
-module Rest.RestApiExplorer
-
-let private modifyHelpStrings op =
-  RestOperationMap
+module internal Rest.RestApiExplorer
 
 let applyEntityKeyName resource =
   let replace = NaturalLanguage.replaceTokens (Map.ofList [

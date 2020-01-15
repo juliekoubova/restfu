@@ -25,7 +25,6 @@
     <Compile Include="EntityKey.fs" />
     <Compile Include="CRUD.fs" />
     <Compile Include="InMemory.fs" />
-    <Compile Include="Convert.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />

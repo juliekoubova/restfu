@@ -1,8 +1,10 @@
 namespace Rest.AspNetCore
 open Rest
+open Rest.AspNetCore
 open RestResourceProperties
 
 open Microsoft.AspNetCore.Mvc
+open System
 
 [<ApiController>]
 [<NonController>]
@@ -57,5 +59,22 @@ type RestController<'Key, 'Entity>() =
     Put (key, entity) |> this.Invoke
 
   [<HttpGet>]
-  member this.Query () =
+  member this.Query
+    (
+      [<FromQuery(Name = "$filter")>]
+      filter : string,
+
+      [<FromQuery(Name = "$orderby")>]
+      orderBy: string [],
+
+      [<FromQuery(Name = "$skip")>]
+      skip : Nullable<int32>,
+
+      [<FromQuery(Name = "$skiptoken")>]
+      skipToken : string,
+
+      [<FromQuery(Name = "$top")>]
+      top: Nullable<int32>
+    )
+    =
     Query None |> this.Invoke

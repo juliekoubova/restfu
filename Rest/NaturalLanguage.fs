@@ -1,4 +1,4 @@
-module Rest.NaturalLanguage
+module internal Rest.NaturalLanguage
 open Pluralize.NET
 open System.Text.RegularExpressions
 

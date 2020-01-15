@@ -1,5 +1,4 @@
 namespace Rest
-open Microsoft.FSharp.Quotations
 
 type RestOrder =
 | Ascending

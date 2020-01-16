@@ -13,11 +13,11 @@ type RestResult<'Key, 'Entity> =
 | PostSuccess of RestSuccessStatus * ('Key * 'Entity option)
 | PostFail of RestFailDetails * 'Entity
 
-| PutSuccess of RestSuccessStatus * ('Key * 'Entity option)
+| PutSuccess of RestSuccessStatus  * ('Key * 'Entity option)
 | PutFail of RestFailDetails * ('Key * 'Entity)
 
-| QuerySuccess of RestSuccessStatus * (RestQuery * 'Entity seq)
-| QueryFail of RestFailDetails * RestQuery
+| QuerySuccess of RestSuccessStatus * (RestQuery<'Entity> * 'Entity seq)
+| QueryFail of RestFailDetails * RestQuery<'Entity>
 
 module RestResult =
 

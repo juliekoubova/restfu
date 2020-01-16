@@ -2,12 +2,12 @@ namespace Rest
 open System
 open System.Reflection
 
-type RestExpr =
-| Convert of Type * RestExpr
+type RestExpr<'T> =
+| Convert of Type * RestExpr<'T>
 | Literal of obj
 | Property of PropertyInfo list
-| Unary of ExprAst.UnaryOperator * RestExpr
-| Binary of ExprAst.BinaryOperator * RestExpr * RestExpr
+| Unary of ExprAst.UnaryOperator * RestExpr<'T>
+| Binary of ExprAst.BinaryOperator * RestExpr<'T> * RestExpr<'T>
 
 module RestExpr =
   let exprType =
@@ -148,7 +148,7 @@ module RestExpr =
     else
       (l, r)
 
-  let validate entityType ast : Result<RestExpr, string> =
+  let validate<'T> ast : Result<RestExpr<'T>, string> =
 
     let validateValue =
       let literal x = x |> box |> Literal |> Ok
@@ -159,7 +159,7 @@ module RestExpr =
       | ExprAst.Int64 n -> literal n
       | ExprAst.String str -> literal str
       | ExprAst.Property path ->
-        validatePropertyPath entityType path
+        validatePropertyPath typeof<'T> path
         |> Result.map Property
 
     let expectType (expected : Type) expr result =
@@ -216,6 +216,6 @@ module RestExpr =
       ast
       id
 
-  let parse entityType str =
+  let parse<'T> str =
     ExprAst.parse str
-    |> Result.bind (validate entityType)
+    |> Result.bind (validate<'T>)

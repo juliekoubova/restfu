@@ -14,7 +14,7 @@ let private equality =
 let private comparison =
   getMethodDef <@ LanguagePrimitives.GenericComparison 0 0 @>
 
-let applyFilter<'T> ({ Filter = filter } : RestQuery) (seq : 'T seq) =
+let applyFilter<'T> ({ Filter = filter } : RestQuery<'T>) (seq : 'T seq) =
   match filter with
   | None -> seq
   | Some expr ->

@@ -4,14 +4,13 @@ type RestOrder =
 | Ascending
 | Descending
 
-type RestOrderBy = OrderBy of RestExpr * RestOrder
+type RestOrderBy<'T> = OrderBy of RestExpr<'T> * RestOrder
 
 
-type RestQuery = {
-  Filter : RestExpr option
-  OrderBy : RestOrderBy list
+type RestQuery<'T> = {
+  Filter : RestExpr<'T> option
+  OrderBy : RestOrderBy<'T> list
   Skip : int option
-  SkipToken : string option
   Top : int option
 }
 
@@ -21,7 +20,6 @@ module RestQuery =
     Filter = None
     OrderBy = []
     Skip = None
-    SkipToken = None
     Top = None
   }
 

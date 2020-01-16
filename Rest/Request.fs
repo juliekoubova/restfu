@@ -6,7 +6,7 @@ type RestRequest<'Key, 'Entity> =
 | Patch of 'Key * JsonPatch
 | Post of 'Entity
 | Put of 'Key * 'Entity
-| Query of RestQuery
+| Query of RestQuery<'Entity>
 
 module RestRequest =
   let map k e p q request =

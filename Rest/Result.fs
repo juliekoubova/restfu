@@ -13,17 +13,16 @@ type RestResult<'Key, 'Entity> =
 | PostSuccess of RestSuccessStatus * ('Key * 'Entity option)
 | PostFail of RestFailDetails * 'Entity
 
-| PutSuccess of RestSuccessStatus  * ('Key * 'Entity option)
+| PutSuccess of RestSuccessStatus * ('Key * 'Entity option)
 | PutFail of RestFailDetails * ('Key * 'Entity)
 
-| QuerySuccess of RestSuccessStatus * (RestQuery<'Entity> option * 'Entity seq)
-| QueryFail of RestFailDetails * RestQuery<'Entity> option
+| QuerySuccess of RestSuccessStatus * (RestQuery * 'Entity seq)
+| QueryFail of RestFailDetails * RestQuery
 
 module RestResult =
 
   let map k e p q fd result =
     let eOpt = Option.map e
-    let qOpt = Option.map q
     let eSeq = Seq.map e
     let pairMap x y (a, b) =
       (x a, y b)
@@ -62,10 +61,10 @@ module RestResult =
       PutFail (fd details, pairMap k e context)
 
     | QuerySuccess (status, result) ->
-      QuerySuccess (status, pairMap qOpt eSeq result)
+      QuerySuccess (status, pairMap q eSeq result)
 
     | QueryFail (details, query) ->
-      QueryFail (fd details, qOpt query)
+      QueryFail (fd details, q query)
 
   let mapKey k = map k id id id id
   let mapEntity e p q = map id e p q id

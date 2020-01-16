@@ -31,7 +31,7 @@ let tests =
     for (str, expected) in cases ->
       test (str.Replace (".", "\u2024")) {
         let result =
-          RestExpr.parse<Entity> str |> Result.map (
+          RestExpr.parse typeof<Entity> str |> Result.map (
             (fun expr -> { RestQuery.empty with Filter = Some expr }) >>
             (fun query -> QueryEvaluator.applyFilter query entities ) >>
             List.ofSeq

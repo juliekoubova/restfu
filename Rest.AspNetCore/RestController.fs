@@ -1,15 +1,36 @@
 namespace Rest.AspNetCore
 open Rest
 open Rest.AspNetCore
+open Rest.Internal
 open RestResourceProperties
 
 open Microsoft.AspNetCore.Mvc
+open Microsoft.AspNetCore.Mvc.ModelBinding
 open System
+
+type RestExprModelBinder () =
+  interface IModelBinder with
+    member _.BindModelAsync context =
+      let context =
+        if isNull context
+        then invalidArg "context" "Context cannot be null"
+        else context
+
+      let value = context.ValueProvider.GetValue context.ModelName
+      if value = ValueProviderResult.None
+        System.Threading.Tasks.Task.CompletedTask
+      else
+        RestExpr.parse value.FirstValue
 
 [<ApiController>]
 [<NonController>]
-type RestController<'Key, 'Entity>() =
+type RestController<'Key, 'Entity> () =
   inherit ControllerBase()
+
+  let parseFilter str =
+    match str with
+    | null -> Result.Ok None
+    | str -> RestExpr.parse<'Entity> str |> Result.map Some
 
   member private this.Invoke (request : RestRequest<'Key, 'Entity>) =
     this.ControllerContext.ActionDescriptor.Properties
@@ -64,8 +85,8 @@ type RestController<'Key, 'Entity>() =
       [<FromQuery(Name = "$filter")>]
       filter : string,
 
-      [<FromQuery(Name = "$orderby")>]
-      orderBy: string [],
+      // [<FromQuery(Name = "$orderby")>]
+      // orderBy: string [],
 
       [<FromQuery(Name = "$skip")>]
       skip : Nullable<int32>,
@@ -77,4 +98,17 @@ type RestController<'Key, 'Entity>() =
       top: Nullable<int32>
     )
     =
-    Query None |> this.Invoke
+    let query =
+      parseFilter filter
+      |> Result.map (fun filter -> {
+        Filter = filter
+        OrderBy = []
+        Skip = nullableToOption skip
+        SkipToken = nonEmptyStringToOption skipToken
+        Top = nullableToOption top
+      })
+
+    match query with
+    | Error err -> this.BadRequest
+
+    Query query |> this.Invoke

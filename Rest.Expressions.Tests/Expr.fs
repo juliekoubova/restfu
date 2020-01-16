@@ -13,18 +13,18 @@ type Entity = {
   I : int32
 }
 
-let bTrue : RestExpr<Entity> = Literal true
-let bFalse : RestExpr<Entity> = Literal false
-let i : RestExpr<Entity> = Property [typeof<Entity>.GetProperty "I"]
-let prop : RestExpr<Entity> = Property [typeof<Entity>.GetProperty "Prop"]
-let propX : RestExpr<Entity> = Property [
+let bTrue : RestExpr = Literal true
+let bFalse : RestExpr = Literal false
+let i : RestExpr = Property [typeof<Entity>.GetProperty "I"]
+let prop : RestExpr = Property [typeof<Entity>.GetProperty "Prop"]
+let propX : RestExpr = Property [
     typeof<Entity>.GetProperty "Prop"
     typeof<P>.GetProperty "X"
   ]
-let weedNumber : RestExpr<Entity> = Literal 420.0
-let sexNumber : RestExpr<Entity> = Literal 69.0
-let onTheBackSeatOfACar : RestExpr<Entity> = Literal 420.69
-let noice : RestExpr<Entity> = Literal "noice"
+let weedNumber : RestExpr = Literal 420.0
+let sexNumber : RestExpr = Literal 69.0
+let onTheBackSeatOfACar : RestExpr = Literal 420.69
+let noice : RestExpr = Literal "noice"
 
 [<Tests>]
 let tests =
@@ -81,7 +81,7 @@ let tests =
       for (expected, str) in parseCases ->
         test (str.Replace (".", "\u2024")) {
           Expect.equal
-            (RestExpr.parse<Entity> str)
+            (RestExpr.parse typeof<Entity> str)
             expected
             "Unexpected parse result"
         }

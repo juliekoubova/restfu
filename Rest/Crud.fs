@@ -28,7 +28,7 @@ let create<'K, 'E when 'K : equality>
   (patch     : 'K * JsonPatch -> RestResult<'K, 'E>)
   (post      : 'E -> RestResult<'K, 'E>)
   (put       : 'K * 'E -> RestResult<'K, 'E>)
-  (query     : RestQuery<'E> option -> RestResult<'K, 'E>)
+  (query     : RestQuery -> RestResult<'K, 'E>)
   =
   let entityName = typeof<'E>.Name
 

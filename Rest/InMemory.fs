@@ -47,7 +47,7 @@ module private InMemoryResource =
         state
         |> Map.toSeq
         |> Seq.map snd
-        // |> Seq.filter ()
+        |> RestQuery.apply q
       QuerySuccess (applySuccess queryOk (q, entities))
 
     Crud.create entityKey delete get patch post put query

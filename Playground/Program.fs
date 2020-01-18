@@ -9,28 +9,39 @@ open Rest.AspNetCore
 
 [<CLIMutable>]
 type Pet = {
-  [<Required>] Name : string
-  [<Required>] Owner : string
+  [<Required>]
+  Name : string
+
+  [<Required>]
+  Owner : string
+
+  [<Required; Range(18, 100)>]
+  Age : int
+
+  [<Required>]
+  Thicc : bool
 }
 
 let pets = InMemory.Create (fun pet -> pet.Name)
-pets.Handler <| Post { Name = "Moan"; Owner = "Daddy" } |> ignore
+let post = Post >> pets.Handler >> ignore
+post { Name = "Moan"; Owner = "Daddy"; Age = 33; Thicc = true }
+post { Name = "On my mind"; Owner = "Moan"; Age = 26; Thicc = false }
 
 let configureServices (services : IServiceCollection) =
   ignore <| services.AddControllers()
-  ignore <| services.AddRest ()
-  ignore <| services.AddRestResource ("pets", pets)
-  ignore <| services.AddSwaggerGen (fun swagger ->
-    swagger.SwaggerDoc ("pets", OpenApiInfo (Title = "Pets API", Version = "v1"))
+  ignore <| services.AddRest()
+  ignore <| services.AddRestResource("pets", pets)
+  ignore <| services.AddSwaggerGen(fun swagger ->
+    swagger.SwaggerDoc("pets", OpenApiInfo (Title = "Pets API", Version = "v1"))
   )
 
 let configureApp (app : IApplicationBuilder) =
-  ignore <| app.UseRouting ()
-  ignore <| app.UseEndpoints (fun endpoints ->
-    ignore <| endpoints.MapControllers ()
+  ignore <| app.UseRouting()
+  ignore <| app.UseEndpoints(fun endpoints ->
+    ignore <| endpoints.MapControllers()
   )
-  ignore <| app.UseSwagger ()
-  ignore <| app.UseSwaggerUI (fun c ->
+  ignore <| app.UseSwagger()
+  ignore <| app.UseSwaggerUI(fun c ->
     ignore <| c.SwaggerEndpoint("/swagger/pets/swagger.json", "Pets API")
   )
 

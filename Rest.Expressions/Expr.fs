@@ -2,12 +2,17 @@ namespace Rest
 open System
 open System.Reflection
 
+type IRestExpr =
+  abstract member EntityType : Type with get
+
 type RestExpr<'T> =
 | Convert of Type * RestExpr<'T>
 | Literal of obj
 | Property of PropertyInfo list
 | Unary of ExprAst.UnaryOperator * RestExpr<'T>
 | Binary of ExprAst.BinaryOperator * RestExpr<'T> * RestExpr<'T>
+  interface IRestExpr with
+    member _.EntityType with get () = typeof<'T>
 
 module RestExpr =
   let exprType =

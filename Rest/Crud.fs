@@ -1,5 +1,4 @@
 module Rest.Crud
-open Internal
 open RestFailDefinition
 open RestResource
 open RestSuccessDefinition

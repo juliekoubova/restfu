@@ -11,10 +11,12 @@
     <Compile Include="StatusCode.fs" />
     <Compile Include="RestActionResult.fs" />
     <Compile Include="RestResourceProperties.fs" />
+    <Compile Include="RestExprModel.fs" />
     <Compile Include="RestController.fs" />
     <Compile Include="RestControllerModel.fs" />
     <Compile Include="RestApplicationModelProvider.fs" />
     <Compile Include="SwaggerOperationFilter.fs" />
+    <Compile Include="SwaggerRestExprModelFilter.fs" />
     <Compile Include="Extensions.fs" />
   </ItemGroup>
   <ItemGroup>

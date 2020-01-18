@@ -33,7 +33,7 @@ let tests =
         let result =
           RestExpr.parse<Entity> str |> Result.map (
             (fun expr -> { RestQuery.empty with Filter = Some expr }) >>
-            (fun query -> QueryEvaluator.applyFilter query entities ) >>
+            (fun query -> RestQuery.apply query entities ) >>
             List.ofSeq
           )
 

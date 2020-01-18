@@ -4,13 +4,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyAttributes.fs" />
-    <Compile Include="Utils.fs" />
     <Compile Include="Reflection.fs" />
     <Compile Include="NaturalLanguage.fs" />
     <Compile Include="JsonPointer.fs" />
     <Compile Include="JsonPatch.fs" />
     <Compile Include="Query.fs" />
-    <Compile Include="QueryEvaluator.fs" />
     <Compile Include="Request.fs" />
     <Compile Include="Status.fs" />
     <Compile Include="Fail.fs" />
@@ -30,5 +28,6 @@
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.0" />
     <ProjectReference Include="../Rest.Expressions/Rest.Expressions.fsproj" />
+    <ProjectReference Include="../Rest.Private/Rest.Private.fsproj" />
   </ItemGroup>
 </Project>

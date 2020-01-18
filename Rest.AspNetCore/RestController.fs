@@ -17,30 +17,32 @@ type RestController<'Key, 'Entity>() =
     |> (fun res -> res.Handler request)
     |> RestActionResult.fromResult<'Key, 'Entity>
 
-  // NOTE: Routes must be specified using the RouteAttribute separately from
-  // method constraints, because the Route attribute gets replaced when
-  // RestControllerModel renames the key parameter.
-
   [<HttpDelete("{key}")>]
   member this.Delete
     (
       [<FromRoute(Name = "key")>] key : 'Key
-    ) =
+    )
+    =
     Delete key |> this.Invoke
 
   [<HttpGet("{key}")>]
   member this.Get
     (
       [<FromRoute(Name = "key")>] key : 'Key
-    ) =
+    )
+    =
     Get key |> this.Invoke
 
   [<HttpPatch("{key}")>]
   member this.Patch
     (
-      [<FromRoute(Name = "key")>] key : 'Key,
-      [<FromBody>]                patch : JsonPatch
-    ) =
+      [<FromRoute(Name = "key")>]
+      key : 'Key,
+
+      [<FromBody>]
+      patch : JsonPatch
+    )
+    =
     Patch (key, patch) |> this.Invoke
 
   [<HttpPost>]
@@ -53,16 +55,20 @@ type RestController<'Key, 'Entity>() =
   [<HttpPut("{key}")>]
   member this.Put
     (
-      [<FromRoute(Name = "key")>] key : 'Key,
-      [<FromBody>]                entity : 'Entity
-    ) =
+      [<FromRoute(Name = "key")>]
+      key : 'Key,
+
+      [<FromBody>]
+      entity : 'Entity
+    )
+    =
     Put (key, entity) |> this.Invoke
 
   [<HttpGet>]
   member this.Query
     (
       [<FromQuery(Name = "$filter")>]
-      filter : string,
+      filter : RestExprModel<'Entity>,
 
       [<FromQuery(Name = "$orderby")>]
       orderBy: string [],
@@ -77,4 +83,16 @@ type RestController<'Key, 'Entity>() =
       top: Nullable<int32>
     )
     =
-    Query None |> this.Invoke
+    let filter =
+      match filter with
+      | null -> None
+      | f -> Some f.Expression
+
+    let query = {
+      Filter = filter
+      OrderBy = []
+      Skip = nullableToOption skip
+      // SkipToken = nonEmptyStringToOption skipToken
+      Top = nullableToOption top
+    }
+    Query query |> this.Invoke

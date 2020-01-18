@@ -1,5 +1,4 @@
 namespace Rest
-open Internal
 
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns

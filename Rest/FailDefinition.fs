@@ -1,5 +1,4 @@
 namespace Rest
-open System.Reflection
 
 type RestFailDefinition<'Arg> =
   {
@@ -22,7 +21,7 @@ module RestFailDefinition =
     let namespacedType = BaseUrl + ``type``
     {
       ResponseType = {
-        ContentType = fun _ -> typeof<RestFailDetails>.GetTypeInfo ()
+        ContentType = fun _ -> typeof<RestFailDetails>
         Status = RestFail status
         Summary = summary
       }

@@ -4,7 +4,7 @@ open RestResourceProperties
 
 open Microsoft.AspNetCore.Mvc
 open Microsoft.OpenApi.Models
-open System.Reflection
+open System
 open Swashbuckle.AspNetCore.SwaggerGen
 
 type SwaggerOperationFilter() =
@@ -28,7 +28,7 @@ type SwaggerOperationFilter() =
     dict
 
   let mergeResponses
-    (generateSchema : TypeInfo -> OpenApiSchema)
+    (generateSchema : Type -> OpenApiSchema)
     (resource : IRestResource)
     (responses : RestResponse list)
     =
@@ -43,7 +43,7 @@ type SwaggerOperationFilter() =
       | RestSuccess _ ->
         ResponseMediaType, (r.ContentType (resource.KeyType, resource.EntityType))
       | RestFail _ ->
-        ProblemMediaType, typeof<ProblemDetails>.GetTypeInfo ()
+        ProblemMediaType, typeof<ProblemDetails>
 
     let mediaType schema =
       OpenApiMediaType(Schema = schema)
@@ -62,14 +62,7 @@ type SwaggerOperationFilter() =
   interface IOperationFilter with
     member _.Apply (operation, context) =
       let generateSchema t =
-        context.SchemaGenerator.GenerateSchema (t, context.SchemaRepository)
-
-      let getSchemaId t =
-        generateSchema t |> ignore // ensure schema exists
-        let mutable schemaId : string = null
-        match context.SchemaRepository.TryGetIdFor (t, &schemaId) with
-        | true -> Some schemaId
-        | _ -> None
+        context.SchemaGenerator.GenerateSchema(t, context.SchemaRepository)
 
       let props =
         context.ApiDescription.ActionDescriptor.Properties

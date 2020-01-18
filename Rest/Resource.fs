@@ -1,13 +1,12 @@
 namespace Rest
 
 open System
-open System.Reflection
 
 type IRestResource =
   abstract member EntityName : string with get
-  abstract member EntityType : TypeInfo with get
+  abstract member EntityType : Type with get
   abstract member KeyName : string with get
-  abstract member KeyType : TypeInfo with get
+  abstract member KeyType : Type with get
   abstract member Operations : RestOperationMap with get
 
 type RestResource<'Key, 'Entity> =
@@ -19,9 +18,9 @@ type RestResource<'Key, 'Entity> =
   }
   interface IRestResource with
     member this.EntityName with get () = this.EntityName
-    member _.EntityType with get () = typeof<'Entity>.GetTypeInfo()
+    member _.EntityType with get () = typeof<'Entity>
     member this.KeyName with get () = this.KeyName
-    member _.KeyType with get () = typeof<'Key>.GetTypeInfo()
+    member _.KeyType with get () = typeof<'Key>
     member this.Operations with get () = this.Operations
 
 

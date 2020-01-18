@@ -1,5 +1,6 @@
 [<AutoOpen>]
 module internal Rest.Reflection
+open System
 open System.Reflection
 
 let attributes (attributeProvider : ICustomAttributeProvider) =
@@ -10,8 +11,8 @@ let attributes (attributeProvider : ICustomAttributeProvider) =
 let ofType<'T> =
   Seq.filter (fun a -> box a :? 'T) >> Seq.cast<'T>
 
-let typeofSeq (t : TypeInfo) =
-  typedefof<seq<_>>.MakeGenericType(t).GetTypeInfo()
+let typeofSeq (t : Type) =
+  typedefof<seq<_>>.MakeGenericType(t)
 
-let typeofOption (t : TypeInfo) =
-  typedefof<option<_>>.MakeGenericType(t).GetTypeInfo()
+let typeofOption (t : Type) =
+  typedefof<option<_>>.MakeGenericType(t)

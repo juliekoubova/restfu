@@ -13,7 +13,7 @@ open System.Reflection
 
 let private controllerType k e =
   let typedef = typedefof<RestController<_,_>>
-  let generic = typedef.MakeGenericType (k, e)
+  let generic = typedef.MakeGenericType(k, e)
   generic.GetTypeInfo()
 
 let private actionMethodName =

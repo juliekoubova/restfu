@@ -1,8 +1,8 @@
 namespace Rest
-open System.Reflection
+open System
 
 type RestResponse = {
-  ContentType : (TypeInfo * TypeInfo) -> TypeInfo
+  ContentType : (Type * Type) -> Type
   Status : RestStatus
   Summary : string
 }

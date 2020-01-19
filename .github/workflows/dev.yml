@@ -27,10 +27,14 @@ jobs:
           --no-restore `
           --version-suffix $VersionSuffix
 
+        Write-Host "${{ secrets.GITHUB_TOKEN }}"
+
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
           curl -vX PUT `
             -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
             -F package=@$_ `
             https://nuget.pkg.github.com/juliekoubova/ `
             2>$null
+
+          Write-Host $LASTEXITCODE
         }

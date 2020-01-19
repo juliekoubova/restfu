@@ -1,7 +1,6 @@
 module Rest.Mapping.Tests
 
-open FsUnit
-open Xunit
+open Expecto
 open Microsoft.FSharp.Reflection
 
 [<ReflectedDefinition>]
@@ -56,14 +55,19 @@ let propertyInfo<'T> name =
   |> Array.tryFind (fun p -> p.Name = name)
   |> Option.get
 
-[<Fact>]
-let ``getRecordEntries returns direct mapping`` () =
-  let entries = Mapping.getRecordEntries documentToModel
-  entries |> should equal [
-    DirectMapping {
-      SourceProperty = propertyInfo<Domain.Document> "Id"
-      TargetProperty = propertyInfo<Domain.DocumentModel> "Key"
-    }
+[<Tests>]
+let tests =
+  testList "Mapping" [
+    testCase "getRecordEntries returns direct mapping" <| (fun _ ->
+      let entries = Mapping.getRecordEntries documentToModel
+      Expect.equal
+        entries
+        [
+          DirectMapping {
+            SourceProperty = propertyInfo<Domain.Document> "Id"
+            TargetProperty = propertyInfo<Domain.DocumentModel> "Key"
+          }
+        ]
+        "Unexpected mapping entries"
+    )
   ]
-  // Mapper.Create Domain.personToModel
-  // Mapper.Create (fun x -> x * 2)

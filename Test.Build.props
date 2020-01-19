@@ -1,0 +1,15 @@
+<Project>
+  <Import Project="Directory.Build.props" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GenerateProgramFile>false</GenerateProgramFile>
+    <IsPackable>False</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Expecto" Version="8.13.1" />
+    <PackageReference Include="FParsec" Version="1.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.8.0" />
+  </ItemGroup>
+</Project>

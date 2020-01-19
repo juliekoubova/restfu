@@ -10,6 +10,7 @@ let private validatePutKey entityKey =
       Put (key, entity) |> handler
     else
       PutFail (applyFail cannotChangeKey (key, keyFromEntity) (key, entity))
+      |> async.Return
 
   withPut put {
     Descriptions = [
@@ -22,12 +23,12 @@ let private validatePutKey entityKey =
 
 let create<'K, 'E when 'K : equality>
   (entityKey : EntityKey<'K, 'E>)
-  (delete    : 'K -> RestResult<'K, 'E>)
-  (get       : 'K -> RestResult<'K, 'E>)
-  (patch     : 'K * JsonPatch -> RestResult<'K, 'E>)
-  (post      : 'E -> RestResult<'K, 'E>)
-  (put       : 'K * 'E -> RestResult<'K, 'E>)
-  (query     : RestQuery<'E> -> RestResult<'K, 'E>)
+  (delete    : 'K -> Async<RestResult<'K, 'E>>)
+  (get       : 'K -> Async<RestResult<'K, 'E>>)
+  (patch     : 'K * JsonPatch -> Async<RestResult<'K, 'E>>)
+  (post      : 'E -> Async<RestResult<'K, 'E>>)
+  (put       : 'K * 'E -> Async<RestResult<'K, 'E>>)
+  (query     : RestQuery<'E> -> Async<RestResult<'K, 'E>>)
   =
   let entityName = typeof<'E>.Name
 
@@ -91,3 +92,21 @@ let create<'K, 'E when 'K : equality>
     Summary = Some "Find all {Entity:plural} matching the query."
   }
   |> validatePutKey entityKey
+
+let createSync
+  (entityKey : EntityKey<'K, 'E>)
+  (delete    : 'K -> RestResult<'K, 'E>)
+  (get       : 'K -> RestResult<'K, 'E>)
+  (patch     : 'K * JsonPatch -> RestResult<'K, 'E>)
+  (post      : 'E -> RestResult<'K, 'E>)
+  (put       : 'K * 'E -> RestResult<'K, 'E>)
+  (query     : RestQuery<'E> -> RestResult<'K, 'E>)
+  =
+  create
+    entityKey
+    (delete >> async.Return)
+    (get >> async.Return)
+    (patch >> async.Return)
+    (post >> async.Return)
+    (put >> async.Return)
+    (query >> async.Return)

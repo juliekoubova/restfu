@@ -50,8 +50,7 @@ module private InMemoryResource =
         |> RestQuery.apply q
       QuerySuccess (applySuccess queryOk (q, entities))
 
-    Crud.create entityKey delete get patch post put query
-
+    Crud.createSync entityKey delete get patch post put query
 
 [<AbstractClass; Sealed>]
 type InMemory private () =

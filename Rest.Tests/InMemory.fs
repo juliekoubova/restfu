@@ -18,16 +18,17 @@ let tests =
   testList "InMemory" [
     yield! testFixture withInMemoryResource [
 
+      let handle res = res.Handler >> Async.RunSynchronously
       "Gets an existing entity", (fun res ->
         let entity = { Id = "42" }
 
         Expect.equal
-          (Post entity |> res.Handler)
+          (Post entity |> handle res)
           (PostSuccess (Created, ("42", Some entity)))
           "Unexpected POST result"
 
         Expect.equal
-          (Get "42" |> res.Handler)
+          (Get "42" |> handle res)
           (GetSuccess (Ok, ("42", entity)))
           "Unexpected GET result"
       )
@@ -35,7 +36,7 @@ let tests =
       "Creates new Entity", (fun res ->
         let entity = { Id = "42" }
         Expect.equal
-          (Post entity |> res.Handler)
+          (Post entity |> handle res)
           (PostSuccess (Created, ("42", Some entity)))
           "Unexpected result"
       )
@@ -44,12 +45,12 @@ let tests =
         let entity = { Id = "42" }
 
         Expect.equal
-          (Post entity |> res.Handler)
+          (Post entity |> handle res)
           (PostSuccess (Created, ("42", Some entity)))
           "First create result unexpected"
 
         Expect.equal
-          (Post entity |> res.Handler)
+          (Post entity |> handle res)
           (PostFail ({
             Status = Conflict
             Title ="Thingy with the specified Id already exists."

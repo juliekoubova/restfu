@@ -5,6 +5,7 @@ open RestResourceProperties
 
 open Microsoft.AspNetCore.Mvc
 open System
+open System.Threading
 
 [<ApiController>]
 [<NonController>]
@@ -12,10 +13,16 @@ type RestController<'Key, 'Entity>() =
   inherit ControllerBase()
 
   member private this.Invoke (request : RestRequest<'Key, 'Entity>) =
-    this.ControllerContext.ActionDescriptor.Properties
-    |> getResource<'Key, 'Entity>
-    |> (fun res -> res.Handler request)
-    |> RestActionResult.fromResult<'Key, 'Entity>
+    let resource =
+      getResource<'Key, 'Entity>
+        this.ControllerContext.ActionDescriptor.Properties
+
+    let workflow = async {
+      let! result = resource.Handler request
+      return RestActionResult.fromResult result
+    }
+
+    Async.StartImmediateAsTask (workflow, this.HttpContext.RequestAborted)
 
   [<HttpDelete("{key}")>]
   member this.Delete

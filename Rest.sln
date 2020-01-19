@@ -21,6 +21,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Expressions.Tests", "R
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Private", "Rest.Private\Rest.Private.fsproj", "{F42B12FC-8FED-48ED-B9EF-7E21936FE60E}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.MongoDB", "Rest.MongoDB\Rest.MongoDB.fsproj", "{8F794BFC-3976-4DED-ABD0-A255B4733935}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +68,9 @@ Global
 		{F42B12FC-8FED-48ED-B9EF-7E21936FE60E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F42B12FC-8FED-48ED-B9EF-7E21936FE60E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F42B12FC-8FED-48ED-B9EF-7E21936FE60E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F794BFC-3976-4DED-ABD0-A255B4733935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F794BFC-3976-4DED-ABD0-A255B4733935}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F794BFC-3976-4DED-ABD0-A255B4733935}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F794BFC-3976-4DED-ABD0-A255B4733935}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

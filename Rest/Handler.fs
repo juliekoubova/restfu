@@ -2,10 +2,10 @@ namespace Rest
 open RestFailDefinition
 
 type RestHandler<'Key, 'Entity> =
-  RestRequest<'Key, 'Entity> -> RestResult<'Key, 'Entity>
+  RestRequest<'Key, 'Entity> -> Async<RestResult<'Key, 'Entity>>
 
 type RestHandlerTransform<'K, 'E, 'Req> =
-  RestHandler<'K, 'E> -> 'Req -> RestResult<'K, 'E>
+  RestHandler<'K, 'E> -> 'Req -> Async<RestResult<'K, 'E>>
 
 module RestHandler =
 
@@ -17,12 +17,12 @@ module RestHandler =
 
   let empty : RestHandler<'K, 'E> =
     function
-    | Delete key -> DeleteFail (applyNotFound key)
-    | Get key -> GetFail (applyNotFound key)
-    | Patch (key, patch) -> PatchFail (applyNotFound (key, patch))
-    | Post entity -> PostFail (applyNotFound entity)
-    | Put (key, entity) -> PutFail (applyNotFound (key, entity))
-    | Query query -> QueryFail (applyNotFound query)
+    | Delete key -> DeleteFail (applyNotFound key) |> async.Return
+    | Get key -> GetFail (applyNotFound key) |> async.Return
+    | Patch (key, patch) -> PatchFail (applyNotFound (key, patch)) |> async.Return
+    | Post entity -> PostFail (applyNotFound entity) |> async.Return
+    | Put (key, entity) -> PutFail (applyNotFound (key, entity)) |> async.Return
+    | Query query -> QueryFail (applyNotFound query) |> async.Return
 
   let withDelete
     (delete : RestHandlerTransform<'K, 'E, 'K>)
@@ -63,19 +63,19 @@ module RestHandler =
     | req -> handler req
 
   let withoutDelete handler : RestHandler<'K, 'E> =
-    handler |> withDelete (fun _ x -> DeleteFail (applyMethodNotAllowed x))
+    handler |> withDelete (fun _ x -> DeleteFail (applyMethodNotAllowed x) |> async.Return)
 
   let withoutGet handler : RestHandler<'K, 'E> =
-    handler |> withGet (fun _ x -> GetFail (applyMethodNotAllowed x))
+    handler |> withGet (fun _ x -> GetFail (applyMethodNotAllowed x) |> async.Return)
 
   let withoutPatch handler : RestHandler<'K, 'E> =
-    handler |> withPatch (fun _ x -> PatchFail (applyMethodNotAllowed x))
+    handler |> withPatch (fun _ x -> PatchFail (applyMethodNotAllowed x) |> async.Return)
 
   let withoutPost handler : RestHandler<'K, 'E> =
-    handler |> withPost (fun _ x -> PostFail (applyMethodNotAllowed x))
+    handler |> withPost (fun _ x -> PostFail (applyMethodNotAllowed x) |> async.Return)
 
   let withoutPut handler : RestHandler<'K, 'E> =
-    handler |> withPut (fun _ x -> PutFail (applyMethodNotAllowed x))
+    handler |> withPut (fun _ x -> PutFail (applyMethodNotAllowed x) |> async.Return)
 
   let withoutQuery handler : RestHandler<'K, 'E> =
-    handler |> withQuery (fun _ x -> QueryFail (applyMethodNotAllowed x))
+    handler |> withQuery (fun _ x -> QueryFail (applyMethodNotAllowed x) |> async.Return)

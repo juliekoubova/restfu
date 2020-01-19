@@ -20,7 +20,12 @@ let applyEntityKeyName resource =
       (Option.map replace)
       op
 
-  resource
-  |> RestResource.map
-    (fun handler -> handler >> RestResult.mapFailDetails applyToFailDetails)
+  RestResource.map
+    (fun handler req ->
+      async.Bind(
+        (handler req),
+        (RestResult.mapFailDetails applyToFailDetails) >> async.Return
+      )
+    )
     (Map.map (fun _ op -> applyToOperation op))
+    resource

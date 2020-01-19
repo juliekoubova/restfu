@@ -1,4 +1,5 @@
 ﻿namespace Rest
+open Microsoft.FSharp.Linq.RuntimeHelpers
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open System
@@ -13,6 +14,14 @@ module Utils =
     | Lambda (_, PropertyGet (_, pi, _)) -> pi.Name
     | _ ->
       invalidArg "expr" "Expected an Expr in the shape of 'fun x -> x.Member'"
+
+  let toLinq (expr : Expr<'a -> 'b>) =
+    match expr with
+    | Lambda (var, body) ->
+      Expr.NewDelegate(typeof<Func<'a, 'b>>, [var], body)
+      |> Expr.Cast<Func<'a,'b>>
+      |> LeafExpressionConverter.QuotationToLambdaExpression
+    | _ -> invalidArg "expr" "Expeceted a Lambda Expr"
 
   let getGenericFunctionDef expr =
     match expr with

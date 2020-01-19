@@ -5,8 +5,6 @@
     <VersionSuffix>private</VersionSuffix>
     <VersionSuffix Condition=" '$(USER)' != '' ">private-$(USER)</VersionSuffix>
     <VersionSuffix Condition=" '$(USERNAME)' != '' ">private-$(USERNAME)</VersionSuffix>
-    <IncludeSource>True</IncludeSource>
-    <IncludeSymbols>True</IncludeSymbols>
     <RepositoryUrl>https://github.com/juliekoubova/tired-rest/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageOutputPath>$(MSBuildThisFileDirectory).nupkg/</PackageOutputPath>

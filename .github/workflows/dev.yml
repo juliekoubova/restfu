@@ -1,7 +1,9 @@
-name: Build
-on: [push, pull_request]
+name: Publish to GitHub Packages
+on:
+  push:
+    branches: dev
 jobs:
-  build:
+  publish:
     runs-on: [windows-latest]
     steps:
     - uses: actions/checkout@v1
@@ -14,4 +16,9 @@ jobs:
     - name: Test
       run: dotnet test
     - name: Publish
-      run: echo ${{ github.ref }}
+      shell: pwsh
+      run: |
+        $VersionSuffix = 'dev-{0:yyyy-MM-dd-HHmmss}-{1}' -f
+          (Get-Date).ToUniversalTime(),
+          ('${{ git.sha }}').Substring(0, 8)
+        dotnet pack --configuration Release --version-suffix $VersionSuffix

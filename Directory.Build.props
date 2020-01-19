@@ -8,5 +8,6 @@
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
     <RepositoryUrl>https://github.com/juliekoubova/tired-rest/</RepositoryUrl>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)packages/</PackageOutputPath>
   </PropertyGroup>
 </Project>

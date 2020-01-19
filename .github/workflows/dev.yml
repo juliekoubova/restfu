@@ -36,6 +36,7 @@ jobs:
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
 
           $Params = @{
+            ContentType = 'application/octet-stream'
             Method = 'PUT'
             Headers = @{
               Authorization = "Basic $Credentials"

@@ -26,9 +26,20 @@ jobs:
           --configuration Release `
           --version-suffix $VersionSuffix
 
+        $Credentials = [Convert]::ToBase64String(
+          [Text.Encoding]::ASCII.GetBytes("juliekoubova:${{ secrents.GITHUB_TOKEN}}")
+        )
+
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
-          curl -X PUT `
-            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
-            -F package=@$_ `
-            https://nuget.pkg.github.com/juliekoubova/
+
+          $Params = @{
+            Method = 'PUT'
+            Headers = @{
+              Authorization = "Basic $Credentials"
+            }
+            InFile = $_
+            Uri = "https://nuget.pkg.github.com/juliekoubova/"
+          }
+
+          Invoke-WebRequest @Params
         }

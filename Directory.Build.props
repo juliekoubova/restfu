@@ -8,6 +8,7 @@
     <IncludeSource>True</IncludeSource>
     <IncludeSymbols>True</IncludeSymbols>
     <RepositoryUrl>https://github.com/juliekoubova/tired-rest/</RepositoryUrl>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)packages/</PackageOutputPath>
+    <RepositoryType>git</RepositoryType>
+    <PackageOutputPath>$(MSBuildThisFileDirectory).nupkg/</PackageOutputPath>
   </PropertyGroup>
 </Project>

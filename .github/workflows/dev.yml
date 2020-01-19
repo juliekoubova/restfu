@@ -20,14 +20,14 @@ jobs:
       run: |
         $VersionSuffix = 'dev-{0:yyyy-MM-dd-HHmmss}-{1}' -f
           (Get-Date).ToUniversalTime(),
-          ('${{ github.sha }}').Substring(0, 8)
+          ('${{ github.sha }}').Substring(0, 7)
 
         dotnet pack `
           --configuration Release `
           --version-suffix $VersionSuffix
 
-        Get-ChildItem $Env:GITHUB_WORKSPACE\packages\*.nupkg |% {
+        Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
           dotnet nuget push $_ `
-            --api-key '${{ secrets.GITHUB_TOKN }}' `
+            --api-key '${{ secrets.GITHUB_TOKEN }}' `
             --source https://nuget.pkg.github.com/juliekoubova/index.json
         }

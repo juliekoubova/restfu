@@ -27,7 +27,7 @@ jobs:
           --version-suffix $VersionSuffix
 
         $Credentials = [Convert]::ToBase64String(
-          [Text.Encoding]::ASCII.GetBytes("juliekoubova:${{ secrents.GITHUB_TOKEN}}")
+          [Text.Encoding]::ASCII.GetBytes("juliekoubova:${{ secrets.GITHUB_TOKEN}}")
         )
 
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {

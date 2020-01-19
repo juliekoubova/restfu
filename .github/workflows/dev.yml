@@ -6,7 +6,7 @@ jobs:
   publish:
     runs-on: [windows-latest]
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -21,4 +21,7 @@ jobs:
         $VersionSuffix = 'dev-{0:yyyy-MM-dd-HHmmss}-{1}' -f
           (Get-Date).ToUniversalTime(),
           ('${{ github.sha }}').Substring(0, 8)
-        dotnet pack --configuration Release --version-suffix $VersionSuffix
+        dotnet pack `
+          --configuration Release `
+          --no-build `
+          --version-suffix $VersionSuffix

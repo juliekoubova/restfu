@@ -1,4 +1,4 @@
-name: Publish to GitHub Packages
+name: dev
 on:
   push:
     branches: dev
@@ -6,7 +6,8 @@ jobs:
   publish:
     runs-on: [windows-latest]
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -15,7 +16,7 @@ jobs:
       run: dotnet build --configuration Release
     - name: Test
       run: dotnet test
-    - name: Publish
+    - name: Publish to GitHub Packages
       shell: pwsh
       run: |
         $VersionSuffix = 'dev-{0:yyyy-MM-dd-HHmmss}-{1}' -f

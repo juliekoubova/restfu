@@ -1,0 +1,24 @@
+name: Publish to GitHub Packages
+on:
+  push:
+    branches: dev
+jobs:
+  publish:
+    runs-on: [windows-latest]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Build
+      run: dotnet build --configuration Release
+    - name: Test
+      run: dotnet test
+    - name: Publish
+      shell: pwsh
+      run: |
+        $VersionSuffix = 'dev-{0:yyyy-MM-dd-HHmmss}-{1}' -f
+          (Get-Date).ToUniversalTime(),
+          ('${{ git.sha }}').Substring(0, 8)
+        dotnet pack --configuration Release --version-suffix $VersionSuffix

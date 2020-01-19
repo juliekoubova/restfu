@@ -11,6 +11,6 @@
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
-    <ProjectReference Include="../Rest.Mapping/Rest.Mapping.fsproj" />
+    <ProjectReference Include="../src/Rest.Mapping.fsproj" />
   </ItemGroup>
 </Project>

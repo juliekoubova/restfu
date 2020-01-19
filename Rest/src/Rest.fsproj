@@ -27,7 +27,7 @@
   <ItemGroup>
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />
     <PackageReference Include="System.Text.Json" Version="4.7.0" />
-    <ProjectReference Include="../Rest.Expressions/Rest.Expressions.fsproj" />
-    <ProjectReference Include="../Rest.Private/Rest.Private.fsproj" />
+    <ProjectReference Include="../../Expressions/src/Rest.Expressions.fsproj" />
+    <ProjectReference Include="../../Private/src/Rest.Private.fsproj" />
   </ItemGroup>
 </Project>

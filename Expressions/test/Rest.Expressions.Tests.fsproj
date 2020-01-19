@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Rest.Expressions/Rest.Expressions.fsproj" />
+    <ProjectReference Include="../src/Rest.Expressions.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

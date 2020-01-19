@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../Rest/Rest.fsproj" />
+    <ProjectReference Include="../../Rest/src/Rest.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Library.fs" />

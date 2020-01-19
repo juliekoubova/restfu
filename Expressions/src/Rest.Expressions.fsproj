@@ -10,6 +10,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FParsec" Version="1.1.0" />
-    <ProjectReference Include="../Rest.Private/Rest.Private.fsproj" />
+    <ProjectReference Include="../../Private/src/Rest.Private.fsproj" />
   </ItemGroup>
 </Project>

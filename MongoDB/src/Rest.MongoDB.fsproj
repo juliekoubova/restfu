@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Rest/Rest.fsproj" />
+    <ProjectReference Include="../../Rest/src/Rest.fsproj" />
   </ItemGroup>
 
 </Project>

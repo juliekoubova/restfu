@@ -8,8 +8,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="5.0.0" />
-    <ProjectReference Include="../Rest/Rest.fsproj" />
-    <ProjectReference Include="../Rest.AspNetCore/Rest.AspNetCore.fsproj" />
+    <ProjectReference Include="../Rest/src/Rest.fsproj" />
+    <ProjectReference Include="../AspNetCore/src/Rest.AspNetCore.fsproj" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

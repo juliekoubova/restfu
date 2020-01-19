@@ -9,11 +9,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
-      env:
-        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       with:
         dotnet-version: 3.1.101
-        source-url: https://nuget.pkg.github.com/juliekoubova/index.json
     - name: Build
       run: dotnet build --configuration Release
     - name: Test
@@ -24,7 +21,13 @@ jobs:
         $VersionSuffix = 'dev-{0:yyyy-MM-dd-HHmmss}-{1}' -f
           (Get-Date).ToUniversalTime(),
           ('${{ github.sha }}').Substring(0, 8)
+
         dotnet pack `
           --configuration Release `
           --version-suffix $VersionSuffix
-        Get-ChildItem $Env:GITHUB_WORKSPACE/packages/*.nupkg |% { dotnet nuget push $_ --source github }
+
+        Get-ChildItem $Env:GITHUB_WORKSPACE\packages\*.nupkg |% {
+          dotnet nuget push $_ `
+            --api-key '${{ secrets.GITHUB_TOKN }}' `
+            --source https://nuget.pkg.github.com/juliekoubova/index.json
+        }

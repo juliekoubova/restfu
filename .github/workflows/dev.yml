@@ -1,12 +1,8 @@
-name: .NET Core
-
+name: Build
 on: [push]
-
 jobs:
   build:
-
     runs-on: [windows-latest]
-
     steps:
     - uses: actions/checkout@v1
     - name: Setup .NET Core
@@ -17,3 +13,5 @@ jobs:
       run: dotnet build --configuration Release
     - name: Test
       run: dotnet test
+    - name: Publish
+      run: echo {{ github.ref }} 

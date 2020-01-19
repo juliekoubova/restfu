@@ -24,10 +24,11 @@ jobs:
 
         dotnet pack `
           --configuration Release `
+          --no-restore `
           --version-suffix $VersionSuffix
 
         $Credentials = [Convert]::ToBase64String(
-          [Text.Encoding]::ASCII.GetBytes("juliekoubova:${{ secrets.GITHUB_TOKEN}}")
+          [Text.Encoding]::ASCII.GetBytes("juliekoubova:${{ secrets.GITHUB_TOKEN }}")
         )
 
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
@@ -39,6 +40,7 @@ jobs:
             }
             InFile = $_
             Uri = "https://nuget.pkg.github.com/juliekoubova/"
+            Verbose = $true
           }
 
           Invoke-WebRequest @Params

@@ -27,7 +27,12 @@ jobs:
           --version-suffix $VersionSuffix
 
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
-          dotnet nuget push $_ `
-            --api-key '${{ secrets.GITHUB_TOKEN }}' `
-            --source https://nuget.pkg.github.com/juliekoubova/index.json
+          curl -vX PUT `
+            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
+            -F package=@$_ `
+            https://nuget.pkg.github.com/juliekoubova/
+
+          # dotnet nuget push $_ `
+          #   --api-key '${{ secrets.GITHUB_TOKEN }}' `
+          #   --source https://nuget.pkg.github.com/juliekoubova/index.json
         }

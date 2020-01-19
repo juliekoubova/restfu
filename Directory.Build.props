@@ -2,5 +2,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix>private</VersionSuffix>
+    <VersionSuffix Condition=" '$(USER)' != '' ">private-$(USER)</VersionSuffix>
+    <VersionSuffix Condition=" '$(USERNAME)' != '' ">private-$(USERNAME)</VersionSuffix>
+    <IncludeSource>True</IncludeSource>
+    <IncludeSymbols>True</IncludeSymbols>
+    <RepositoryUrl>https://github.com/juliekoubova/tired-rest/</RepositoryUrl>
   </PropertyGroup>
 </Project>

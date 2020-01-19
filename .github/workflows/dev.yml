@@ -20,5 +20,5 @@ jobs:
       run: |
         $VersionSuffix = 'dev-{0:yyyy-MM-dd-HHmmss}-{1}' -f
           (Get-Date).ToUniversalTime(),
-          ('${{ git.sha }}').Substring(0, 8)
+          ('${{ github.sha }}').Substring(0, 8)
         dotnet pack --configuration Release --version-suffix $VersionSuffix

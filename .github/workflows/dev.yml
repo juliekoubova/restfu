@@ -31,7 +31,7 @@ jobs:
           [Text.Encoding]::ASCII.GetBytes("juliekoubova:${{ secrets.GITHUB_TOKEN }}")
         )
 
-        write-info "${{ secrets.GITHUB_TOKEN }}"
+        write-output "${{ secrets.GITHUB_TOKEN }}"
 
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
 

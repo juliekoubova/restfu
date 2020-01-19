@@ -23,6 +23,5 @@ jobs:
           ('${{ github.sha }}').Substring(0, 8)
         dotnet pack `
           --configuration Release `
-          --output $Env:GITHUB_WORKSPACE/packages `
           --version-suffix $VersionSuffix
         Get-ChildItem $Env:GITHUB_WORKSPACE/packages/*.nupkg |% { dotnet nuget push $_ --source github }

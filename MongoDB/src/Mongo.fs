@@ -61,25 +61,17 @@ module private MongoDBResource =
       let key = entityKey.Value entity
       async {
         let! cancellationToken = Async.CancellationToken
-        let insert =
-          collection.InsertOneAsync(
-            entity,
-            InsertOneOptions(),
-            cancellationToken
-          ) |> Async.AwaitTask
-        let! result = Async.Catch insert
-
-        return
-          match result with
-          | Choice1Of2 _ ->
-            PostSuccess (applySuccess postCreated (key, Some entity))
-
-          | Choice2Of2 exc ->
-            match exc with
-            | :? MongoDuplicateKeyException ->
-              PostFail (applyFail alreadyExists key entity)
-            | _ ->
-              PostFail (applyFail internalServerError () entity)
+        try
+          let! _ =
+            collection.InsertOneAsync(
+              entity,
+              InsertOneOptions(),
+              cancellationToken
+            ) |> Async.AwaitTask
+          return PostSuccess (applySuccess postCreated (key, Some entity))
+        with
+          | :? MongoDuplicateKeyException ->
+            return PostFail (applyFail alreadyExists key entity)
       }
 
     let put (key, entity) =

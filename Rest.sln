@@ -23,6 +23,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Private", "Private\src
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.MongoDB", "MongoDB\src\Rest.MongoDB.fsproj", "{8F794BFC-3976-4DED-ABD0-A255B4733935}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MongoDB", "MongoDB", "{E4A8DCDF-E634-4689-BAEE-2481CFEA1733}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.MongoDB.Tests", "MongoDB\test\Rest.MongoDB.Tests.fsproj", "{C278AF68-8FFD-4149-8961-F41135660D4A}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,5 +76,12 @@ Global
 		{8F794BFC-3976-4DED-ABD0-A255B4733935}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F794BFC-3976-4DED-ABD0-A255B4733935}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F794BFC-3976-4DED-ABD0-A255B4733935}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C278AF68-8FFD-4149-8961-F41135660D4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C278AF68-8FFD-4149-8961-F41135660D4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C278AF68-8FFD-4149-8961-F41135660D4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C278AF68-8FFD-4149-8961-F41135660D4A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C278AF68-8FFD-4149-8961-F41135660D4A} = {E4A8DCDF-E634-4689-BAEE-2481CFEA1733}
 	EndGlobalSection
 EndGlobal

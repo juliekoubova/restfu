@@ -63,8 +63,3 @@ let convert (expr : RestExpr<'T>) =
 
   Expr.Cast<Func<'T, bool>> lambda
   |> LeafExpressionConverter.QuotationToLambdaExpression
-
-let compile expr =
-  let linq = convert expr
-  let compiled = linq.Compile()
-  compiled

@@ -5,6 +5,7 @@
   "files.exclude": {
     ".git": true,
     ".ionide": true,
+    ".nupkg": true,
     "*.sln": true,
     "**/bin": true,
     "**/obj": true,

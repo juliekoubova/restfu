@@ -2,6 +2,7 @@ namespace Rest
 open RestFailDefinition
 open RestSuccessDefinition
 open Microsoft.FSharp.Quotations
+open System.Linq
 
 module private InMemoryResource =
   let create (entityKey : EntityKey<'Key, 'Entity>) =
@@ -43,12 +44,9 @@ module private InMemoryResource =
       PutSuccess (applySuccess success (key, Some entity))
 
     let query q =
-      let entities =
-        state
-        |> Map.toSeq
-        |> Seq.map snd
-        |> RestQuery.apply q
-      QuerySuccess (applySuccess queryOk (q, entities))
+      let entities = state |> Map.toSeq |> Seq.map snd
+      let result = RestQuery.apply q (entities.AsQueryable())
+      QuerySuccess (applySuccess queryOk (q, result.AsEnumerable()))
 
     Crud.createSync entityKey delete get patch post put query
 

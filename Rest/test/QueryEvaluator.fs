@@ -1,6 +1,7 @@
 module Rest.Tests.QueryEvaluatorTests
 open Expecto
 open Rest
+open System.Linq
 
 type Entity = {
   F : float
@@ -33,7 +34,7 @@ let tests =
         let result =
           RestExpr.parse<Entity> str |> Result.map (
             (fun expr -> { RestQuery.empty with Filter = Some expr }) >>
-            (fun query -> RestQuery.apply query entities ) >>
+            (fun query -> RestQuery.apply query (entities.AsQueryable()) ) >>
             List.ofSeq
           )
 

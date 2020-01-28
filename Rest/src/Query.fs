@@ -1,4 +1,5 @@
 namespace Rest
+open System.Linq
 
 type RestOrder =
 | Ascending
@@ -22,28 +23,27 @@ module RestQuery =
     Top = None
   }
 
-  let private applyFilter filter seq =
+  let private applyFilter filter (queryable : IQueryable<'T>) =
     match filter with
-    | None -> seq
+    | None -> queryable
     | Some expr ->
-      let compiled = RestExprToLinq.compile expr
-      Seq.filter compiled.Invoke seq
+      queryable.Where(RestExprToLinq.convert expr)
 
-  let private applyOrderBy orderBy seq =
-    seq
+  let private applyOrderBy orderBy queryable =
+    queryable
 
-  let private applySkip skip seq =
+  let private applySkip skip (queryable : IQueryable<'T>) =
     match skip with
-    | None -> seq
-    | Some skip -> Seq.skip skip seq
+    | None -> queryable
+    | Some skip -> queryable.Skip(skip)
 
-  let private applyTop top seq =
+  let private applyTop top (queryable : IQueryable<'T>) =
     match top with
-    | None -> seq
-    | Some top -> Seq.take top seq
+    | None -> queryable
+    | Some top -> queryable.Take(top)
 
-  let apply query seq =
+  let apply query (queryable : IQueryable<'T>) =
     (applyFilter query.Filter
     >> applyOrderBy query.OrderBy
     >> applySkip query.Skip
-    >> applyTop query.Top) seq
+    >> applyTop query.Top) queryable

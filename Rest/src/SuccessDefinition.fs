@@ -1,5 +1,4 @@
 namespace Rest
-open System.Reflection
 
 type RestSuccessDefinition = {
   ResponseType : RestResponse

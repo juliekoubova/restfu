@@ -15,8 +15,9 @@
     <Compile Include="RestController.fs" />
     <Compile Include="RestControllerModel.fs" />
     <Compile Include="RestApplicationModelProvider.fs" />
-    <Compile Include="SwaggerOperationFilter.fs" />
+    <Compile Include="SwaggerOperationResponsesFilter.fs" />
     <Compile Include="SwaggerRestExprModelFilter.fs" />
+    <Compile Include="SwaggerSchemaIdSelector.fs" />
     <Compile Include="Extensions.fs" />
   </ItemGroup>
   <ItemGroup>

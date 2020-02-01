@@ -7,7 +7,7 @@ open Microsoft.OpenApi.Models
 open System
 open Swashbuckle.AspNetCore.SwaggerGen
 
-type SwaggerOperationFilter() =
+type SwaggerOperationResponsesFilter() =
 
   [<Literal>]
   let ProblemMediaType = "application/problem+json"

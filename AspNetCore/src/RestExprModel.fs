@@ -30,3 +30,11 @@ and internal RestExprModelTypeConverter<'T> () =
     match RestExpr.parse<'T> (source :?> string) with
     | Result.Ok expr -> upcast (RestExprModel expr)
     | Error error -> raise (FormatException error)
+
+module RestExprModel =
+  let isRestExprModel (typ : Type) =
+    typ.IsGenericType &&
+    typ.GetGenericTypeDefinition() = typedefof<RestExprModel<_>>
+
+  let modelType (typ: Type) =
+    typ.GetGenericArguments().[0]

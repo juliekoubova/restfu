@@ -4,14 +4,25 @@ open Rest
 
 open Microsoft.AspNetCore.Mvc.ApplicationModels
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Options
+open Swashbuckle.AspNetCore.SwaggerGen
 
 type IServiceCollection with
   member this.AddRest () =
-    ignore <| this.AddTransient<IApplicationModelProvider, RestApplicationModelProvider>()
+    ignore <| this.AddTransient<
+      IApplicationModelProvider,
+      RestApplicationModelProvider
+      >()
+
     ignore <| this.ConfigureSwaggerGen(fun swagger ->
-      swagger.OperationFilter<SwaggerOperationFilter>()
+      swagger.OperationFilter<SwaggerOperationResponsesFilter>()
       swagger.SchemaFilter<SwaggerRestExprModelFilter>()
     )
+
+    ignore <| this.AddTransient<
+      IPostConfigureOptions<SchemaGeneratorOptions>,
+      SwaggerSchemaIdSelector
+      >()
 
   member this.AddRestResource<'Key, 'Entity>
     (

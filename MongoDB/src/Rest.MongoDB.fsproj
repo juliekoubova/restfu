@@ -4,6 +4,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.10.1" />
+    <ProjectReference Include="../../Private/src/Rest.Private.fsproj" />
     <ProjectReference Include="../../Rest/src/Rest.fsproj" />
   </ItemGroup>
 </Project>

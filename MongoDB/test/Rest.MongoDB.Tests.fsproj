@@ -5,7 +5,7 @@
     <ProjectReference Include="../src/Rest.MongoDB.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Sample.fs" />
+    <Compile Include="MongoCrudTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 </Project>

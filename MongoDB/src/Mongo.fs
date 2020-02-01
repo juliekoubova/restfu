@@ -5,9 +5,24 @@ open Rest
 open Rest.RestFailDefinition
 open Rest.RestSuccessDefinition
 open Microsoft.FSharp.Quotations
+open System
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module private MongoDBResource =
+  let rec extractException<'T when 'T :> exn> (ex : exn) =
+    match ex with
+    | :? 'T as result -> Some result
+    | :? AggregateException as ae ->
+      ae.InnerExceptions |> Seq.pick extractException<'T> |> Some
+    | _ -> None
+
+  let isDuplicateKey ex =
+    match extractException<MongoWriteException> ex with
+    | Some mwe when mwe.WriteError.Category = ServerErrorCategory.DuplicateKey ->
+      true
+    | _ -> false
+
+
   let create
     (collection : IMongoCollection<'Entity>)
     (entityKey : EntityKey<'Key, 'Entity>)
@@ -62,7 +77,7 @@ module private MongoDBResource =
       async {
         let! cancellationToken = Async.CancellationToken
         try
-          let! _ =
+          do!
             collection.InsertOneAsync(
               entity,
               InsertOneOptions(),
@@ -70,8 +85,9 @@ module private MongoDBResource =
             ) |> Async.AwaitTask
           return PostSuccess (applySuccess postCreated (key, Some entity))
         with
-          | :? MongoDuplicateKeyException ->
+        | e when isDuplicateKey e ->
             return PostFail (applyFail alreadyExists key entity)
+        | e -> return raise e
       }
 
     let put (key, entity) =

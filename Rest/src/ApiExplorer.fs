@@ -1,4 +1,4 @@
-module internal Rest.RestApiExplorer
+module Rest.RestApiExplorer
 
 let applyEntityKeyName resource =
   let replace = NaturalLanguage.replaceTokens (Map.ofList [

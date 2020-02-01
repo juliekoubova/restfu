@@ -26,14 +26,12 @@ module CrudTests =
           (GetSuccess (Ok, ("42", entity)))
           "Unexpected GET result"
 
-
       "Creates new Entity", fun res ->
         let entity = { Id = "42"; Value = "Created" }
         Expect.equal
           (Post entity |> handle res)
           (PostSuccess (Created, ("42", Some entity)))
           "Unexpected result"
-
 
       "Doesn't create an Entity with existing Id", fun res ->
         let existing = { Id = "42"; Value = "Existing" }
@@ -53,6 +51,5 @@ module CrudTests =
             Type = "https://github.com/juliekoubova/tired-rest/wiki/Problems#already-exists"
           }, duplicate))
           "Second create result unexpected"
-
     ]
     |> Seq.ofList

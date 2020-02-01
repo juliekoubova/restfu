@@ -3,9 +3,12 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.OpenApi.Models
-open System.ComponentModel.DataAnnotations
+open MongoDB.Bson.Serialization.Attributes
+open MongoDB.Driver
 open Rest
 open Rest.AspNetCore
+open Rest.MongoDB
+open System.ComponentModel.DataAnnotations
 
 [<CLIMutable>]
 type Pet = {
@@ -22,15 +25,37 @@ type Pet = {
   Thicc : bool
 }
 
+[<CLIMutable>]
+type Toy = {
+  [<BsonId; Required>]
+  Sku : string
+
+  [<Required>]
+  Length : float
+
+  [<Required>]
+  Diameter : float
+}
+
+let mongoClient =
+  MongoClient(System.Environment.GetEnvironmentVariable("MONGODB_URL"))
+
+let playgroundDatabase =
+  mongoClient.GetDatabase("playground")
+
+let toyCollection = playgroundDatabase.GetCollection<Toy>("toys")
+let toys = MongoDBResource.Create(toyCollection, fun toy -> toy.Sku)
+
 let pets = InMemory.Create (fun pet -> pet.Name)
-let post = Post >> pets.Handler >> ignore
-post { Name = "Moan"; Owner = "Daddy"; Age = 33; Thicc = true }
-post { Name = "On my mind"; Owner = "Moan"; Age = 26; Thicc = false }
+let pet = Post >> pets.Handler >> ignore
+pet { Name = "Moan"; Owner = "Daddy"; Age = 33; Thicc = true }
+pet { Name = "On my mind"; Owner = "Moan"; Age = 26; Thicc = false }
 
 let configureServices (services : IServiceCollection) =
   ignore <| services.AddControllers()
   ignore <| services.AddRest()
   ignore <| services.AddRestResource("pets", pets)
+  ignore <| services.AddRestResource("toys", toys)
   ignore <| services.AddSwaggerGen(fun swagger ->
     swagger.SwaggerDoc("pets", OpenApiInfo (Title = "Pets API", Version = "v1"))
   )

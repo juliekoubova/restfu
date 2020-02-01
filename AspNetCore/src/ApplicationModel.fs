@@ -5,7 +5,6 @@ open Microsoft.AspNetCore.Mvc.ApplicationModels
 open Microsoft.AspNetCore.Mvc.Routing
 open Microsoft.AspNetCore.Routing
 open System.Reflection
-open Microsoft.AspNetCore.Mvc
 
 let actionModel
  (methodInfo : MethodInfo)

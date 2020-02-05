@@ -5,7 +5,7 @@
     <VersionSuffix>private</VersionSuffix>
     <VersionSuffix Condition=" '$(USER)' != '' ">private-$(USER)</VersionSuffix>
     <VersionSuffix Condition=" '$(USERNAME)' != '' ">private-$(USERNAME)</VersionSuffix>
-    <RepositoryUrl>https://github.com/juliekoubova/tired-rest/</RepositoryUrl>
+    <RepositoryUrl>https://github.com/juliekoubova/restfu/</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageOutputPath>$(MSBuildThisFileDirectory).nupkg/</PackageOutputPath>

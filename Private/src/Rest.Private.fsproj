@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup />
   <ItemGroup>
+    <Compile Include="NonEmptyString.fs" />
     <Compile Include="Library.fs" />
   </ItemGroup>
 </Project>

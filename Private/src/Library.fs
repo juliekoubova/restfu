@@ -4,6 +4,7 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open System
 
+
 [<AutoOpen>]
 module Utils =
   let ignoreArg0 fn = fun _ arg -> fn arg
@@ -32,8 +33,3 @@ module Utils =
     if nullable.HasValue
     then Some nullable.Value
     else None
-
-  let nonEmptyStringToOption (str : string) =
-    if String.IsNullOrEmpty str
-    then None
-    else Some str

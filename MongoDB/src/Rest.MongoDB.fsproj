@@ -3,7 +3,7 @@
     <Compile Include="Mongo.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.10.1" />
+    <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
     <ProjectReference Include="../../Private/src/Rest.Private.fsproj" />
     <ProjectReference Include="../../Rest/src/Rest.fsproj" />
   </ItemGroup>

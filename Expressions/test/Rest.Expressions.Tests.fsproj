@@ -2,6 +2,7 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Test.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
     <ProjectReference Include="../src/Rest.Expressions.fsproj" />
+    <PackageReference Include="FParsec" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="StringLiterals.fs" />

@@ -6,7 +6,7 @@
     <Compile Include="ExprToLinq.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FParsec" Version="1.1.0" />
+    <PackageReference Include="FParsec" Version="1.1.1" />
     <ProjectReference Include="../../Private/src/Rest.Private.fsproj" />
   </ItemGroup>
 </Project>

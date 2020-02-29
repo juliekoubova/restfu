@@ -4,17 +4,24 @@ open MongoDB.Driver
 open Rest
 open Rest.MongoDB
 open Rest.Tests
+open System
+open System.Threading
 open Expecto
 
-let client =
-  MongoClient(System.Environment.GetEnvironmentVariable("MONGODB_URL"))
+let mongoUrl =
+  Environment.GetEnvironmentVariable("MONGODB_URL")
+  |> NonEmptyString.create
+  |> Option.orElse (NonEmptyString.create("mongodb://localhost:27017/"))
+  |> Option.get
 
-let db = client.GetDatabase("restfu-test")
+let db =
+  MongoClient(mongoUrl.Value).GetDatabase("restfu-test")
+
 let mutable collectionIndex = 0
 
 let withMongoDBResource f () =
   let collectionName =
-    sprintf "thingies-%i" (System.Threading.Interlocked.Increment (&collectionIndex))
+    sprintf "thingies-%i" (Interlocked.Increment (&collectionIndex))
 
   let collection = db.GetCollection<Thingy>(collectionName)
   collection.DeleteMany(fun _ -> true) |> ignore

@@ -13,13 +13,12 @@ module private MongoDBResource =
     match ex with
     | :? 'T as result -> Some result
     | :? AggregateException as ae ->
-      ae.InnerExceptions |> Seq.pick extractException<'T> |> Some
+      ae.InnerExceptions |> Seq.tryPick extractException<'T>
     | _ -> None
 
   let isDuplicateKey ex =
     match extractException<MongoWriteException> ex with
-    | Some mwe when mwe.WriteError.Category = ServerErrorCategory.DuplicateKey ->
-      true
+    | Some mwe -> mwe.WriteError.Category = ServerErrorCategory.DuplicateKey
     | _ -> false
 
 

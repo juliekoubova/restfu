@@ -14,10 +14,10 @@ jobs:
       with:
         dotnet-version: 3.1.101
 
-    # - name: Test
-    #   env:
-    #     MONGODB_URL: ${{ secrets.MONGODB_URL }}
-    #   run: dotnet test
+    - name: Test
+      env:
+        MONGODB_URL: ${{ secrets.MONGODB_URL }}
+      run: dotnet test
 
     - name: Build NuGet Packages
       shell: pwsh
@@ -36,7 +36,7 @@ jobs:
         }
 
         $PackArgs = @(
-          '--configuration', 'Release' #, '--no-restore'
+          '--configuration', 'Release', '--no-restore'
         )
 
         foreach ($tuple in $Props.GetEnumerator()) {
@@ -45,7 +45,7 @@ jobs:
 
         dotnet pack @PackArgs
 
-        Set-Content ./.nupkg/version $Props.Version
+        Set-Content .nupkg/version $Props.Version
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v1
@@ -67,7 +67,7 @@ jobs:
     - name: Upload NuGet Packages to GitHub
       shell: pwsh
       run: |
-        Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
+        Get-ChildItem .nupkg/*.nupkg |% {
           curl -sSX PUT `
             -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
             -F package=@$_ `
@@ -77,19 +77,20 @@ jobs:
   github_release:
     needs: build
     runs-on: windows-latest
-    if: startsWith(github.ref, 'refs/tags/v')
     steps:
     - name: Download Artifacts
+      if: startsWith(github.ref, 'refs/tags/v')
       uses: actions/download-artifact@v1
       with:
         name: nupkg
         path: .nupkg
     - name: Create ZIP Archive
+      if: startsWith(github.ref, 'refs/tags/v')
       id: zip
       shell: pwsh
       run: |
-        $Version = Get-Content ./.nupkg/version
-        Remove-Item ./.nupkg/version
+        $Version = Get-Content .nupkg/version
+        Remove-Item .nupkg/version
 
         $ZipFile = "restfu-${Version}.zip"
 
@@ -108,15 +109,16 @@ jobs:
         "::set-output name=zip::$ZipFile"
 
     - name: Create GitHub Release
+      if: steps.zip.outputs.version
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: v${{ steps.extract.outputs.version }}
+        release_name: v${{ steps.zip.outputs.version }}
         draft: false
-        prerelease: ${{ steps.extract.outputs.prerelease }}
+        prerelease: ${{ steps.zip.outputs.prerelease }}
 
     - name: Upload Packages to the GitHub Release
       if: steps.zip.outputs.zip && steps.create_release.outputs.upload_url

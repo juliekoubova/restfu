@@ -24,8 +24,6 @@ jobs:
     - name: Build NuGet Packages
       id: pack
       shell: pwsh
-      env:
-
       run: |
 
         $Props = @{

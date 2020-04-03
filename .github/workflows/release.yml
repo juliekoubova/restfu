@@ -19,7 +19,7 @@ jobs:
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
       run: dotnet test
 
-    - name: Build NuGet Packages
+    - name: Build Packages
       shell: pwsh
       run: |
 
@@ -47,24 +47,43 @@ jobs:
 
         Set-Content .nupkg/version $Props.Version
 
-    - name: Upload Artifacts
+    - name: Upload Packages
       uses: actions/upload-artifact@v1
       with:
         name: nupkg
         path: .nupkg
 
-  github_package:
+  nuget_package:
     needs: build
     runs-on: windows-latest
-    if: github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v')
     steps:
     - name: Download Artifacts
+      if: startsWith(github.ref, 'refs/tags/v')
       uses: actions/download-artifact@v1
       with:
         name: nupkg
         path: .nupkg
 
-    - name: Upload NuGet Packages to GitHub
+    - name: Upload Packages to NuGet.org
+      if: startsWith(github.ref, 'refs/tags/v')
+      shell: pwsh
+      run: |
+        dotnet push .nupkg/*.nupkg -k '${{ secrets.NUGET_KEY }}'
+
+
+  github_package:
+    needs: build
+    runs-on: windows-latest
+    steps:
+    - name: Download Packages
+      if: github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v')
+      uses: actions/download-artifact@v1
+      with:
+        name: nupkg
+        path: .nupkg
+
+    - name: Upload Packages to GitHub Packages
+      if: github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v')
       shell: pwsh
       run: |
         Get-ChildItem .nupkg/*.nupkg |% {
@@ -78,7 +97,7 @@ jobs:
     needs: build
     runs-on: windows-latest
     steps:
-    - name: Download Artifacts
+    - name: Download Packages
       if: startsWith(github.ref, 'refs/tags/v')
       uses: actions/download-artifact@v1
       with:
@@ -130,15 +149,3 @@ jobs:
         asset_path: ./${{ steps.zip.outputs.zip }}
         asset_name: ${{ steps.zip.outputs.zip }}
         asset_content_type: application/zip
-
-  # publish:
-
-
-
-  #   # - name: Upload Packages to Nuget.org
-  #   #   if: false && steps.pack.outputs.version
-  #   #   shell: pwsh
-  #   #   env:
-  #   #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
-  #   #   run: |
-  #   #     dotnet push $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg -k $Env:NUGET_KEY

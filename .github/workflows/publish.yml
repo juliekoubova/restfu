@@ -72,7 +72,7 @@ jobs:
 
         [System.IO.Compression.ZipFile]::CreateFromDirectory(
           (Resolve-Path "$Env:GITHUB_WORKSPACE\.nupkg"),
-          $ZipFile
+          $ZipFile,
           'NoCompression',
           $false
         )

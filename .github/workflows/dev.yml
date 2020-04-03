@@ -58,9 +58,9 @@ jobs:
 
         dotnet pack @PackArgs
 
-        if ($?) {
-          zip restfu.zip "$Env:GITHUB_WORKSPACE\.nupkg\*.nupkg"
-        }
+        # if ($?) {
+        #   zip restfu.zip "$Env:GITHUB_WORKSPACE\.nupkg\*.nupkg"
+        # }
 
     - name: Upload NuGet Packages to GitHub
       if: github.ref == 'refs/heads/dev'

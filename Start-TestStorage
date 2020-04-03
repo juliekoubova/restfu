@@ -1,7 +1,12 @@
 #!/bin/sh
-trap 'kill $MONGOPID; exit' INT
-mongod --dbpath $TMPDIR &
-MONGOPID=$!
+# trap 'kill $MONGOPID; exit' INT
 
-mkdir -p $TMPDIR/azurite
-npx azurite --location $TMPDIR/azurite
+DATA=$TMPDIR
+MONGO_DB=$DATA/mongo
+
+mkdir -p $MONGO_DB
+mongod --dbpath $MONGO_DB #&
+# MONGOPID=$!
+
+# mkdir -p $TMPDIR/azurite
+# npx azurite --location $TMPDIR/azurite

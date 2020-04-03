@@ -16,7 +16,7 @@
         ");
 
         var match = GitRefRegex.Match(Value);
-        Branch = match.Groups["Branch"].Value ?? match.Groups["Tag"].Value;
+        Result = match.Groups["Branch"].Value ?? match.Groups["Tag"].Value;
       ]]></Code>
     </Task>
   </UsingTask>

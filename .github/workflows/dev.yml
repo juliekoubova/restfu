@@ -13,12 +13,12 @@ jobs:
       with:
         dotnet-version: 3.1.101
 
-    - name: Test
-      env:
-        DOTNET_CLI_TELEMETRY_OPTOUT: 0
-        DOTNET_NOLOGO: 1
-        MONGODB_URL: ${{ secrets.MONGODB_URL }}
-      run: dotnet test
+    # - name: Test
+    #   env:
+    #     DOTNET_CLI_TELEMETRY_OPTOUT: 0
+    #     DOTNET_NOLOGO: 1
+    #     MONGODB_URL: ${{ secrets.MONGODB_URL }}
+    #   run: dotnet test
 
     - name: Build NuGet Packages
       id: build
@@ -51,9 +51,9 @@ jobs:
         }
 
         $PackArgs
-        write-output "::set-output name=branch::$($Props.RepositoryBranch)"
-        write-output "::set-output name=version::$($Props.Version)"
-        write-output "::set-output name=version_suffix::$($Props.VersionSuffix)"
+        "::set-output name=branch::$($Props.RepositoryBranch)"
+        "::set-output name=version::$($Props.Version)"
+        "::set-output name=version_suffix::$($Props.VersionSuffix)"
 
         # dotnet pack @PackArgs
 

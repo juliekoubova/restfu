@@ -1,13 +1,13 @@
 name: dev
+runs-on: windows-latest
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 0
+  DOTNET_NOLOGO: 1
 on:
   push:
   pull_request:
 jobs:
-  publish:
-    env:
-      DOTNET_CLI_TELEMETRY_OPTOUT: 0
-      DOTNET_NOLOGO: 1
-    runs-on: [windows-latest]
+  build:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -24,21 +24,19 @@ jobs:
     - name: Build NuGet Packages
       id: pack
       shell: pwsh
+      env:
+
       run: |
 
-        $GithubRef = '${{ github.ref }}'
-
         $Props = @{
-          RepositoryCommit = '${{ github.sha }}'
         }
 
-        if ($GithubRef -match '^refs/heads/(.+)$') {
-          $Props.RepositoryBranch = $matches[1]
+        if ($Env:GITHUB_REF -match '^refs/heads/(.+)$') {
           $Props.VersionSuffix = '{0}-{1:yyyy-MM-dd-HHmmss}-{2}' -f
             $matches[1],
             (Get-Date).ToUniversalTime(),
-            $Props.RepositoryCommit.Substring(0, 7)
-        } elseif ($GithubRef -match '^refs/tags/v(.+)$') {
+            $(git rev-parse --short $Env:GITHUB_SHA)
+        } elseif ($Env:GITHUB_REF -match '^refs/tags/v(.+)$') {
           $Props.Version = $matches[1]
 
           "::set-output name=version::$($Props.Version)"
@@ -58,67 +56,78 @@ jobs:
 
         dotnet pack @PackArgs
 
-        if (-not $?) {
-          exit $LastExitCode
-        }
+        # if (-not $?) {
+        #   exit $LastExitCode
+        # }
 
-        if ($Props.VersionSuffix) {
-          $ZipSuffix = $Props.VersionSuffix
-        } elseif ($Props.Version) {
-          $ZipSuffix = 'v' + $Props.Version
-        }
+        # if ($Props.VersionSuffix) {
+        #   $ZipSuffix = $Props.VersionSuffix
+        # } elseif ($Props.Version) {
+        #   $ZipSuffix = 'v' + $Props.Version
+        # }
 
-        $ZipFile = "restfu-${ZipSuffix}.zip"
+        # $ZipFile = "restfu-${ZipSuffix}.zip"
 
-        [System.IO.Compression.ZipFile]::CreateFromDirectory(
-          (Resolve-Path "$Env:GITHUB_WORKSPACE\.nupkg"),
-          $ZipFile,
-          'NoCompression',
-          $false
-        )
+        # [System.IO.Compression.ZipFile]::CreateFromDirectory(
+        #   (Resolve-Path "$Env:GITHUB_WORKSPACE\.nupkg"),
+        #   $ZipFile,
+        #   'NoCompression',
+        #   $false
+        # )
 
-        "::set-output name=zip::$ZipFile"
+        # "::set-output name=zip::$ZipFile"
 
-    - name: Upload NuGet Packages to GitHub
-      if: github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v')
-      shell: pwsh
-      run: |
-        Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
-          curl -sSX PUT `
-            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
-            -F package=@$_ `
-            https://nuget.pkg.github.com/juliekoubova/
-        }
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v1
+        with:
+          name: nupkg
+          path: .nupkg
 
-    - name: Create GitHub Release
-      id: create_release
-      if: steps.pack.outputs.version
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ steps.pack.outputs.version }}
-        draft: false
-        prerelease: ${{ steps.pack.outputs.prerelease }}
+  # publish_github_package:
+  #   if: github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v')
+  #   steps:
+  #   - name: Upload Packages to the GitHub Release
+  #     if: steps.pack.outputs.zip && steps.create_release.outputs.upload_url
+  #     uses: actions/upload-release-asset@v1
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     with:
+  #       upload_url: ${{ steps.create_release.outputs.upload_url }}
+  #       asset_path: ./${{ steps.pack.outputs.zip }}
+  #       asset_name: ${{ steps.pack.outputs.zip }}
+  #       asset_content_type: application/zip
 
-    - name: Upload Packages to the GitHub Release
-      if: steps.pack.outputs.zip
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # shell: pwsh
-      # run: write-host '${{ steps.create_release.outputs.upload_url }}'
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./${{ steps.pack.outputs.zip }}
-        asset_name: ${{ steps.pack.outputs.zip }}
-        asset_content_type: application/zip
+  # publish:
+  #   needs: build
+  #   if: github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v')
+  #   steps:
+  #   - name: Upload NuGet Packages to GitHub
+  #     shell: pwsh
+  #     run: |
+  #       Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
+  #         curl -sSX PUT `
+  #           -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
+  #           -F package=@$_ `
+  #           https://nuget.pkg.github.com/juliekoubova/
+  #       }
 
-    # - name: Upload Packages to Nuget.org
-    #   if: false && steps.pack.outputs.version
-    #   shell: pwsh
-    #   env:
-    #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
-    #   run: |
-    #     dotnet push $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg -k $Env:NUGET_KEY
+  #   - name: Create GitHub Release
+  #     id: create_release
+  #     if: steps.pack.outputs.version
+  #     uses: actions/create-release@v1
+  #     env:
+  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     with:
+  #       tag_name: ${{ github.ref }}
+  #       release_name: ${{ steps.pack.outputs.version }}
+  #       draft: false
+  #       prerelease: ${{ steps.pack.outputs.prerelease }}
+
+
+  #   # - name: Upload Packages to Nuget.org
+  #   #   if: false && steps.pack.outputs.version
+  #   #   shell: pwsh
+  #   #   env:
+  #   #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
+  #   #   run: |
+  #   #     dotnet push $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg -k $Env:NUGET_KEY

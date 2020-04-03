@@ -17,6 +17,8 @@ jobs:
         dotnet-version: 3.1.101
     - name: Test
       env:
+        DOTNET_CLI_TELEMETRY_OPTOUT: 0
+        DOTNET_NOLOGO: 1
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
       run: dotnet test
     - name: Publish to GitHub Packages
@@ -45,14 +47,14 @@ jobs:
         }
 
     - name: Publish to nuget.org
-      if: github.event_name == 'release'
+      # if: github.event_name == 'release'
       shell: pwsh
       env:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
       run: |
         $Branch = '${{ github.ref }}'
         $SHA = '${{ github.sha }}'
-        $Branch, $SHA, '${{ github.event }}'
+        $Branch, $SHA, '${{ github.event_name }}', '${{ github.event }}'
 
         # dotnet pack `
         #   --configuration Release `

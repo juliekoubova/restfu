@@ -58,12 +58,29 @@ jobs:
 
         dotnet pack @PackArgs
 
-        # if ($?) {
-        #   zip restfu.zip "$Env:GITHUB_WORKSPACE\.nupkg\*.nupkg"
-        # }
+        if (-not $?) {
+          exit $LastExitCode
+        }
+
+        if ($Props.VersionSuffix) {
+          $ZipSuffix = $Props.VersionSuffix
+        } elseif ($Props.Version) {
+          $ZipSuffix = 'v' + $Props.Version
+        }
+
+        $ZipFile = "restfu-${ZipSuffix}.zip"
+
+        [System.IO.Compression.ZipFile]::CreateFromDirectory(
+          (Resolve-Path "$Env:GITHUB_WORKSPACE\.nupkg"),
+          $ZipFile
+          'NoCompression',
+          $false
+        )
+
+        "::set-output name=zip::$ZipFile"
 
     - name: Upload NuGet Packages to GitHub
-      if: github.ref == 'refs/heads/dev'
+      if: github.ref == 'refs/heads/dev' || startsWith(githu.ref, 'refs/tags/v')
       shell: pwsh
       run: |
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
@@ -81,23 +98,22 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: Release ${{ steps.pack.outputs.version }}
+        release_name: ${{ steps.pack.outputs.version }}
         draft: false
         prerelease: ${{ steps.pack.outputs.prerelease }}
 
     - name: Upload Packages to the GitHub Release
-      # id: upload-release-asset
-      if: steps.pack.outputs.version
-      # uses: actions/upload-release-asset@v1
+      if: steps.pack.outputs.zip
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      shell: pwsh
-      run: write-host '${{ steps.create_release.outputs.upload_url }}'
-      # with:
-      #   upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #   asset_path: ./restfu.zip
-      #   asset_name: restfu-v${{ steps.pack.outputs.version }}.zip
-      #   asset_content_type: application/zip
+      # shell: pwsh
+      # run: write-host '${{ steps.create_release.outputs.upload_url }}'
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./${{ steps.pack.outputs.zip }}
+        asset_name: ${{ steps.pack.outputs.zip }}
+        asset_content_type: application/zip
 
     # - name: Upload Packages to Nuget.org
     #   if: false && steps.pack.outputs.version

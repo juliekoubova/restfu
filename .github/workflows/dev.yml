@@ -2,9 +2,6 @@ name: dev
 on:
   push:
   pull_request:
-  release:
-    types: [ published, prerelased ]
-
 jobs:
   publish:
     runs-on: [windows-latest]
@@ -15,39 +12,60 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
+
     - name: Test
       env:
         DOTNET_CLI_TELEMETRY_OPTOUT: 0
         DOTNET_NOLOGO: 1
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
       run: dotnet test
-    - name: Publish to GitHub Packages
-      if: github.event_name == 'push' && github.ref == 'dev'
+
+    - name: Build NuGet Packages
+      id: build
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v'))
       shell: pwsh
       run: |
-        $Branch = '${{ github.ref }}'
-        $SHA = '${{ github.sha }}'
-        $VersionSuffix = '{0}-{1:yyyy-MM-dd-HHmmss}-{2}' -f
-          $Branch,
-          (Get-Date).ToUniversalTime(),
-          $SHA.Substring(0, 7)
 
-        dotnet pack `
-          --configuration Release `
-          --no-restore `
-          --version-suffix $VersionSuffix `
-          --p:RepositoryBranch=$Branch `
-          --p:RepositoryCommit=$SHA
-
-        Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
-          curl -sSX PUT `
-            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
-            -F package=@$_ `
-            https://nuget.pkg.github.com/juliekoubova/
+        $GithubRef = '${{ github.ref }}'
+        $Props = @{
+          RepositoryCommit = '${{ github.sha }}'
         }
 
+        if ($GithubRef -match '^refs/heads/(.+)$') {
+          $Props.RepositoryBranch = $matches[1]
+          $Props.VersionSuffix = '{0}-{1:yyyy-MM-dd-HHmmss}-{2}' -f
+            $matches[1]
+            (Get-Date).ToUniversalTime(),
+            $Props.RepositoryCommit.Substring(0, 7)
+        }
+        elseif ($GithubRef -match '^refs/tags/v(.+)$') {
+          $Props.Version = $matches[1]
+        }
+
+        $PackArgs = @(
+          '--configuration', 'Release', '--no-restore',
+        )
+
+        foreach ($tuple in $Props.GetEnumerator()) {
+          $PackArgs += "-p:$($tuple.Key)=$($tuple.Value)"
+        }
+
+        $PackArgs
+        write-output "::set-output name=branch::$($Props.RepositoryBranch)"
+        write-output "::set-output name=version::$($Props.Version)"
+        write-output "::set-output name=version_suffix::$($Props.VersionSuffix)"
+
+        # dotnet pack @PackArgs
+
+        # Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
+        #   curl -sSX PUT `
+        #     -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
+        #     -F package=@$_ `
+        #     https://nuget.pkg.github.com/juliekoubova/
+        # }
+
     - name: Publish to nuget.org
-      if: github.event_name == 'release'
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       shell: pwsh
       env:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}

@@ -47,14 +47,14 @@ jobs:
         }
 
     - name: Publish to nuget.org
-      # if: github.event_name == 'release'
+      if: github.event_name == 'release'
       shell: pwsh
       env:
         NUGET_KEY: ${{ secrets.NUGET_KEY }}
       run: |
         $Branch = '${{ github.ref }}'
         $SHA = '${{ github.sha }}'
-        $Branch, $SHA, '${{ github.event_name }}', '${{ github.event }}'
+        $Branch, $SHA, '${{ github.event_name }}', 'pre:${{ github.event.release.prerelease }}'
 
         # dotnet pack `
         #   --configuration Release `

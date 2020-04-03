@@ -1,9 +1,9 @@
 module Restfu.Azure.Cosmos.Table.TableTests
 
 open MongoDB.Driver
-open Rest
-open Rest.MongoDB
-open Rest.Tests
+open Restfu
+open Restfu.MongoDB
+open Restfu.Tests
 open System
 open System.Threading
 open Expecto

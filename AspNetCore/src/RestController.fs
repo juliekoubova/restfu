@@ -1,6 +1,6 @@
-namespace Rest.AspNetCore
-open Rest
-open Rest.AspNetCore
+namespace Restfu.AspNetCore
+open Restfu
+open Restfu.AspNetCore
 open RestResourceProperties
 
 open Microsoft.AspNetCore.Mvc

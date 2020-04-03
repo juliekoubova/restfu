@@ -1,4 +1,4 @@
-module internal Rest.AspNetCore.ApplicationModel
+module internal Restfu.AspNetCore.ApplicationModel
 
 open Microsoft.AspNetCore.Mvc.ActionConstraints
 open Microsoft.AspNetCore.Mvc.ApplicationModels

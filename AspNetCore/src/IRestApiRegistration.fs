@@ -1,5 +1,5 @@
-namespace Rest.AspNetCore
-open Rest
+namespace Restfu.AspNetCore
+open Restfu
 
 type IRestApiRegistration =
   abstract member Resource : IRestResource with get

@@ -1,6 +1,6 @@
-module Rest.AspNetCore.RestActionResult
-open Rest
-open Rest.AspNetCore.StatusCode
+module Restfu.AspNetCore.RestActionResult
+open Restfu
+open Restfu.AspNetCore.StatusCode
 
 open System
 open Microsoft.AspNetCore.Mvc

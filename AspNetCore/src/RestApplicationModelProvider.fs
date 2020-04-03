@@ -1,4 +1,4 @@
-namespace Rest.AspNetCore
+namespace Restfu.AspNetCore
 open Microsoft.AspNetCore.Mvc.ApplicationModels
 open Microsoft.AspNetCore.Mvc.ModelBinding
 

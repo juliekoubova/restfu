@@ -1,6 +1,6 @@
-module Rest.AspNetCore.RestControllerModel
-open Rest
-open Rest.Reflection
+module Restfu.AspNetCore.RestControllerModel
+open Restfu
+open Restfu.Reflection
 
 open ApplicationModel
 open RestResourceProperties

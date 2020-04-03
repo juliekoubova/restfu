@@ -1,4 +1,4 @@
-namespace Rest.AspNetCore
+namespace Restfu.AspNetCore
 open Microsoft.OpenApi.Any
 open Microsoft.OpenApi.Models
 open Swashbuckle.AspNetCore.SwaggerGen

@@ -3,7 +3,7 @@
     <Compile Include="TableResource.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../Private/src/Rest.Private.fsproj" />
-    <ProjectReference Include="../../Rest/src/Rest.fsproj" />
+    <ProjectReference Include="../../Private/src/Restfu.Private.fsproj" />
+    <ProjectReference Include="../../Restfu/src/Restfu.fsproj" />
   </ItemGroup>
 </Project>

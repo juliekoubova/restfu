@@ -1,5 +1,5 @@
 [<AutoOpen>]
-module Rest.NonEmptyString
+module Restfu.NonEmptyString
 open System
 
 type NonEmptyString =

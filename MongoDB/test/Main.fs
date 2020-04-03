@@ -1,4 +1,4 @@
-﻿module Rest.MongoDB.Tests.Main
+﻿module Restfu.MongoDB.Tests.Main
 open Expecto
 
 [<EntryPoint>]

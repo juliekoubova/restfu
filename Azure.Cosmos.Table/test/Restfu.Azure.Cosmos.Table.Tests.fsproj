@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Test.Build.props', '$(MSBuildThisFileDirectory)../'))" />
   <ItemGroup>
-    <ProjectReference Include="../../Rest/src/Rest.fsproj" />
-    <ProjectReference Include="../../Private/src/Rest.Private.fsproj" />
-    <ProjectReference Include="../../Rest/test/Rest.Tests.fsproj" />
+    <ProjectReference Include="../../Restfu/src/Restfu.fsproj" />
+    <ProjectReference Include="../../Private/src/Restfu.Private.fsproj" />
+    <ProjectReference Include="../../Restfu/test/Restfu.Tests.fsproj" />
     <ProjectReference Include="../src/Restfu.Azure.Cosmos.Table.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MongoCrudTests.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
 </Project>

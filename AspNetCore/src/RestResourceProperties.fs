@@ -1,5 +1,5 @@
-module internal Rest.AspNetCore.RestResourceProperties
-open Rest
+module internal Restfu.AspNetCore.RestResourceProperties
+open Restfu
 
 open System.Collections.Generic
 open Microsoft.AspNetCore.Mvc.ApplicationModels

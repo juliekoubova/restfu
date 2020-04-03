@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../../Restfu/src/Restfu.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Library.fs" />
+    <Compile Include="Mapper.fs" />
+  </ItemGroup>
+</Project>

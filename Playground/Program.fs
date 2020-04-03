@@ -5,9 +5,9 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.OpenApi.Models
 open MongoDB.Bson.Serialization.Attributes
 open MongoDB.Driver
-open Rest
-open Rest.AspNetCore
-open Rest.MongoDB
+open Restfu
+open Restfu.AspNetCore
+open Restfu.MongoDB
 open System
 open System.ComponentModel.DataAnnotations
 

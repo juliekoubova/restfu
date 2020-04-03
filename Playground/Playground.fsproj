@@ -10,11 +10,11 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="5.0.0" />
-    <ProjectReference Include="../Rest/src/Rest.fsproj" />
-    <ProjectReference Include="../AspNetCore/src/Rest.AspNetCore.fsproj" />
+    <ProjectReference Include="../Restfu/src/Restfu.fsproj" />
+    <ProjectReference Include="../AspNetCore/src/Restfu.AspNetCore.fsproj" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MongoDB\src\Rest.MongoDB.fsproj" />
+    <ProjectReference Include="..\MongoDB\src\Restfu.MongoDB.fsproj" />
   </ItemGroup>
 </Project>

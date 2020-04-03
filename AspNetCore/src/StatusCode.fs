@@ -1,5 +1,5 @@
-module Rest.AspNetCore.StatusCode
-open Rest
+module Restfu.AspNetCore.StatusCode
+open Restfu
 open Microsoft.AspNetCore.Http
 
 let successCode success =

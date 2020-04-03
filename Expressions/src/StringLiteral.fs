@@ -1,4 +1,4 @@
-module Rest.StringLiteral
+module Restfu.StringLiteral
 open FParsec
 
 let parse : Parser<string, unit> =

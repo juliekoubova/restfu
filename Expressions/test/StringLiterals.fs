@@ -1,7 +1,7 @@
-module Rest.Tests.StringLiterals
+module Restfu.Tests.StringLiterals
 open Expecto
 open FParsec
-open Rest
+open Restfu
 
 let parse (str : string) : Reply<string> =
   use stream = new CharStream<unit> (str, 0, str.Length)

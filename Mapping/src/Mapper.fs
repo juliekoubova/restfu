@@ -1,4 +1,4 @@
-namespace Rest.Mapping
+namespace Restfu.Mapping
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.DerivedPatterns
 open Microsoft.FSharp.Quotations.ExprShape

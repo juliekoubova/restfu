@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <Compile Include="Mongo.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
+    <ProjectReference Include="../../Private/src/Restfu.Private.fsproj" />
+    <ProjectReference Include="../../Restfu/src/Restfu.fsproj" />
+  </ItemGroup>
+</Project>

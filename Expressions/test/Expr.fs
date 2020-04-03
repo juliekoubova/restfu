@@ -1,7 +1,7 @@
-module Rest.Tests.ExprTests
+module Restfu.Tests.ExprTests
 open Expecto
-open Rest.ExprAst
-open Rest
+open Restfu.ExprAst
+open Restfu
 
 
 type P = {

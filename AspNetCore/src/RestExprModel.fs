@@ -1,5 +1,5 @@
-namespace Rest.AspNetCore
-open Rest
+namespace Restfu.AspNetCore
+open Restfu
 open System
 open System.ComponentModel
 

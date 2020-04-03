@@ -1,4 +1,4 @@
-module Rest.ExprAst
+module Restfu.ExprAst
 open FParsec
 
 type Value =

@@ -1,6 +1,6 @@
 [<AutoOpen>]
-module Rest.AspNetCore.Extensions
-open Rest
+module Restfu.AspNetCore.Extensions
+open Restfu
 
 open Microsoft.AspNetCore.Mvc.ApplicationModels
 open Microsoft.Extensions.DependencyInjection

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Restfu/src/Restfu.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationModel.fs" />
+    <Compile Include="IRestApiRegistration.fs" />
+    <Compile Include="StatusCode.fs" />
+    <Compile Include="RestActionResult.fs" />
+    <Compile Include="RestResourceProperties.fs" />
+    <Compile Include="RestExprModel.fs" />
+    <Compile Include="RestController.fs" />
+    <Compile Include="RestControllerModel.fs" />
+    <Compile Include="RestApplicationModelProvider.fs" />
+    <Compile Include="SwaggerOperationResponsesFilter.fs" />
+    <Compile Include="SwaggerRestExprModelFilter.fs" />
+    <Compile Include="SwaggerSchemaIdSelector.fs" />
+    <Compile Include="Extensions.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0" />
+  </ItemGroup>
+</Project>

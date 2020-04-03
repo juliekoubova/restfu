@@ -1,4 +1,4 @@
-namespace Rest
+namespace Restfu
 open System
 open System.Reflection
 

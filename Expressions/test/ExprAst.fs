@@ -1,7 +1,7 @@
-module Rest.Tests.ExprAstTests
+module Restfu.Tests.ExprAstTests
 open Expecto
-open Rest
-open Rest.ExprAst
+open Restfu
+open Restfu.ExprAst
 open FParsec
 
 let bTrue = Value (Boolean true)

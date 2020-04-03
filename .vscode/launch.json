@@ -5,11 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Rest.Tests",
+      "name": "Restfu.Tests",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/Rest.Tests/bin/Debug/netcoreapp3.1/Rest.Tests.dll",
+      "program": "${workspaceFolder}/Restfu.Tests/bin/Debug/netcoreapp3.1/Restfu.Tests.dll",
       "args": [],
       "cwd": "${workspaceFolder}",
       "stopAtEntry": false,

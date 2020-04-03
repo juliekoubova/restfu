@@ -1,9 +1,8 @@
-module Rest.RestExprToLinq
+module Restfu.RestExprToLinq
 open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Linq.RuntimeHelpers
 open System
 open System.Reflection
-open Rest
 
 let private equality =
   getGenericFunctionDef <@ LanguagePrimitives.GenericEquality 0 0 @>

@@ -3,29 +3,29 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest", "Rest\src\Rest.fsproj", "{62457451-B9DE-473B-94F9-AD8D0376001A}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu", "Restfu\src\Restfu.fsproj", "{62457451-B9DE-473B-94F9-AD8D0376001A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.AspNetCore", "AspNetCore\src\Rest.AspNetCore.fsproj", "{8D9F3086-6257-4C26-9FD9-D22FF2A6984A}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu.AspNetCore", "AspNetCore\src\Restfu.AspNetCore.fsproj", "{8D9F3086-6257-4C26-9FD9-D22FF2A6984A}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Playground", "Playground\Playground.fsproj", "{58C2991B-8F26-4FFA-BB31-4CF67EA15663}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Mapping", "Mapping\src\Rest.Mapping.fsproj", "{1CB97137-97C7-4DFC-9247-281946F3091F}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu.Mapping", "Mapping\src\Restfu.Mapping.fsproj", "{1CB97137-97C7-4DFC-9247-281946F3091F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Mapping.Tests", "Mapping\test\Rest.Mapping.Tests.fsproj", "{184CBCE9-D17C-4CCF-9FE9-13C015D083B9}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu.Mapping.Tests", "Mapping\test\Restfu.Mapping.Tests.fsproj", "{184CBCE9-D17C-4CCF-9FE9-13C015D083B9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Tests", "Rest\test\Rest.Tests.fsproj", "{2E7910C1-7D70-48C8-950C-09EEC849DA1A}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu.Tests", "Restfu\test\Restfu.Tests.fsproj", "{2E7910C1-7D70-48C8-950C-09EEC849DA1A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Expressions", "Expressions\src\Rest.Expressions.fsproj", "{C24AF5AE-2C01-4A27-9278-EE50B9EBD0D3}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu.Expressions", "Expressions\src\Restfu.Expressions.fsproj", "{C24AF5AE-2C01-4A27-9278-EE50B9EBD0D3}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Expressions.Tests", "Expressions\test\Rest.Expressions.Tests.fsproj", "{59A68FE9-9B71-42A5-B32D-8F9695A777CB}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu.Expressions.Tests", "Expressions\test\Restfu.Expressions.Tests.fsproj", "{59A68FE9-9B71-42A5-B32D-8F9695A777CB}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.Private", "Private\src\Rest.Private.fsproj", "{F42B12FC-8FED-48ED-B9EF-7E21936FE60E}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu.Private", "Private\src\Restfu.Private.fsproj", "{F42B12FC-8FED-48ED-B9EF-7E21936FE60E}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.MongoDB", "MongoDB\src\Rest.MongoDB.fsproj", "{8F794BFC-3976-4DED-ABD0-A255B4733935}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu.MongoDB", "MongoDB\src\Restfu.MongoDB.fsproj", "{8F794BFC-3976-4DED-ABD0-A255B4733935}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MongoDB", "MongoDB", "{E4A8DCDF-E634-4689-BAEE-2481CFEA1733}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Rest.MongoDB.Tests", "MongoDB\test\Rest.MongoDB.Tests.fsproj", "{C278AF68-8FFD-4149-8961-F41135660D4A}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Restfu.MongoDB.Tests", "MongoDB\test\Restfu.MongoDB.Tests.fsproj", "{C278AF68-8FFD-4149-8961-F41135660D4A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure.Cosmos.Table", "Azure.Cosmos.Table", "{A75FC13F-A0C0-4353-81FD-037F735A4499}"
 EndProject

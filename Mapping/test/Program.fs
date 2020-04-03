@@ -1,4 +1,4 @@
-module Rest.Tests.Program
+module Restfu.Tests.Program
 open Expecto
 
 [<EntryPoint>]

@@ -1,9 +1,9 @@
-namespace Rest.MongoDB
+namespace Restfu.MongoDB
 open MongoDB.Driver
 open MongoDB.Driver.Linq
-open Rest
-open Rest.RestFailDefinition
-open Rest.RestSuccessDefinition
+open Restfu
+open Restfu.RestFailDefinition
+open Restfu.RestSuccessDefinition
 open Microsoft.FSharp.Quotations
 open System
 

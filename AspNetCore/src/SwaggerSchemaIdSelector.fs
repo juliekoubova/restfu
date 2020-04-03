@@ -1,4 +1,4 @@
-namespace Rest.AspNetCore
+namespace Restfu.AspNetCore
 open Microsoft.Extensions.Options
 open Swashbuckle.AspNetCore.SwaggerGen
 

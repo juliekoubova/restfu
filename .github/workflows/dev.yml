@@ -49,7 +49,7 @@ jobs:
         }
 
         $PackArgs = @(
-          '--configuration', 'Release', '--no-restore'
+          '--configuration', 'Release' #, '--no-restore'
         )
 
         foreach ($tuple in $Props.GetEnumerator()) {

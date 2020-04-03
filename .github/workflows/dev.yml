@@ -1,7 +1,10 @@
 name: dev
 on:
-  push:
-    branches: dev
+  push
+  pull_request
+  release:
+    types: [ published, prerelased ]
+
 jobs:
   publish:
     runs-on: [windows-latest]
@@ -17,16 +20,22 @@ jobs:
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
       run: dotnet test
     - name: Publish to GitHub Packages
+      if: github.event_name == 'push' && github.ref == 'dev'
       shell: pwsh
       run: |
-        $VersionSuffix = 'dev-{0:yyyy-MM-dd-HHmmss}-{1}' -f
+        $Branch = '${{ github.ref }}'
+        $SHA = '${{ github.sha }}'
+        $VersionSuffix = '{0}-{1:yyyy-MM-dd-HHmmss}-{2}' -f
+          $Branch,
           (Get-Date).ToUniversalTime(),
-          ('${{ github.sha }}').Substring(0, 7)
+          $SHA.Substring(0, 7)
 
         dotnet pack `
           --configuration Release `
           --no-restore `
-          --version-suffix $VersionSuffix
+          --version-suffix $VersionSuffix `
+          --p:RepositoryBranch=$Branch `
+          --p:RepositoryCommit=$SHA
 
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {
           curl -sSX PUT `
@@ -34,3 +43,22 @@ jobs:
             -F package=@$_ `
             https://nuget.pkg.github.com/juliekoubova/
         }
+
+    - name: Publish to nuget.org
+      if: github.event_name == 'release'
+      shell: pwsh
+      env:
+        NUGET_KEY: ${{ secrets.NUGET_KEY }}
+      run: |
+        $Branch = '${{ github.ref }}'
+        $SHA = '${{ github.sha }}'
+        $Branch, $SHA, '${{ github.event }}'
+
+        # dotnet pack `
+        #   --configuration Release `
+        #   --no-restore `
+        #   --version-suffix preview1 `
+        #   --p:RepositoryBranch=$Branch `
+        #   --p:RepositoryCommit=$SHA
+
+        # dotnet push $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg -k $Env:NUGET_KEY

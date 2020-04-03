@@ -80,7 +80,7 @@ jobs:
         "::set-output name=zip::$ZipFile"
 
     - name: Upload NuGet Packages to GitHub
-      if: github.ref == 'refs/heads/dev' || startsWith(githu.ref, 'refs/tags/v')
+      if: github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/v')
       shell: pwsh
       run: |
         Get-ChildItem $Env:GITHUB_WORKSPACE\.nupkg\*.nupkg |% {

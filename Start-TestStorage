@@ -1,0 +1,7 @@
+#!/bin/sh
+trap 'kill $MONGOPID; exit' INT
+mongod --dbpath $TMPDIR &
+MONGOPID=$!
+
+mkdir -p $TMPDIR/azurite
+npx azurite --location $TMPDIR/azurite

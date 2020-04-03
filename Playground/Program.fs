@@ -8,6 +8,7 @@ open MongoDB.Driver
 open Rest
 open Rest.AspNetCore
 open Rest.MongoDB
+open System
 open System.ComponentModel.DataAnnotations
 
 [<CLIMutable>]
@@ -38,7 +39,11 @@ type Toy = {
 }
 
 let mongoClient =
-  MongoClient(System.Environment.GetEnvironmentVariable("MONGODB_URL"))
+  Environment.GetEnvironmentVariable("MONGODB_URL")
+  |> NonEmptyString.create
+  |> Option.orElse (NonEmptyString.create "mongodb://localhost:27017")
+  |> (Option.get >> fun nes -> nes.Value)
+  |> MongoClient
 
 let playgroundDatabase =
   mongoClient.GetDatabase("playground")
@@ -49,7 +54,6 @@ let toys = MongoDBResource.Create(toyCollection, fun toy -> toy.Sku)
 let pets = InMemory.Create (fun pet -> pet.Name)
 let pet = Post >> pets.Handler >> ignore
 pet { Name = "Moan"; Owner = "Daddy"; Age = 33; Thicc = true }
-pet { Name = "On my mind"; Owner = "Moan"; Age = 26; Thicc = false }
 
 let configureServices (services : IServiceCollection) =
   ignore <| services.AddControllers()

@@ -37,8 +37,8 @@ jobs:
       shell: pwsh
       # working-directory: ${{ env.PackageOutputPath }}
       run: |
-        "${{ github.workspace }} -- ${{ env.PackageOutputPath }}"
-        pwd
+        get-childitem "${{ github.workspace }}\${{ env.PackageOutputPath }}"
+        # pwd
         # Get-ChildItem *.nupkg
         # Get-ChildItem *.nupkg |% {
         #   curl -X PUT `

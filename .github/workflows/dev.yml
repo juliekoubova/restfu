@@ -1,14 +1,15 @@
 name: dev
 on:
   pull_request:
+    branches-ignore: [ release/* ]
   push:
     branches: [ dev ]
 
 env:
-  Configuration: Release
   DOTNET_CLI_TELEMETRY_OPTOUT: 0
   DOTNET_NOLOGO: 1
-  PackageOutputPath: ${{ github.workspace }}\.nupkg
+  RESTFU_CONFIGURATION: Release
+  RESTFU_PACKAGE_PATH: .nupkg
 
 jobs:
   build:
@@ -19,11 +20,6 @@ jobs:
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.201
-
     - name: Restore, Build, and Test
       env:
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
@@ -33,14 +29,15 @@ jobs:
       if: github.ref == 'refs/heads/dev'
       run: dotnet pack
 
+    - name: Setup GitHub Packages API Key
+      if: github.ref == 'refs/heads/dev'
+      uses: actions/setup-dotnet@v1
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        source-url: https://nuget.pkg.github.com/juliekoubova/index.json
+
     - name: Upload to GitHub Packages
       if: github.ref == 'refs/heads/dev'
-      shell: pwsh
-      working-directory: ${{ env.PackageOutputPath }}
-      run: |
-        Get-ChildItem *.nupkg |% {
-          curl -sSX PUT `
-            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
-            -F package=@$_ `
-            https://nuget.pkg.github.com/juliekoubova/
-        }
+      working-directory: ${{ env. RESTFU_PACKAGE_PATH }}
+      run: dotnet nuget push '*.nupkg' --no-symbols=true

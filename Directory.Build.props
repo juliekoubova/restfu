@@ -5,38 +5,20 @@
     <RepositoryUrl>https://github.com/juliekoubova/restfu.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageOuputPath Condition=" '$(PackageOutputPath)' == '' ">$(MSBuildThisFileDirectory).nupkg/</PackageOuputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(RESTFU_CONFIGURATION)' != '' ">$(RESTFU_CONFIGURATION)</Configuration>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RestfuPackagePath>.nupkg</RestfuPackagePath>
+    <RestfuPackagePath Condition=" '$(RESTFU_PACKAGE_PATH)' != '' ">$(RESTFU_PACKAGE_PATH)</RestfuPackagePath>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)$(RestfuPackagePath)</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.1.74" />
   </ItemGroup>
-
-  <!-- <PropertyGroup Condition=" '$(GITHUB_REF)' != '' ">
-    <GithubRefRegex>^refs/(.+)/(.+)$</GithubRefRegex>
-    <GithubRefType>$([System.Text.RegularExpressions.Regex]::Replace($(GITHUB_REF), $(GithubRefRegex), `$1`))</GithubRefType>
-    <GithubRefName>$([System.Text.RegularExpressions.Regex]::Replace($(GITHUB_REF), $(GithubRefRegex), `$2`))</GithubRefName>
-    <GithubBranch Condition=" '$(GithubRefType)' == 'heads' ">$(GithubRefName)</GithubBranch>
-    <GithubTag Condition=" '$(GithubRefType)' == 'tags' ">$(GithubRefName)</GithubTag>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <RepositoryBranch Condition=" '$(GithubBranch)' != '' ">$(GithubBranch)</RepositoryBranch>
-    <RepositoryBranch Condition=" '$(GithubTag)' != '' ">$(GithubTag)</RepositoryBranch>
-    <RepositoryCommit>$(GITHUB_SHA)</RepositoryCommit>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <VersionSuffixA>private-</VersionSuffixA>
-    <VersionSuffixA Condition=" '$(USER)' != '' ">private-$(USER)-</VersionSuffixA>
-    <VersionSuffixA Condition=" '$(USERNAME)' != '' ">private-$(USERNAME)-</VersionSuffixA>
-    <VersionSuffixA Condition=" '$(GithubBranch)' != '' ">$(GithubBranch)-</VersionSuffixA>
-    <VersionSuffixA Condition=" '$(GithubTag)' != '' ">$(GithubTag)-</VersionSuffixA>
-    <VersionSuffixB>$([System.DateTime]::UtcNow.ToString(`yyyy-MM-dd-HHmmss`))</VersionSuffixB>
-    <VersionSuffixC Condition=" '$(GITHUB_SHA)' != '' ">-$(GITHUB_SHA.Substring(0, 7))</VersionSuffixC>
-    <VersionSuffix>$(VersionSuffixA)$(VersionSuffixB)$(VersionSuffixC)</VersionSuffix>
-    <VersionPrefix>0.0.0</VersionPrefix>
-    <Version Condition=" $(GithubTag.StartsWith('v')) ">$(GithubTag.Substring(1))</Version>
-  </PropertyGroup> -->
 
 </Project>

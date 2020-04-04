@@ -5,10 +5,10 @@ on:
       release/*
 
 env:
-  Configuration: Release
   DOTNET_CLI_TELEMETRY_OPTOUT: 0
   DOTNET_NOLOGO: 1
-  PackageOutputPath: ${{ github.workspace }}\.nupkg
+  RESTFU_CONFIGURATION: Release
+  RESTFU_PACKAGE_PATH: .nupkg
 
 jobs:
   build:
@@ -19,11 +19,6 @@ jobs:
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.201
-
     - name: Restore, Build, and Test
       env:
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
@@ -33,5 +28,9 @@ jobs:
       run: dotnet pack
 
     - name: Upload to NuGet.org
-      working-directory: ${{ env.PackageOutputPath }}
-      run: dotnet nuget push *.nupkg -k "${{ secrets.NUGET_KEY }}"
+      working-directory: ${{ env.RESTFU_PACKAGE_PATH }}
+      run: >
+        dotnet nuget push '*.nupkg'
+        --api-key '${{ secrets.NUGET_KEY }}'
+        --no-symbols=true
+        --source nuget.org

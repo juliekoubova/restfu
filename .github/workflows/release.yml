@@ -19,13 +19,6 @@ jobs:
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_KEY }}
-      with:
-        dotnet-version: 3.1.201
-
     - name: Restore, Build, and Test
       env:
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
@@ -33,6 +26,11 @@ jobs:
 
     - name: Package
       run: dotnet pack
+
+    - name: Setup NuGet.org API Key
+      uses: actions/setup-dotnet@v1
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_KEY }}
 
     - name: Upload to NuGet.org
       working-directory: ${{ env.RESTFU_PACKAGE_PATH }}

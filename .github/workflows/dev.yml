@@ -20,14 +20,6 @@ jobs:
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        dotnet-version: 3.1.201
-        source-url: https://nuget.pkg.github.com/juliekoubova/index.json
-
     - name: Restore, Build, and Test
       env:
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
@@ -36,6 +28,14 @@ jobs:
     - name: Package
       if: github.ref == 'refs/heads/dev'
       run: dotnet pack
+
+    - name: Setup GitHub Packages API Key
+      if: github.ref == 'refs/heads/dev'
+      uses: actions/setup-dotnet@v1
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        source-url: https://nuget.pkg.github.com/juliekoubova/index.json
 
     - name: Upload to GitHub Packages
       if: github.ref == 'refs/heads/dev'

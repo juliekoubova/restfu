@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Test.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Test.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <ItemGroup>
     <ProjectReference Include="../../Restfu/src/Restfu.fsproj" />
     <ProjectReference Include="../../Private/src/Restfu.Private.fsproj" />

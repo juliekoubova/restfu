@@ -21,6 +21,8 @@
     <Compile Include="Extensions.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.3.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.3.1" />
   </ItemGroup>
 </Project>

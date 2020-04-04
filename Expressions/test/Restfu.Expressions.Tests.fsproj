@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Test.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Test.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <ItemGroup>
     <ProjectReference Include="../src/Restfu.Expressions.fsproj" />
     <PackageReference Include="FParsec" Version="1.1.1" />

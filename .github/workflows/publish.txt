@@ -1,7 +1,7 @@
 name: Release Production Packages
 on:
   push:
-    branches: release/v*
+    tags: v*
 
 env:
   Configuration: Release
@@ -51,7 +51,7 @@ jobs:
         "::set-output name=file::$ZipFile"
 
     - name: Create GitHub Release
-      if: steps.zip.outputs.version
+      if: steps.nbgv.outputs.Version
       id: create_release
       uses: actions/create-release@v1
       env:

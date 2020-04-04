@@ -37,8 +37,8 @@ jobs:
       shell: pwsh
       run: |
         gci env:\
-        Get-ChildItem $Env:PackageOutputPath/*.nupkg |% {
-          curl -sSX PUT `
+        Get-ChildItem $Env:PackageOutputPath\*.nupkg |% {
+          curl -X PUT `
             -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
             -F package=@$_ `
             https://nuget.pkg.github.com/juliekoubova/

@@ -3,12 +3,12 @@
 [CmdletBinding()]
 param (
   [Parameter(Mandatory, Position = 0)]
-  [Version]
-  $Version,
+  [String]
+  $Tag
 
-  [Parameter()]
-  [Switch]
-  $Prerelease
+  # [Parameter()]
+  # [Switch]
+  # $Prerelease
 #   [Parameter(Mandatory, Position = 0)]
 #   [ValidateSet('major', 'minor', 'build')]
 #   [String]
@@ -29,10 +29,10 @@ param (
 #   }
 # }
 
-$Tag = "v${Version}"
-if ($Prerelease) {
-  $Tag += '-pre'
-}
+# $Tag = "v${Version}"
+# if ($Prerelease) {
+#   $Tag += '-pre'
+# }
 
 git tag $Tag -m $Tag
 git push origin $Tag

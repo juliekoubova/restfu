@@ -1,0 +1,7 @@
+name: Generate Version String
+description: Generates version string from the current Git ref.
+outputs:
+  version:
+    description: The generated version string.
+  prerelease:
+    description: Flag indicating whether the version is a prerelease.

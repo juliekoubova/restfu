@@ -1,0 +1,57 @@
+name: Release Development Packages
+on:
+  pull_request:
+  push:
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 0
+  DOTNET_NOLOGO: 1
+  CONFIGURATION: Release
+  PKG_DIR: .nupkg
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.201
+
+    - name: Run Tests
+      env:
+        MONGODB_URL: ${{ secrets.MONGODB_URL }}
+      run: dotnet test --configuration ${{ env.CONFIGURATION }}
+
+    - name: Build Packages
+      shell: pwsh
+      run: |
+
+        if ($Env:GITHUB_REF -match '^refs/heads/(.+)$') {
+          $Branch = $Match[1]
+        } else {
+          $Branch = 'unknown'
+        }
+
+        $VersionSuffix = '{0}-{1:yyyy-MM-dd-HHmmss}-{2}' -f
+          $Branch,
+          (Get-Date).ToUniversalTime(),
+          $(git rev-parse --short $Env:GITHUB_SHA)
+
+        dotnet pack `
+          --output $Env:PKG_DIR `
+          --configuration $Env:CONFIGURATION `
+          --version-suffix $VersionSuffix `
+          --no-build
+
+    - name: Upload to GitHub Packages
+      shell: pwsh
+      run: |
+        Get-ChildItem $Env:PKG_DIR/*.nupkg |% {
+          curl -sSX PUT `
+            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
+            -F package=@$_ `
+            https://nuget.pkg.github.com/juliekoubova/
+        }

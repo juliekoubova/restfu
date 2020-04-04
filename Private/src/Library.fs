@@ -4,9 +4,15 @@ open Microsoft.FSharp.Quotations
 open Microsoft.FSharp.Quotations.Patterns
 open System
 
-
 [<AutoOpen>]
 module Utils =
+  let rec extractException<'T when 'T :> exn> (ex : exn) =
+    match ex with
+    | :? 'T as result -> Some result
+    | :? AggregateException as ae ->
+      ae.InnerExceptions |> Seq.tryPick extractException<'T>
+    | _ -> None
+
   let ignoreArg0 fn = fun _ arg -> fn arg
 
   let getterName (expr : Expr<'a -> 'b>) =
@@ -22,7 +28,7 @@ module Utils =
       Expr.NewDelegate(typeof<Func<'a, 'b>>, [var], body)
       |> Expr.Cast<Func<'a,'b>>
       |> LeafExpressionConverter.QuotationToLambdaExpression
-    | _ -> invalidArg "expr" "Expeceted a Lambda Expr"
+    | _ -> invalidArg "expr" "Expected a Lambda Expr"
 
   let getGenericFunctionDef expr =
     match expr with

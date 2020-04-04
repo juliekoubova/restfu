@@ -20,7 +20,6 @@ let private validatePutKey entityKey =
     Summary = None
   }
 
-
 let create<'K, 'E when 'K : equality>
   (entityKey : EntityKey<'K, 'E>)
   (delete    : 'K -> Async<RestResult<'K, 'E>>)

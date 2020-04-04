@@ -9,12 +9,6 @@ open System
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module private MongoDBResource =
-  let rec extractException<'T when 'T :> exn> (ex : exn) =
-    match ex with
-    | :? 'T as result -> Some result
-    | :? AggregateException as ae ->
-      ae.InnerExceptions |> Seq.tryPick extractException<'T>
-    | _ -> None
 
   let isDuplicateKey ex =
     match extractException<MongoWriteException> ex with

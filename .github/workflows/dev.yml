@@ -6,10 +6,10 @@ on:
     branches: [ dev ]
 
 env:
-  Configuration: Release
   DOTNET_CLI_TELEMETRY_OPTOUT: 0
   DOTNET_NOLOGO: 1
-  PackageOutputPath: ${{ github.workspace }}\.nupkg
+  RESTFU_CONFIGURATION: Release
+  RESTFU_PACKAGE_PATH: .nupkg
 
 jobs:
   build:
@@ -22,8 +22,11 @@ jobs:
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         dotnet-version: 3.1.201
+        source-url: https://nuget.pkg.github.com/juliekoubova/index.json
 
     - name: Restore, Build, and Test
       env:
@@ -36,12 +39,5 @@ jobs:
 
     - name: Upload to GitHub Packages
       if: github.ref == 'refs/heads/dev'
-      shell: pwsh
-      working-directory: ${{ env.PackageOutputPath }}
-      run: |
-        Get-ChildItem *.nupkg |% {
-          curl -sSX PUT `
-            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
-            -F package=@$_ `
-            https://nuget.pkg.github.com/juliekoubova/
-        }
+      working-directory: ${{ RESTFU_PACKAGE_PATH }}
+      run: dotnet nuget push '*.nupkg' --no-symbols=true

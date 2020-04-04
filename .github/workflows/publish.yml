@@ -1,7 +1,7 @@
-name: Publish to GitHub Packages
+name: Publish to NuGet.org
 on:
-  pull_request:
   push:
+    branches
 
 env:
   Configuration: Release
@@ -29,17 +29,8 @@ jobs:
       run: dotnet test
 
     - name: Package
-      if: github.ref == 'refs/heads/dev'
       run: dotnet pack
 
-    - name: Upload to GitHub Packages
-      if: github.ref == 'refs/heads/dev'
-      shell: pwsh
+    - name: Upload to NuGet.org
       working-directory: ${{ env.PackageOutputPath }}
-      run: |
-        Get-ChildItem *.nupkg |% {
-          curl -sSX PUT `
-            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
-            -F package=@$_ `
-            https://nuget.pkg.github.com/juliekoubova/
-        }
+      run: dotnet push *.nupkg -k "${{ secrets.NUGET_KEY }}"

@@ -30,7 +30,7 @@ jobs:
 
     - name: Package
       if: github.ref == 'refs/heads/dev'
-      run: dotnet pack --no-build
+      run: dotnet pack
 
     - name: Upload to GitHub Packages
       if: github.ref == 'refs/heads/dev'

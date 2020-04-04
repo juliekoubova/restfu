@@ -15,173 +15,40 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.201
 
-    - name: Restore Dependencies
-      run: dotnet restore
+    - name: Generate Version using NBGV
+      uses: aarnott/nbgv@v0.3
+      id: nbgv
 
-    - name: Generate Version
-      id: generate_version
-      shell: pwsh
-      run: |
-        if ($Env:GITHUB_REF -match '^refs/tags/v(.+)$') {
-          "::set-output name=version::$($Matches[1])"
-          "::set-output name=prerelease::$($Matches[1] -like '*-*')"
-        } else {
-          throw "Cannot parse version from '$Env:GITHUB_REF'"
-        }
-
-    - name: Build
-      shell: pwsh
-      run: |
-        dotnet build `
-          -c $Env:CONFIGURATION `
-          -p:Version=${{ steps.generate_version.outputs.version }}
-
-    - name: Test
-      env:
-        MONGODB_URL: ${{ secrets.MONGODB_URL }}
-      run: dotnet test -c ${{ env.CONFIGURATION }} --no-build
-
-    - name: Package
-      shell: pwsh
-      run: |
-        dotnet pack `
-          -o $Env:PKG_DIR `
-          -c $Env:CONFIGURATION `
-          -p:Version=${{ steps.generate_version.outputs.version }}
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v1
-      with:
-        name: nuget-packages
-        path: ${{ env.PKG_DIR }}
-
-    # - name: Upload NuGet.org
-    #   run: dotnet push .nupkg/*.nupkg -k '${{ secrets.NUGET_KEY }}'
-
-  github_package:
-    needs: build
-    runs-on: windows-latest
-    steps:
-    - name: Download Artifact
-      uses: actions/download-artifact@v1
-      with:
-        name: nupkg
-        path: ${{ env.PKG_DIR }}
-
-    - name: Upload to GitHub Packages
-      shell: pwsh
-      run: |
-        Get-ChildItem $Env:PKG_DIR/*.nupkg |% {
-          curl -sSX PUT `
-            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
-            -F package=@$_ `
-            https://nuget.pkg.github.com/juliekoubova/
-        }
-
-
-
-jobs:
-  build:
-    runs-on: windows-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.101
-
-    - name: Test
+    - name: Restore, Build, and Test
       env:
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
       run: dotnet test
 
-    - name: Build Packages
-      shell: pwsh
-      run: |
+    - name: Package
+      run: dotnet pack
 
-        $Props = @{
-        }
-
-        if ($Env:GITHUB_REF -match '^refs/heads/(.+)$') {
-          $Props.VersionSuffix = '{0}-{1:yyyy-MM-dd-HHmmss}-{2}' -f
-            $matches[1],
-            (Get-Date).ToUniversalTime(),
-            $(git rev-parse --short $Env:GITHUB_SHA)
-        } elseif ($Env:GITHUB_REF -match '^refs/tags/v(.+)$') {
-          $Props.Version = $matches[1]
-        }
-
-        $PackArgs = @(
-          '--configuration', 'Release', '--no-restore'
-        )
-
-        foreach ($tuple in $Props.GetEnumerator()) {
-          $PackArgs += "-p:$($tuple.Key)=$($tuple.Value)"
-        }
-
-        dotnet pack @PackArgs
-
-        Set-Content .nupkg/version $Props.Version
-
-    - name: Upload Packages
-      uses: actions/upload-artifact@v1
-      with:
-        name: nupkg
-        path: .nupkg
-
-  nuget_package:
-    needs: build
-    runs-on: windows-latest
-    steps:
-    - name: Download Artifacts
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: actions/download-artifact@v1
-      with:
-        name: nupkg
-        path: .nupkg
-
-
-
-  github_release:
-    needs: build
-    runs-on: windows-latest
-    steps:
-    - name: Download Packages
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: actions/download-artifact@v1
-      with:
-        name: nupkg
-        path: .nupkg
     - name: Create ZIP Archive
-      if: startsWith(github.ref, 'refs/tags/v')
       id: zip
       shell: pwsh
       run: |
-        $Version = Get-Content .nupkg/version
-        Remove-Item .nupkg/version
-
-        $ZipFile = "restfu-${Version}.zip"
+        $ZipFile = "restfu-v${{ steps.nbgv.outputs.Version }}.zip"
 
         [System.IO.Compression.ZipFile]::CreateFromDirectory(
-          '.nupkg',
+          $Env:PackageOutputPath,
           $ZipFile,
           'NoCompression',
           $false
         )
 
-        if ($Version -like '*-*') {
-          "::set-output name=prerelease::true"
-        }
-
-        "::set-output name=version::$Version"
-        "::set-output name=zip::$ZipFile"
+        "::set-output name=file::$ZipFile"
 
     - name: Create GitHub Release
       if: steps.zip.outputs.version
@@ -190,18 +57,18 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: v${{ steps.zip.outputs.version }}
-        draft: false
-        prerelease: ${{ steps.zip.outputs.prerelease }}
+        tag_name: v${{ steps.nbgv.outputs.Version }}
+        release_name: v${{ steps.nbgv.outputs.Version }}
+        draft: true
+        prerelease: ${{ steps.nbgv.outputs.PrereleaseVersion != '' }}
 
     - name: Upload Packages to the GitHub Release
-      if: steps.zip.outputs.zip && steps.create_release.outputs.upload_url
+      if: steps.zip.outputs.file && steps.create_release.outputs.upload_url
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./${{ steps.zip.outputs.zip }}
-        asset_name: ${{ steps.zip.outputs.zip }}
+        asset_path: ${{ steps.zip.outputs.file }}
+        asset_name: ${{ steps.zip.outputs.file }}
         asset_content_type: application/zip

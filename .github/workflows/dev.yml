@@ -35,9 +35,10 @@ jobs:
     - name: Upload to GitHub Packages
       if: github.ref == 'refs/heads/dev'
       shell: pwsh
+      working-directory: ${{ env.PackageOutputPath }}
       run: |
-        gci env:\
-        Get-ChildItem $Env:PackageOutputPath\*.nupkg |% {
+        Get-ChildItem *.nupkg
+        Get-ChildItem *.nupkg |% {
           curl -X PUT `
             -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
             -F package=@$_ `

@@ -1,13 +1,13 @@
 name: Release Production Packages
 on:
   push:
-    tags: v*
+    branches: release/v*
 
 env:
+  Configuration: Release
   DOTNET_CLI_TELEMETRY_OPTOUT: 0
   DOTNET_NOLOGO: 1
-  CONFIGURATION: Release
-  PKG_DIR: .nupkg
+  PackageOutputPath: .nupkg
 
 jobs:
   build:

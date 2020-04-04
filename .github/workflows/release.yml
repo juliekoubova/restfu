@@ -31,6 +31,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_KEY }}
+      with:
+        source-url: https://api.nuget.org/v3/index.json
 
     - name: Upload to NuGet.org
       working-directory: ${{ env.RESTFU_PACKAGE_PATH }}

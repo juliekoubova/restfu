@@ -1,8 +1,8 @@
-name: publish
+name: release
 on:
   push:
     branches:
-      publish
+      release/*
 
 env:
   Configuration: Release

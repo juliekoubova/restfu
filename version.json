@@ -5,7 +5,7 @@
     "^refs/heads/publish$"
   ],
   "release": {
-    "branchName": "release/v{version}",
+    "branchName": "release/{version}",
     "versionIncrement": "minor",
     "firstUnstableTag": "dev"
   }

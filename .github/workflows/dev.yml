@@ -1,9 +1,8 @@
 name: dev
 on:
   pull_request:
-    branches-ignore: [ dev ]
   push:
-    branches-ignore: [ publish ]
+    branches: [ dev ]
 
 env:
   Configuration: Release

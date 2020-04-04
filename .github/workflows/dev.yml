@@ -1,4 +1,4 @@
-name: Publish to GitHub Packages
+name: dev
 on:
   pull_request:
   push:

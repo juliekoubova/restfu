@@ -39,5 +39,5 @@ jobs:
 
     - name: Upload to GitHub Packages
       if: github.ref == 'refs/heads/dev'
-      working-directory: ${{ RESTFU_PACKAGE_PATH }}
+      working-directory: ${{ env. RESTFU_PACKAGE_PATH }}
       run: dotnet nuget push '*.nupkg' --no-symbols=true

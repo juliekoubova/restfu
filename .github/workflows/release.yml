@@ -27,13 +27,10 @@ jobs:
     - name: Package
       run: dotnet pack
 
-    - name: Setup NuGet.org API Key
-      uses: actions/setup-dotnet@v1
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_KEY }}
-      with:
-        source-url: https://api.nuget.org/v3/index.json
-
     - name: Upload to NuGet.org
       working-directory: ${{ env.RESTFU_PACKAGE_PATH }}
-      run: dotnet nuget push '*.nupkg' --no-symbols=true
+      run: >
+        dotnet nuget push '*.nupkg'
+        --api-key '${{ secrets.NUGET_KEY }}'
+        --no-symbols=true
+        --source nuget.org

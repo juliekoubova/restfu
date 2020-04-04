@@ -1,7 +1,8 @@
 name: Publish to NuGet.org
 on:
   push:
-    branches
+    branches:
+        publish
 
 env:
   Configuration: Release

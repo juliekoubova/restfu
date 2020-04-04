@@ -1,8 +1,6 @@
 module Restfu.Azure.Cosmos.Table.TableTests
 
-open MongoDB.Driver
 open Restfu
-open Restfu.MongoDB
 open Restfu.Tests
 open System
 open System.Threading
@@ -38,6 +36,6 @@ open Expecto
 [<Tests>]
 let tests =
   testList "Azure.Cosmos.Table" [
-    ptest "skipped" { }
+    testCase "nothing yet" <| fun () -> ()
     // yield! testFixture withMongoDBResource CrudTests.tests
   ]

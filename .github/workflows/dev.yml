@@ -36,6 +36,7 @@ jobs:
       if: github.ref == 'refs/heads/dev'
       shell: pwsh
       run: |
+        gci env:\
         Get-ChildItem $Env:PackageOutputPath/*.nupkg |% {
           curl -sSX PUT `
             -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `

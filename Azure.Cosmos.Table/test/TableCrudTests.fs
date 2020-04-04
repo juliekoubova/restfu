@@ -38,5 +38,6 @@ open Expecto
 [<Tests>]
 let tests =
   testList "Azure.Cosmos.Table" [
+    ptest "skipped" { }
     // yield! testFixture withMongoDBResource CrudTests.tests
   ]

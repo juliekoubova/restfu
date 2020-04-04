@@ -1,4 +1,5 @@
-module Restfu.Mapping.Tests
+module Restfu.Mapping.Tests.MappingTests
+open Restfu.Mapping
 
 open Expecto
 open Microsoft.FSharp.Reflection

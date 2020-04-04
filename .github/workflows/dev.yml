@@ -35,12 +35,14 @@ jobs:
     - name: Upload to GitHub Packages
       if: github.ref == 'refs/heads/dev'
       shell: pwsh
-      working-directory: ${{ env.PackageOutputPath }}
+      # working-directory: ${{ env.PackageOutputPath }}
       run: |
-        Get-ChildItem *.nupkg
-        Get-ChildItem *.nupkg |% {
-          curl -X PUT `
-            -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
-            -F package=@$_ `
-            https://nuget.pkg.github.com/juliekoubova/
-        }
+        "${{ github.workspace }} -- ${{ env.PackageOutputPath }}"
+        pwd
+        # Get-ChildItem *.nupkg
+        # Get-ChildItem *.nupkg |% {
+        #   curl -X PUT `
+        #     -u "juliekoubova:${{ secrets.GITHUB_TOKEN }}" `
+        #     -F package=@$_ `
+        #     https://nuget.pkg.github.com/juliekoubova/
+        # }

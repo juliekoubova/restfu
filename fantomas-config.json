@@ -1,0 +1,8 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fsprojects/fantomas/master/src/Fantomas/schema.json",
+  "IndentSpaceNum": 2,
+  "KeepNewlineAfter": true,
+  "PageWidth": 80,
+  "SpaceAfterComma": true,
+  "SpaceBeforeColon": true,
+}

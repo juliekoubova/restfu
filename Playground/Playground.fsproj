@@ -9,7 +9,7 @@
     <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.3.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="5.3.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="6.4.0" />
     <ProjectReference Include="../Restfu/src/Restfu.fsproj" />
     <ProjectReference Include="../AspNetCore/src/Restfu.AspNetCore.fsproj" />
     <ProjectReference Include="../MongoDB/src/Restfu.MongoDB.fsproj" />
